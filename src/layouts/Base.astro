@@ -1,0 +1,143 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
+import '@fontsource-variable/source-serif-4';
+import '../styles/global.css';
+import SearchDialog from '../components/SearchDialog.astro';
+import { asset, href, LANGS, other, stripLang, t, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  /** extra class on <body> */
+  bodyClass?: string;
+}
+
+const { lang, title, description, bodyClass } = Astro.props;
+const site = t(lang, 'siteName');
+const fullTitle = title ? `${title} · ${site}` : `${site} — ${t(lang, 'tagline')}`;
+const desc = description ?? t(lang, 'description');
+const path = stripLang(Astro.url.pathname);
+const canonical = new URL(href(lang, path), Astro.site).href;
+
+const nav = [
+  { key: 'nav.map', path: 'map/' },
+  { key: 'nav.syllabus', path: 'topics/' },
+  { key: 'nav.routes', path: 'routes/' },
+  { key: 'nav.lab', path: 'lab/' },
+  { key: 'nav.exercises', path: 'exercises/' },
+  { key: 'nav.method', path: 'method/' },
+] as const;
+const current = (p: string) =>
+  path.startsWith(p) || (p === 'topics/' && (path.startsWith('topic/') || path.startsWith('area/')));
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#0a0d12" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <link rel="canonical" href={canonical} />
+    {LANGS.map((l) => <link rel="alternate" hreflang={l} href={new URL(href(l, path), Astro.site).href} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(href('en', path), Astro.site).href} />
+    <link rel="icon" href={asset('favicon.svg')} type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={lang === 'es' ? 'es_ES' : 'en_US'} />
+    <!-- Synchronous, before first paint: applies the saved theme without a flash. -->
+    <script is:inline src={asset('theme.js')}></script>
+  </head>
+  <body class={bodyClass} data-lang={lang} data-base={import.meta.env.BASE_URL}>
+    <a class="skip" href="#main">{t(lang, 'skip')}</a>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href={href(lang)} aria-label={site}>
+          <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="1" y="1" width="30" height="30" rx="7" fill="none" stroke="currentColor" stroke-opacity=".25"></rect>
+            <path class="bm-curve" d="M6 23 C 11 23, 12 9, 16 9 S 21 23, 26 23"></path>
+            <line class="bm-tangent" x1="7.9" y1="24.8" x2="14.9" y2="7.2"></line>
+            <circle class="bm-point" cx="11.4" cy="16" r="2.2"></circle>
+          </svg>
+          <span class="brand-name">Calculus<span class="x">×</span>Computing</span>
+        </a>
+        <nav class="nav" id="site-nav" aria-label="Main">
+          {
+            nav.map((n) => (
+              <a href={href(lang, n.path)} aria-current={current(n.path) ? 'page' : undefined}>
+                {t(lang, n.key)}
+              </a>
+            ))
+          }
+        </nav>
+        <div class="header-tools">
+          <button class="search-btn" type="button" data-search-open aria-label={t(lang, 'nav.search')}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"
+              ><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg
+            >
+            <span class="label">{t(lang, 'nav.search')}…</span>
+            <kbd>Ctrl K</kbd>
+          </button>
+          <a class="icon-btn" href={href(other(lang), path)} hreflang={other(lang)} lang={other(lang)} title={t(lang, 'lang.switch')}>
+            {t(lang, 'lang.short')}
+          </a>
+          <button class="icon-btn" type="button" data-theme-toggle aria-label={t(lang, 'theme.toggle')} title={t(lang, 'theme.toggle')}>
+            <svg class="theme-dark-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"
+              ><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"></path></svg
+            >
+            <svg class="theme-light-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"
+              ><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+              ></path></svg
+            >
+          </button>
+          <button class="icon-btn menu-btn" type="button" aria-controls="site-nav" aria-expanded="false" aria-label={t(lang, 'nav.menu')}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"
+              ><path d="M4 7h16M4 12h16M4 17h16"></path></svg
+            >
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <div>
+          <p><strong>{site}</strong> — {t(lang, 'tagline')}.</p>
+          <p>{t(lang, 'footer.note')}</p>
+          <p>© 2026 Antonio Ferreiro · MIT</p>
+        </div>
+        <div>
+          <h2>{t(lang, 'footer.siblings')}</h2>
+          <ul>
+            <li><a href={`https://toniferr.github.io/math-of-ai/${lang === 'es' ? 'es/' : ''}`}>Math of AI</a></li>
+            <li><a href={`https://toniferr.github.io/math-of-quantum/${lang === 'es' ? 'es/' : ''}`}>Math of Quantum</a></li>
+            <li><a href="https://toniferr.github.io/">toniferr.github.io</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>{t(lang, 'footer.source')}</h2>
+          <ul>
+            <li><a href="https://github.com/toniferr/calculus-computing">GitHub</a></li>
+            <li><a href={href(lang, 'method/')}>{t(lang, 'nav.method')}</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    <SearchDialog lang={lang} />
+    <script>
+      import '../scripts/chrome';
+    </script>
+  </body>
+</html>

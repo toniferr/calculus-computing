@@ -1,0 +1,892 @@
+kind: math
+order: 12
+glyph: '∇'
+title: {en: 'Multivariable calculus', es: 'Cálculo multivariable'}
+summary:
+  en: |
+    Functions of many variables: partial derivatives, the gradient, Jacobians and Hessians. The language in which a
+    neural network with a billion parameters is trained.
+  es: |
+    Funciones de muchas variables: derivadas parciales, gradiente, jacobianas y hessianas. El idioma en el que se
+    entrena una red neuronal de mil millones de parámetros.
+intro:
+  en: |
+    Real problems have many inputs: the pixels of an image, the joints of a robot, the weights of a network. The
+    derivative generalizes to a vector (the **gradient**) or a matrix (the **Jacobian**), and second derivatives to a
+    matrix (the **Hessian**). The single most important chain in modern computing starts here:
+
+    ```
+    ∇f  →  gradient descent  →  loss function  →  backpropagation  →  neural networks  →  deep learning
+    ```
+  es: |
+    Los problemas reales tienen muchas entradas: los píxeles de una imagen, las articulaciones de un robot, los pesos
+    de una red. La derivada se generaliza a un vector (el **gradiente**) o a una matriz (la **jacobiana**), y las
+    segundas derivadas a una matriz (la **hessiana**). La cadena más importante de la informática actual empieza aquí:
+
+    ```
+    ∇f  →  descenso de gradiente  →  función de pérdida  →  retropropagación  →  redes neuronales  →  deep learning
+    ```
+topics:
+  - id: multivariable-functions
+    level: university
+    core: true
+    prerequisites: [functions, vectors]
+    title: {en: 'Functions of several variables', es: 'Funciones de varias variables'}
+    aliases: {en: [multivariate function, scalar function, 'f(x,y)', R^n to R], es: [función multivariable, función escalar, 'f(x,y)', de R^n en R]}
+    summary:
+      en: |
+        $f : \R^n \to \R$ (or $\R^m$): many inputs, one (or many) outputs. With two inputs the graph is a surface over the
+        plane; with a million inputs — the weights of a model — we reason with its level sets and its gradient.
+      es: |
+        $f : \R^n \to \R$ (o $\R^m$): muchas entradas, una (o muchas) salidas. Con dos entradas la gráfica es una
+        superficie sobre el plano; con un millón de entradas (los pesos de un modelo) se razona con sus conjuntos de nivel
+        y su gradiente.
+    formulas:
+      - tex: |-
+          f : \R^n \to \R, \qquad (x_1, \dots, x_n) \mapsto f(x_1, \dots, x_n)
+      - tex: |-
+          L(\theta) = \frac1N\sum_{i=1}^{N}\ell\big(f_\theta(x_i), y_i\big), \qquad \theta \in \R^{d},\ d \sim 10^{9}
+        label: {en: 'a training loss: a function of $d$ variables', es: 'una pérdida de entrenamiento: una función de $d$ variables'}
+    applications:
+      - to: loss-function
+        strength: 5
+        type: fundamental
+        note:
+          en: 'A loss is a scalar function of all the model''s parameters.'
+          es: 'Una pérdida es una función escalar de todos los parámetros del modelo.'
+      - to: image-processing
+        strength: 4
+        type: frequent
+        note:
+          en: 'A grayscale image is a function $I(x, y)$ sampled on a grid; a colour image is $\R^2 \to \R^3$.'
+          es: 'Una imagen en escala de grises es una función $I(x, y)$ muestreada en una rejilla; una en color es $\R^2 \to \R^3$.'
+
+  - id: surfaces
+    level: university
+    prerequisites: [multivariable-functions]
+    title: {en: 'Surfaces and level sets', es: 'Superficies y conjuntos de nivel'}
+    aliases: {en: [level curves, contour lines, isosurface, implicit surface, parametric surface], es: [curvas de nivel, isolíneas, isosuperficie, superficie implícita, superficie paramétrica]}
+    summary:
+      en: |
+        Three ways to describe a surface: a graph $z = f(x,y)$, a level set $F(x,y,z) = c$ (implicit), or a
+        parametrization $r(u,v)$. Contour maps of loss functions and the isosurfaces of medical imaging are level sets.
+      es: |
+        Tres formas de describir una superficie: una gráfica $z = f(x,y)$, un conjunto de nivel $F(x,y,z) = c$ (implícita)
+        o una parametrización $r(u,v)$. Los mapas de contorno de las funciones de pérdida y las isosuperficies de la
+        imagen médica son conjuntos de nivel.
+    formulas:
+      - tex: |-
+          \{(x, y) : f(x, y) = c\}, \qquad \{x \in \R^3 : F(x) = 0\}, \qquad r(u, v) \in \R^3
+    applications:
+      - to: signed-distance-fields
+        strength: 5
+        type: fundamental
+        note:
+          en: 'An SDF represents a shape as the zero level set of a distance function.'
+          es: 'Un SDF representa una forma como el conjunto de nivel cero de una función distancia.'
+      - to: surface-normals
+        strength: 4
+        type: fundamental
+        note:
+          en: 'Normals of parametric surfaces come from $r_u \times r_v$; of implicit ones from $\nabla F$.'
+          es: 'Las normales de superficies paramétricas salen de $r_u \times r_v$; las de implícitas, de $\nabla F$.'
+      - to: loss-landscape
+        strength: 4
+        type: frequent
+        note:
+          en: 'Contour plots of a loss along two directions are the standard way to visualize its landscape.'
+          es: 'Los mapas de contorno de una pérdida a lo largo de dos direcciones son la forma estándar de visualizar su paisaje.'
+
+  - id: multivariable-limits
+    level: university
+    prerequisites: [multivariable-functions, limit, continuity]
+    title: {en: 'Limits and continuity in several variables', es: 'Límites y continuidad en varias variables'}
+    aliases: {en: [limit along paths, neighbourhood], es: [límite por trayectorias, entorno]}
+    summary:
+      en: |
+        Same $\varepsilon$–$\delta$ definition with $\norm{x - a}$ instead of $|x - a|$. New subtlety: the point can be
+        approached along infinitely many paths, and the limit must agree on all of them.
+      es: |
+        La misma definición $\varepsilon$–$\delta$ con $\norm{x - a}$ en vez de $|x - a|$. Sutileza nueva: al punto se puede
+        llegar por infinitas trayectorias, y el límite debe coincidir en todas.
+    formulas:
+      - tex: |-
+          f(x,y) = \frac{xy}{x^2 + y^2}: \quad y = mx \implies f = \frac{m}{1 + m^2}
+        label: {en: 'no limit at the origin: it depends on the direction', es: 'sin límite en el origen: depende de la dirección'}
+    applications: []
+
+  - id: partial-derivatives
+    level: university
+    core: true
+    prerequisites: [multivariable-functions, derivative]
+    title: {en: 'Partial derivatives', es: 'Derivadas parciales'}
+    aliases: {en: [partial derivative, ∂f/∂x, sensitivity], es: [derivada parcial, ∂f/∂x, sensibilidad]}
+    summary:
+      en: |
+        $\frac{\partial f}{\partial x_i}$: the derivative with respect to one variable, holding the others fixed. Each
+        answers "how sensitive is the output to *this* input?" — for a neural network, to *this* weight.
+      es: |
+        $\frac{\partial f}{\partial x_i}$: la derivada respecto de una variable, dejando fijas las demás. Cada una responde
+        a «¿cuánto depende la salida de *esta* entrada?»; en una red neuronal, de *este* peso.
+    why:
+      en: |
+        With many inputs, "the" rate of change depends on the direction you move. The simplest directions are the axes:
+        move one variable, freeze the rest. Partial derivatives are those axis-aligned rates, and (for nice functions)
+        they determine the rate in every other direction.
+      es: |
+        Con muchas entradas, «la» tasa de cambio depende de la dirección en que te muevas. Las direcciones más sencillas
+        son los ejes: mover una variable y congelar el resto. Las derivadas parciales son esas tasas a lo largo de los
+        ejes y (para funciones razonables) determinan la tasa en cualquier otra dirección.
+    intuition:
+      en: |
+        Slice the surface $z = f(x, y)$ with the plane $y = y_0$: you get a curve, and $\partial f/\partial x$ is its
+        slope. Slice with $x = x_0$ for $\partial f / \partial y$. On a mountain: $\partial f/\partial x$ is how steep it
+        is walking due east, $\partial f/\partial y$ due north.
+      es: |
+        Corta la superficie $z = f(x, y)$ con el plano $y = y_0$: sale una curva, y $\partial f/\partial x$ es su
+        pendiente. Corta con $x = x_0$ para $\partial f / \partial y$. En una montaña: $\partial f/\partial x$ es lo
+        empinado que está caminando hacia el este y $\partial f/\partial y$ hacia el norte.
+    formal:
+      en: |
+        $$\frac{\partial f}{\partial x_i}(a) = \lim_{h\to 0}\frac{f(a + h\,e_i) - f(a)}{h},$$
+        where $e_i$ is the $i$-th unit vector. If all partials exist and are continuous near $a$ ($f \in C^1$), $f$ is
+        differentiable at $a$; if $f \in C^2$, mixed partials commute: $\partial_x\partial_y f = \partial_y\partial_x f$
+        (Schwarz).
+      es: |
+        $$\frac{\partial f}{\partial x_i}(a) = \lim_{h\to 0}\frac{f(a + h\,e_i) - f(a)}{h},$$
+        donde $e_i$ es el $i$-ésimo vector unitario. Si todas las parciales existen y son continuas cerca de $a$
+        ($f \in C^1$), $f$ es diferenciable en $a$; si $f \in C^2$, las parciales cruzadas conmutan:
+        $\partial_x\partial_y f = \partial_y\partial_x f$ (Schwarz).
+    formulas:
+      - tex: |-
+          \frac{\partial f}{\partial x_i}(a) = \lim_{h\to 0}\frac{f(a + h e_i) - f(a)}{h}
+      - tex: |-
+          f(x, y) = x^2 y + \sin y: \quad f_x = 2xy, \quad f_y = x^2 + \cos y
+    compute:
+      en: 'Differentiate in $x_i$ treating every other variable as a constant; all single-variable rules apply.'
+      es: 'Deriva respecto de $x_i$ tratando las demás variables como constantes; valen todas las reglas de una variable.'
+    example:
+      en: |
+        Squared error of a linear model with two weights: $L(w, b) = (wx + b - y)^2$. Then
+        $\partial L/\partial w = 2(wx + b - y)\,x$ and $\partial L/\partial b = 2(wx + b - y)$. The common factor
+        $2(\hat y - y)$ is the "error signal" that backpropagation sends to every weight.
+      es: |
+        Error cuadrático de un modelo lineal con dos pesos: $L(w, b) = (wx + b - y)^2$. Entonces
+        $\partial L/\partial w = 2(wx + b - y)\,x$ y $\partial L/\partial b = 2(wx + b - y)$. El factor común
+        $2(\hat y - y)$ es la «señal de error» que la retropropagación envía a cada peso.
+    matters:
+      en: |
+        Training computes $\partial L / \partial\theta_i$ for every parameter $\theta_i$; image processing computes
+        $\partial I/\partial x$ and $\partial I/\partial y$ to find edges; physics writes its laws (heat, waves, fluids,
+        electromagnetism, quantum mechanics) as equations between partial derivatives.
+      es: |
+        Entrenar es calcular $\partial L / \partial\theta_i$ para cada parámetro $\theta_i$; el procesado de imagen calcula
+        $\partial I/\partial x$ y $\partial I/\partial y$ para encontrar bordes; la física escribe sus leyes (calor, ondas,
+        fluidos, electromagnetismo, mecánica cuántica) como ecuaciones entre derivadas parciales.
+    applications:
+      - to: backpropagation
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Backprop computes $\partial L/\partial w$ for every weight $w$ of the network.'
+          es: 'La retropropagación calcula $\partial L/\partial w$ para cada peso $w$ de la red.'
+      - to: image-processing
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Edge detection estimates $\partial I/\partial x$ and $\partial I/\partial y$ of the intensity.'
+          es: 'La detección de bordes estima $\partial I/\partial x$ y $\partial I/\partial y$ de la intensidad.'
+      - to: heat-equation
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The heat equation $u_t = \alpha(u_{xx} + u_{yy})$ is a relation between partial derivatives.'
+          es: 'La ecuación del calor $u_t = \alpha(u_{xx} + u_{yy})$ es una relación entre derivadas parciales.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Compute all first and second partial derivatives of $f(x, y) = e^{xy}$ and check that $f_{xy} = f_{yx}$.'
+          es: 'Calcula todas las derivadas parciales primeras y segundas de $f(x, y) = e^{xy}$ y comprueba que $f_{xy} = f_{yx}$.'
+        solution:
+          en: '$f_x = ye^{xy}$, $f_y = xe^{xy}$, $f_{xx} = y^2e^{xy}$, $f_{yy} = x^2e^{xy}$, $f_{xy} = f_{yx} = (1 + xy)e^{xy}$.'
+          es: '$f_x = ye^{xy}$, $f_y = xe^{xy}$, $f_{xx} = y^2e^{xy}$, $f_{yy} = x^2e^{xy}$, $f_{xy} = f_{yx} = (1 + xy)e^{xy}$.'
+      - type: ai
+        prompt:
+          en: 'For $\hat y = \sigma(w_1x_1 + w_2x_2 + b)$ and $L = -\big(y\ln\hat y + (1-y)\ln(1-\hat y)\big)$, show that $\partial L/\partial w_1 = (\hat y - y)\,x_1$.'
+          es: 'Para $\hat y = \sigma(w_1x_1 + w_2x_2 + b)$ y $L = -\big(y\ln\hat y + (1-y)\ln(1-\hat y)\big)$, demuestra que $\partial L/\partial w_1 = (\hat y - y)\,x_1$.'
+        solution:
+          en: '$\frac{\partial L}{\partial\hat y} = \frac{\hat y - y}{\hat y(1 - \hat y)}$, $\frac{\partial\hat y}{\partial z} = \hat y(1 - \hat y)$, $\frac{\partial z}{\partial w_1} = x_1$. The product simplifies to $(\hat y - y)x_1$: sigmoid and cross-entropy cancel beautifully.'
+          es: '$\frac{\partial L}{\partial\hat y} = \frac{\hat y - y}{\hat y(1 - \hat y)}$, $\frac{\partial\hat y}{\partial z} = \hat y(1 - \hat y)$, $\frac{\partial z}{\partial w_1} = x_1$. El producto se simplifica a $(\hat y - y)x_1$: sigmoide y entropía cruzada se cancelan de maravilla.'
+
+  - id: gradient
+    level: university
+    core: true
+    prerequisites: [partial-derivatives, vectors]
+    related: [gradient-descent, directional-derivative, surface-normals]
+    title: {en: 'Gradient', es: 'Gradiente'}
+    aliases: {en: [grad, nabla, ∇f, steepest ascent, gradient vector], es: [grad, nabla, ∇f, máxima pendiente, vector gradiente]}
+    summary:
+      en: |
+        $\nabla f = \left(\frac{\partial f}{\partial x_1}, \dots, \frac{\partial f}{\partial x_n}\right)$: the vector of all
+        partial derivatives. It points in the direction of steepest ascent, its length is that steepest slope, and it is
+        perpendicular to the level sets. Walk against it and you go downhill fastest.
+      es: |
+        $\nabla f = \left(\frac{\partial f}{\partial x_1}, \dots, \frac{\partial f}{\partial x_n}\right)$: el vector de todas
+        las derivadas parciales. Apunta en la dirección de máximo ascenso, su longitud es esa pendiente máxima y es
+        perpendicular a los conjuntos de nivel. Si caminas en contra bajas lo más deprisa posible.
+    why:
+      en: |
+        We want one object that answers "which way is up, and how steep?" for a function of many variables. The partial
+        derivatives are $n$ separate numbers; assembled into a vector they gain a geometric meaning that does not depend
+        on the coordinate system — and that turns optimization into "follow an arrow".
+      es: |
+        Queremos un objeto que responda a «¿hacia dónde es cuesta arriba, y cuánto?» para una función de muchas
+        variables. Las derivadas parciales son $n$ números sueltos; juntos en un vector adquieren un significado
+        geométrico que no depende del sistema de coordenadas, y que convierte la optimización en «seguir una flecha».
+    intuition:
+      en: |
+        Stand on a hillside in fog. The gradient is the arrow on the ground pointing straight uphill; contour lines run
+        perpendicular to it. Its length is the slope in that direction. Gradient descent is: look at the arrow, take a
+        step the other way, repeat.
+
+        ```
+                       ∇f
+                       ↑
+                       │
+               ╭───────●───────╮   ← level curve f = c
+             ╭─┴───────────────┴─╮
+        ```
+      es: |
+        Estás en una ladera con niebla. El gradiente es la flecha en el suelo que apunta directamente cuesta arriba; las
+        curvas de nivel van perpendiculares a ella. Su longitud es la pendiente en esa dirección. El descenso de gradiente
+        es: mira la flecha, da un paso en sentido contrario, repite.
+
+        ```
+                       ∇f
+                       ↑
+                       │
+               ╭───────●───────╮   ← curva de nivel f = c
+             ╭─┴───────────────┴─╮
+        ```
+    formal:
+      en: |
+        For $f : \R^n \to \R$ differentiable at $a$, $\nabla f(a)$ is the unique vector with
+        $$f(a + h) = f(a) + \nabla f(a)\cdot h + o(\norm h).$$
+        The directional derivative in a unit direction $u$ is $D_u f(a) = \nabla f(a)\cdot u$, maximized by
+        $u = \nabla f/\norm{\nabla f}$ (Cauchy–Schwarz), with maximum value $\norm{\nabla f(a)}$. If $\nabla f(a) \ne 0$,
+        it is orthogonal to the level set $\{f = f(a)\}$.
+      es: |
+        Para $f : \R^n \to \R$ diferenciable en $a$, $\nabla f(a)$ es el único vector tal que
+        $$f(a + h) = f(a) + \nabla f(a)\cdot h + o(\norm h).$$
+        La derivada direccional en una dirección unitaria $u$ es $D_u f(a) = \nabla f(a)\cdot u$, que se maximiza con
+        $u = \nabla f/\norm{\nabla f}$ (Cauchy–Schwarz) y vale como máximo $\norm{\nabla f(a)}$. Si $\nabla f(a) \ne 0$, es
+        ortogonal al conjunto de nivel $\{f = f(a)\}$.
+    formulas:
+      - tex: |-
+          \nabla f = \left(\frac{\partial f}{\partial x_1}, \dots, \frac{\partial f}{\partial x_n}\right)
+      - tex: |-
+          D_u f = \nabla f\cdot u \le \norm{\nabla f}
+        label: {en: 'steepest ascent along $\nabla f$', es: 'máximo ascenso a lo largo de $\nabla f$'}
+      - tex: |-
+          \theta_{k+1} = \theta_k - \eta\,\nabla L(\theta_k)
+        label: {en: 'gradient descent', es: 'descenso de gradiente'}
+      - tex: |-
+          n = \frac{\nabla F}{\norm{\nabla F}}
+        label: {en: 'unit normal of an implicit surface $F(x,y,z) = 0$', es: 'normal unitaria de una superficie implícita $F(x,y,z) = 0$'}
+    compute:
+      en: |
+        By hand: all partial derivatives. In software, for a scalar loss of $n$ parameters, **reverse-mode automatic
+        differentiation** computes the whole gradient for a small constant times the cost of evaluating $f$ (Baur–Strassen),
+        while finite differences would need $n + 1$ evaluations.
+      es: |
+        A mano: todas las derivadas parciales. En software, para una pérdida escalar de $n$ parámetros, la
+        **diferenciación automática en modo inverso** calcula el gradiente completo por una pequeña constante por el
+        coste de evaluar $f$ (Baur–Strassen), mientras que las diferencias finitas necesitarían $n + 1$ evaluaciones.
+    example:
+      en: |
+        $f(x, y) = x^2 + 4y^2$ (an elongated bowl). $\nabla f = (2x, 8y)$. At $(2, 1)$: $\nabla f = (4, 8)$, which does
+        **not** point at the minimum $(0, 0)$ — it points across the narrow valley. That is why plain gradient descent
+        zigzags on badly conditioned problems (try it in the [[gradient-descent]] demo).
+      es: |
+        $f(x, y) = x^2 + 4y^2$ (un cuenco alargado). $\nabla f = (2x, 8y)$. En $(2, 1)$: $\nabla f = (4, 8)$, que **no**
+        apunta hacia el mínimo $(0, 0)$: apunta a través del valle estrecho. Por eso el descenso de gradiente simple
+        zigzaguea en problemas mal condicionados (pruébalo en la demo de [[gradient-descent]]).
+    matters:
+      en: |
+        The gradient is the bridge from calculus to modern AI: every model trained by gradient descent — from linear
+        regression to large language models — follows $-\nabla L$. It is also how renderers get surface normals from
+        implicit shapes, how edge detectors find boundaries, and how physics derives forces from potentials
+        ($F = -\nabla U$).
+      es: |
+        El gradiente es el puente del cálculo a la IA moderna: todo modelo entrenado por descenso de gradiente, de la
+        regresión lineal a los grandes modelos de lenguaje, sigue $-\nabla L$. También es como los renderizadores
+        obtienen normales de formas implícitas, como los detectores de bordes encuentran fronteras y como la física
+        deduce fuerzas de potenciales ($F = -\nabla U$).
+    applications:
+      - to: gradient-descent
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The update $\theta \leftarrow \theta - \eta\nabla L(\theta)$ is the gradient, used as a direction.'
+          es: 'La actualización $\theta \leftarrow \theta - \eta\nabla L(\theta)$ es el gradiente usado como dirección.'
+      - to: surface-normals
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The normal of an implicit surface $F = 0$ is $\nabla F/\norm{\nabla F}$.'
+          es: 'La normal de una superficie implícita $F = 0$ es $\nabla F/\norm{\nabla F}$.'
+      - to: signed-distance-fields
+        strength: 5
+        type: fundamental
+        note:
+          en: 'For a signed distance $d$, $\norm{\nabla d} = 1$ and $\nabla d$ is the surface normal; ray marchers estimate it by finite differences.'
+          es: 'Para una distancia con signo $d$, $\norm{\nabla d} = 1$ y $\nabla d$ es la normal; los ray marchers la estiman con diferencias finitas.'
+      - to: image-processing
+        strength: 4
+        type: frequent
+        note:
+          en: 'Edges are large $\norm{\nabla I}$; HOG features are histograms of gradient directions.'
+          es: 'Los bordes son $\norm{\nabla I}$ grandes; los descriptores HOG son histogramas de direcciones del gradiente.'
+      - to: classical-mechanics
+        strength: 4
+        type: frequent
+        note:
+          en: 'Conservative forces are minus the gradient of a potential: $F = -\nabla U$.'
+          es: 'Las fuerzas conservativas son menos el gradiente de un potencial: $F = -\nabla U$.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Find $\nabla f$ for $f(x,y,z) = x^2y + yz^3$ at $(1, 2, -1)$ and the rate of increase in the direction $(1,1,1)/\sqrt3$.'
+          es: 'Halla $\nabla f$ para $f(x,y,z) = x^2y + yz^3$ en $(1, 2, -1)$ y la tasa de aumento en la dirección $(1,1,1)/\sqrt3$.'
+        solution:
+          en: '$\nabla f = (2xy, x^2 + z^3, 3yz^2) = (4, 0, 6)$. $D_u f = (4 + 0 + 6)/\sqrt3 = 10/\sqrt3 \approx 5.77$; the maximum possible is $\norm{\nabla f} = \sqrt{52} \approx 7.21$.'
+          es: '$\nabla f = (2xy, x^2 + z^3, 3yz^2) = (4, 0, 6)$. $D_u f = (4 + 0 + 6)/\sqrt3 = 10/\sqrt3 \approx 5{,}77$; el máximo posible es $\norm{\nabla f} = \sqrt{52} \approx 7{,}21$.'
+      - type: graphical
+        prompt:
+          en: 'Draw the level curves of $f(x,y) = x^2 + 4y^2$ and the gradient at $(2, 1)$. Why does the arrow not point to the origin?'
+          es: 'Dibuja las curvas de nivel de $f(x,y) = x^2 + 4y^2$ y el gradiente en $(2, 1)$. ¿Por qué la flecha no apunta al origen?'
+        solution:
+          en: 'Level curves are ellipses, wider in $x$. The gradient $(4, 8)$ is perpendicular to the ellipse through $(2,1)$, which is not the radial direction $(2, 1)$ because the ellipse is not a circle.'
+          es: 'Las curvas de nivel son elipses, más anchas en $x$. El gradiente $(4, 8)$ es perpendicular a la elipse que pasa por $(2,1)$, y esa no es la dirección radial $(2, 1)$ porque la elipse no es una circunferencia.'
+      - type: ai
+        prompt:
+          en: 'Why does reverse-mode AD compute $\nabla L \in \R^{10^9}$ in roughly the time of 3–5 evaluations of $L$, while finite differences would need $10^9$?'
+          es: '¿Por qué la diferenciación automática en modo inverso calcula $\nabla L \in \R^{10^9}$ en el tiempo de unas 3–5 evaluaciones de $L$, mientras que las diferencias finitas necesitarían $10^9$?'
+        solution:
+          en: |
+            Finite differences perturb one parameter at a time. Reverse mode runs the program once forward, then once
+            backward propagating $\partial L/\partial(\text{intermediate})$; each intermediate is visited once, so the cost is
+            a constant multiple of the forward pass, independent of the number of parameters (one scalar output).
+          es: |
+            Las diferencias finitas perturban un parámetro cada vez. El modo inverso ejecuta el programa una vez hacia
+            delante y otra hacia atrás propagando $\partial L/\partial(\text{intermedio})$; cada intermedio se visita una
+            vez, así que el coste es un múltiplo constante de la pasada hacia delante, independiente del número de
+            parámetros (con una única salida escalar).
+
+  - id: directional-derivative
+    level: university
+    prerequisites: [gradient, dot-product]
+    title: {en: 'Directional derivative', es: 'Derivada direccional'}
+    aliases: {en: [rate of change in a direction, steepest descent direction], es: [tasa de cambio en una dirección, dirección de máximo descenso]}
+    summary:
+      en: |
+        The rate of change of $f$ moving in a unit direction $u$: $D_u f = \nabla f\cdot u$. It proves that $-\nabla f$ is
+        the direction of steepest descent, and it is what forward-mode AD computes (a Jacobian–vector product).
+      es: |
+        La tasa de cambio de $f$ al moverse en una dirección unitaria $u$: $D_u f = \nabla f\cdot u$. Demuestra que
+        $-\nabla f$ es la dirección de máximo descenso, y es lo que calcula la diferenciación automática en modo directo
+        (un producto jacobiana–vector).
+    formulas:
+      - tex: |-
+          D_u f(a) = \lim_{t\to0}\frac{f(a + t u) - f(a)}{t} = \nabla f(a)\cdot u
+    applications:
+      - to: gradient-descent
+        strength: 4
+        type: fundamental
+        note:
+          en: 'Among unit steps, $u = -\nabla f/\norm{\nabla f}$ minimizes $D_u f$: the justification of the method.'
+          es: 'Entre los pasos unitarios, $u = -\nabla f/\norm{\nabla f}$ minimiza $D_u f$: la justificación del método.'
+      - to: automatic-differentiation
+        strength: 4
+        type: frequent
+        note:
+          en: 'Forward-mode AD with dual numbers computes $D_u f$ (a JVP) in one pass.'
+          es: 'La diferenciación automática en modo directo con números duales calcula $D_u f$ (un JVP) en una pasada.'
+
+  - id: total-differential
+    level: university
+    prerequisites: [partial-derivatives, differential]
+    title: {en: 'Total differential and linearization', es: 'Diferencial total y linealización'}
+    aliases: {en: [differentiability in R^n, tangent plane, linearization], es: [diferenciabilidad en R^n, plano tangente, linealización]}
+    summary:
+      en: |
+        Near a point, a differentiable function is approximately linear: $\dd f = \sum_i \frac{\partial f}{\partial x_i}\dd x_i$.
+        The graph has a tangent plane, and small input errors propagate linearly.
+      es: |
+        Cerca de un punto, una función diferenciable es aproximadamente lineal: $\dd f = \sum_i \frac{\partial f}{\partial x_i}\dd x_i$.
+        La gráfica tiene plano tangente, y los errores pequeños de entrada se propagan linealmente.
+    formulas:
+      - tex: |-
+          \dd f = \frac{\partial f}{\partial x}\dd x + \frac{\partial f}{\partial y}\dd y, \qquad z = f(a) + \nabla f(a)\cdot(x - a)
+    applications:
+      - to: kalman-filter
+        strength: 4
+        type: frequent
+        note:
+          en: 'The extended Kalman filter linearizes nonlinear dynamics and sensors at the current estimate.'
+          es: 'El filtro de Kalman extendido linealiza la dinámica y los sensores no lineales en la estimación actual.'
+      - to: control-theory
+        strength: 4
+        type: frequent
+        note:
+          en: 'Linearization around an equilibrium gives the matrices $A$, $B$ of a state-space model.'
+          es: 'Linealizar alrededor de un equilibrio da las matrices $A$, $B$ de un modelo en espacio de estados.'
+
+  - id: multivariable-chain-rule
+    level: university
+    core: true
+    prerequisites: [partial-derivatives, chain-rule]
+    related: [backpropagation, automatic-differentiation]
+    title: {en: 'Multivariable chain rule', es: 'Regla de la cadena multivariable'}
+    aliases: {en: [chain rule in several variables, computational graph, total derivative], es: [regla de la cadena en varias variables, grafo computacional, derivada total]}
+    summary:
+      en: |
+        When a variable influences the output through several paths, add the contributions of every path, each the product
+        of the local derivatives along it: $\frac{\partial z}{\partial x} = \sum_i \frac{\partial z}{\partial u_i}\frac{\partial u_i}{\partial x}$.
+        In matrix form, Jacobians multiply. This is exactly what backpropagation computes on a network's graph.
+      es: |
+        Cuando una variable influye en la salida por varios caminos, se suman las aportaciones de cada camino, cada una
+        producto de las derivadas locales a lo largo de él: $\frac{\partial z}{\partial x} = \sum_i \frac{\partial z}{\partial u_i}\frac{\partial u_i}{\partial x}$.
+        En forma matricial, las jacobianas se multiplican. Es exactamente lo que calcula la retropropagación sobre el
+        grafo de una red.
+    why:
+      en: |
+        Real computations branch and merge: a weight affects many neurons, which all affect the loss. The one-variable
+        chain rule handles a single path; the multivariable version handles any directed acyclic graph of operations —
+        any program without loops, or any unrolled one.
+      es: |
+        Los cálculos reales se ramifican y se juntan: un peso afecta a muchas neuronas, que afectan todas a la pérdida. La
+        regla de la cadena de una variable trata un único camino; la versión multivariable trata cualquier grafo
+        acíclico dirigido de operaciones: cualquier programa sin bucles, o con ellos desenrollados.
+    intuition:
+      en: |
+        Draw the computation as a graph: inputs at the bottom, the output at the top, each edge labelled with a local
+        partial derivative. $\partial(\text{output})/\partial(\text{input})$ is the sum, over all paths, of the products of
+        labels along the path. Backpropagation computes all these sums at once by sweeping the graph from the top,
+        accumulating at each node "how much the output cares about me" (the adjoint).
+      es: |
+        Dibuja el cálculo como un grafo: entradas abajo, la salida arriba, y cada arista etiquetada con una derivada
+        parcial local. $\partial(\text{salida})/\partial(\text{entrada})$ es la suma, sobre todos los caminos, de los
+        productos de las etiquetas del camino. La retropropagación calcula todas esas sumas a la vez recorriendo el grafo
+        desde arriba y acumulando en cada nodo «cuánto le importo a la salida» (el adjunto).
+    formal:
+      en: |
+        If $g : \R^n \to \R^m$ is differentiable at $x$ and $f : \R^m \to \R^p$ at $g(x)$, then
+        $$J_{f\circ g}(x) = J_f\big(g(x)\big)\,J_g(x).$$
+        For scalar $z = f(u_1, \dots, u_m)$ with $u_i = u_i(x)$: $\frac{\partial z}{\partial x_j} = \sum_{i=1}^{m}\frac{\partial z}{\partial u_i}\frac{\partial u_i}{\partial x_j}$.
+      es: |
+        Si $g : \R^n \to \R^m$ es diferenciable en $x$ y $f : \R^m \to \R^p$ en $g(x)$, entonces
+        $$J_{f\circ g}(x) = J_f\big(g(x)\big)\,J_g(x).$$
+        Para $z = f(u_1, \dots, u_m)$ escalar con $u_i = u_i(x)$: $\frac{\partial z}{\partial x_j} = \sum_{i=1}^{m}\frac{\partial z}{\partial u_i}\frac{\partial u_i}{\partial x_j}$.
+    formulas:
+      - tex: |-
+          \frac{\partial z}{\partial x} = \sum_{i}\frac{\partial z}{\partial u_i}\,\frac{\partial u_i}{\partial x}
+      - tex: |-
+          J_{f_L\circ\cdots\circ f_1} = J_{f_L}\cdots J_{f_2}\,J_{f_1}
+        label: {en: 'a deep network: a product of Jacobians', es: 'una red profunda: un producto de jacobianas'}
+      - tex: |-
+          \frac{\partial L}{\partial W^{(\ell)}} = \delta^{(\ell)}\,\big(a^{(\ell-1)}\big)^{\mathsf T}, \qquad \delta^{(\ell)} = \Big(\big(W^{(\ell+1)}\big)^{\mathsf T}\delta^{(\ell+1)}\Big)\odot\sigma'\big(z^{(\ell)}\big)
+        label: {en: 'the backpropagation equations', es: 'las ecuaciones de la retropropagación'}
+    compute:
+      en: |
+        The product $J_L\cdots J_1$ can be evaluated right-to-left (forward mode: cost ∝ number of inputs) or left-to-right
+        (reverse mode: cost ∝ number of outputs). A loss has one output and millions of inputs, so reverse mode wins by a
+        factor of millions — that choice *is* backpropagation.
+      es: |
+        El producto $J_L\cdots J_1$ se puede evaluar de derecha a izquierda (modo directo: coste ∝ número de entradas) o de
+        izquierda a derecha (modo inverso: coste ∝ número de salidas). Una pérdida tiene una salida y millones de
+        entradas, así que el modo inverso gana por un factor de millones: esa elección *es* la retropropagación.
+    example:
+      en: |
+        $z = xy + \sin x$ with $x = t^2$, $y = e^t$. Two paths from $t$ to $z$ (through $x$ and through $y$):
+        $\frac{\dd z}{\dd t} = (y + \cos x)\cdot 2t + x\cdot e^t = (e^t + \cos t^2)\,2t + t^2e^t$.
+      es: |
+        $z = xy + \sin x$ con $x = t^2$, $y = e^t$. Dos caminos de $t$ a $z$ (por $x$ y por $y$):
+        $\frac{\dd z}{\dd t} = (y + \cos x)\cdot 2t + x\cdot e^t = (e^t + \cos t^2)\,2t + t^2e^t$.
+    matters:
+      en: |
+        It is the mathematical content of backpropagation and of every autodiff library (PyTorch, JAX, TensorFlow). It
+        also gives robot velocities through the kinematic chain and the sensitivities used in engineering design
+        (adjoint methods in CFD and weather forecasting are the same reverse-mode idea).
+      es: |
+        Es el contenido matemático de la retropropagación y de toda librería de diferenciación automática (PyTorch, JAX,
+        TensorFlow). También da las velocidades de un robot a través de la cadena cinemática y las sensibilidades del
+        diseño de ingeniería (los métodos adjuntos en CFD y predicción meteorológica son la misma idea del modo inverso).
+    applications:
+      - to: backpropagation
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Backprop = the multivariable chain rule evaluated in reverse order on the network''s graph.'
+          es: 'Retropropagación = la regla de la cadena multivariable evaluada en orden inverso sobre el grafo de la red.'
+      - to: automatic-differentiation
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Forward and reverse mode are the two natural orders of multiplying the Jacobian chain.'
+          es: 'Los modos directo e inverso son los dos órdenes naturales de multiplicar la cadena de jacobianas.'
+      - to: weather-climate
+        strength: 3
+        type: advanced
+        note:
+          en: '4D-Var data assimilation uses adjoint (reverse-mode) models to fit the initial state of forecasts.'
+          es: 'La asimilación de datos 4D-Var usa modelos adjuntos (modo inverso) para ajustar el estado inicial de las predicciones.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'If $w = f(x, y)$ with $x = r\cos\theta$, $y = r\sin\theta$, express $\partial w/\partial r$ and $\partial w/\partial\theta$.'
+          es: 'Si $w = f(x, y)$ con $x = r\cos\theta$, $y = r\sin\theta$, expresa $\partial w/\partial r$ y $\partial w/\partial\theta$.'
+        solution:
+          en: '$w_r = f_x\cos\theta + f_y\sin\theta$, $w_\theta = -f_x r\sin\theta + f_y r\cos\theta$.'
+          es: '$w_r = f_x\cos\theta + f_y\sin\theta$, $w_\theta = -f_x r\sin\theta + f_y r\cos\theta$.'
+      - type: ai
+        prompt:
+          en: 'A network computes $L = \ell(W_2\,\sigma(W_1x))$. Write $\partial L/\partial W_1$ using the chain rule and say which factors are reused from $\partial L/\partial W_2$.'
+          es: 'Una red calcula $L = \ell(W_2\,\sigma(W_1x))$. Escribe $\partial L/\partial W_1$ con la regla de la cadena y di qué factores se reutilizan de $\partial L/\partial W_2$.'
+        solution:
+          en: |
+            Let $z_1 = W_1x$, $a = \sigma(z_1)$, $z_2 = W_2a$. With $g = \partial\ell/\partial z_2$:
+            $\partial L/\partial W_2 = g\,a^{\mathsf T}$ and $\partial L/\partial W_1 = \big((W_2^{\mathsf T}g)\odot\sigma'(z_1)\big)x^{\mathsf T}$.
+            The upstream gradient $g$ is computed once and reused: that sharing is what makes backprop cheap.
+          es: |
+            Sea $z_1 = W_1x$, $a = \sigma(z_1)$, $z_2 = W_2a$. Con $g = \partial\ell/\partial z_2$:
+            $\partial L/\partial W_2 = g\,a^{\mathsf T}$ y $\partial L/\partial W_1 = \big((W_2^{\mathsf T}g)\odot\sigma'(z_1)\big)x^{\mathsf T}$.
+            El gradiente que llega desde arriba, $g$, se calcula una vez y se reutiliza: ese reaprovechamiento es lo que
+            hace barata la retropropagación.
+
+  - id: jacobian
+    level: university
+    core: true
+    prerequisites: [multivariable-chain-rule, matrices]
+    title: {en: 'Jacobian matrix', es: 'Matriz jacobiana'}
+    aliases: {en: [Jacobian, derivative matrix, Jacobian determinant, JVP, VJP], es: [jacobiano, matriz derivada, determinante jacobiano, JVP, VJP]}
+    summary:
+      en: |
+        For $F : \R^n \to \R^m$, the $m \times n$ matrix of all partial derivatives $\partial F_i/\partial x_j$: the best
+        linear approximation of $F$ near a point. Its determinant measures how $F$ stretches volumes.
+      es: |
+        Para $F : \R^n \to \R^m$, la matriz $m \times n$ de todas las derivadas parciales $\partial F_i/\partial x_j$: la
+        mejor aproximación lineal de $F$ cerca de un punto. Su determinante mide cómo estira $F$ los volúmenes.
+    why:
+      en: |
+        When both input and output are vectors, "the derivative" has to say how each output responds to each input: an
+        $m \times n$ table of rates. Arranged as a matrix it composes by multiplication (chain rule), inverts when $F$ is
+        locally invertible, and its determinant gives the change-of-variables factor in integrals.
+      es: |
+        Cuando la entrada y la salida son vectores, «la derivada» tiene que decir cómo responde cada salida a cada
+        entrada: una tabla $m \times n$ de tasas. Dispuesta como matriz se compone multiplicando (regla de la cadena), se
+        invierte cuando $F$ es localmente invertible y su determinante da el factor de cambio de variable en las
+        integrales.
+    intuition:
+      en: |
+        Zoom in on a smooth map until it looks linear: the Jacobian is that linear map. A tiny square at $x$ is mapped to
+        a tiny parallelogram spanned by the columns of $J$; its area is $|\det J|$ times the square's. For a robot arm,
+        column $j$ is how fast the hand moves when joint $j$ turns.
+      es: |
+        Haz zoom sobre una aplicación suave hasta que parezca lineal: la jacobiana es esa aplicación lineal. Un cuadradito
+        en $x$ se transforma en un paralelogramo diminuto generado por las columnas de $J$; su área es $|\det J|$ veces la
+        del cuadrado. En un brazo robótico, la columna $j$ dice a qué velocidad se mueve la mano cuando gira la
+        articulación $j$.
+    formal:
+      en: |
+        $$J_F(x) = \begin{pmatrix} \frac{\partial F_1}{\partial x_1} & \cdots & \frac{\partial F_1}{\partial x_n} \\ \vdots & & \vdots \\ \frac{\partial F_m}{\partial x_1} & \cdots & \frac{\partial F_m}{\partial x_n}\end{pmatrix}, \qquad F(x + h) = F(x) + J_F(x)\,h + o(\norm h).$$
+        **Inverse function theorem:** if $m = n$ and $\det J_F(a) \ne 0$, $F$ is invertible near $a$ with
+        $J_{F^{-1}} = J_F^{-1}$.
+      es: |
+        $$J_F(x) = \begin{pmatrix} \frac{\partial F_1}{\partial x_1} & \cdots & \frac{\partial F_1}{\partial x_n} \\ \vdots & & \vdots \\ \frac{\partial F_m}{\partial x_1} & \cdots & \frac{\partial F_m}{\partial x_n}\end{pmatrix}, \qquad F(x + h) = F(x) + J_F(x)\,h + o(\norm h).$$
+        **Teorema de la función inversa:** si $m = n$ y $\det J_F(a) \ne 0$, $F$ es invertible cerca de $a$ con
+        $J_{F^{-1}} = J_F^{-1}$.
+    formulas:
+      - tex: |-
+          (J_F)_{ij} = \frac{\partial F_i}{\partial x_j}
+      - tex: |-
+          \dot p = J(q)\,\dot q
+        label: {en: 'robot velocity kinematics', es: 'cinemática de velocidades de un robot'}
+      - tex: |-
+          p_Y(y) = p_X(x)\,\big|\det J_F(x)\big|^{-1}, \quad y = F(x)
+        label: {en: 'densities under an invertible map (normalizing flows)', es: 'densidades bajo una aplicación invertible (normalizing flows)'}
+    example:
+      en: |
+        Polar coordinates $F(r, \theta) = (r\cos\theta, r\sin\theta)$:
+        $J = \begin{pmatrix}\cos\theta & -r\sin\theta\\ \sin\theta & r\cos\theta\end{pmatrix}$, $\det J = r$. That $r$ is
+        the familiar factor in $\dd x\,\dd y = r\,\dd r\,\dd\theta$.
+      es: |
+        Coordenadas polares $F(r, \theta) = (r\cos\theta, r\sin\theta)$:
+        $J = \begin{pmatrix}\cos\theta & -r\sin\theta\\ \sin\theta & r\cos\theta\end{pmatrix}$, $\det J = r$. Esa $r$ es el
+        factor conocido de $\dd x\,\dd y = r\,\dd r\,\dd\theta$.
+    matters:
+      en: |
+        Robotics lives on Jacobians (velocity kinematics, inverse kinematics, singularities where $\det J = 0$). Newton's
+        method for systems inverts one per step. Normalizing flows need cheap $\log|\det J|$. Autodiff frameworks never
+        build Jacobians explicitly: they compute Jacobian–vector (JVP) and vector–Jacobian (VJP) products.
+      es: |
+        La robótica vive de jacobianas (cinemática de velocidades, cinemática inversa, singularidades donde
+        $\det J = 0$). El método de Newton para sistemas invierte una en cada paso. Los normalizing flows necesitan
+        $\log|\det J|$ barato. Los frameworks de diferenciación automática nunca construyen jacobianas explícitamente:
+        calculan productos jacobiana–vector (JVP) y vector–jacobiana (VJP).
+    applications:
+      - to: robot-jacobian
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Maps joint velocities to end-effector velocities; its singularities are configurations where the arm loses mobility.'
+          es: 'Transforma velocidades articulares en velocidades del efector final; sus singularidades son configuraciones donde el brazo pierde movilidad.'
+      - to: inverse-kinematics
+        strength: 5
+        type: fundamental
+        note:
+          en: 'IK solvers iterate $\Delta q = J^{+}\Delta p$ (pseudo-inverse) or damped least squares.'
+          es: 'Los resolvedores de cinemática inversa iteran $\Delta q = J^{+}\Delta p$ (pseudoinversa) o mínimos cuadrados amortiguados.'
+      - to: generative-models
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Normalizing flows compute exact likelihoods via $\log p_X = \log p_Z + \log|\det J|$, designing layers with cheap determinants.'
+          es: 'Los normalizing flows calculan verosimilitudes exactas con $\log p_X = \log p_Z + \log|\det J|$, diseñando capas con determinantes baratos.'
+      - to: kalman-filter
+        strength: 4
+        type: frequent
+        note:
+          en: 'The extended Kalman filter propagates covariances with the Jacobians of the dynamics and measurement models.'
+          es: 'El filtro de Kalman extendido propaga covarianzas con las jacobianas de los modelos de dinámica y de medida.'
+      - to: automatic-differentiation
+        strength: 4
+        type: fundamental
+        note:
+          en: 'AD computes JVPs (forward mode) and VJPs (reverse mode) without materializing $J$.'
+          es: 'La diferenciación automática calcula JVP (modo directo) y VJP (modo inverso) sin construir $J$.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Compute the Jacobian of $F(x, y) = (x^2 - y^2,\ 2xy)$ and its determinant. Where is $F$ not locally invertible?'
+          es: 'Calcula la jacobiana de $F(x, y) = (x^2 - y^2,\ 2xy)$ y su determinante. ¿Dónde no es $F$ localmente invertible?'
+        solution:
+          en: '$J = \begin{pmatrix}2x & -2y\\ 2y & 2x\end{pmatrix}$, $\det J = 4(x^2 + y^2)$. Only at the origin ($F$ is $z \mapsto z^2$ in complex form).'
+          es: '$J = \begin{pmatrix}2x & -2y\\ 2y & 2x\end{pmatrix}$, $\det J = 4(x^2 + y^2)$. Solo en el origen ($F$ es $z \mapsto z^2$ en forma compleja).'
+      - type: applied
+        prompt:
+          en: 'A 2-link planar arm with lengths $\ell_1, \ell_2$ has hand position $p = (\ell_1\cos q_1 + \ell_2\cos(q_1+q_2),\ \ell_1\sin q_1 + \ell_2\sin(q_1+q_2))$. When is $\det J = 0$?'
+          es: 'Un brazo plano de 2 eslabones de longitudes $\ell_1, \ell_2$ tiene la mano en $p = (\ell_1\cos q_1 + \ell_2\cos(q_1+q_2),\ \ell_1\sin q_1 + \ell_2\sin(q_1+q_2))$. ¿Cuándo es $\det J = 0$?'
+        solution:
+          en: '$\det J = \ell_1\ell_2\sin q_2$: zero when $q_2 = 0$ or $\pi$ — arm fully stretched or folded. There the hand cannot move radially.'
+          es: '$\det J = \ell_1\ell_2\sin q_2$: cero cuando $q_2 = 0$ o $\pi$, con el brazo totalmente estirado o plegado. Ahí la mano no se puede mover en dirección radial.'
+
+  - id: hessian
+    level: university
+    core: true
+    prerequisites: [gradient, higher-order-derivatives, matrices]
+    title: {en: 'Hessian matrix', es: 'Matriz hessiana'}
+    aliases: {en: [Hessian, second derivative matrix, curvature matrix, positive definite], es: [hessiano, matriz de segundas derivadas, matriz de curvatura, definida positiva]}
+    summary:
+      en: |
+        The matrix of second partial derivatives $\partial^2 f/\partial x_i\partial x_j$: the curvature of $f$ in every
+        direction. Its eigenvalues classify critical points (minimum, maximum, saddle) and control how fast optimizers
+        can go.
+      es: |
+        La matriz de segundas derivadas parciales $\partial^2 f/\partial x_i\partial x_j$: la curvatura de $f$ en todas las
+        direcciones. Sus valores propios clasifican los puntos críticos (mínimo, máximo, silla) y controlan lo deprisa que
+        pueden ir los optimizadores.
+    why:
+      en: |
+        The gradient says which way is downhill but not how the slope changes — whether the valley is a gentle bowl, a
+        narrow ravine or a saddle. That second-order information decides whether a critical point is a minimum and how
+        big a step is safe.
+      es: |
+        El gradiente dice hacia dónde es cuesta abajo, pero no cómo cambia la pendiente: si el valle es un cuenco suave,
+        un barranco estrecho o una silla de montar. Esa información de segundo orden decide si un punto crítico es un
+        mínimo y qué tamaño de paso es seguro.
+    intuition:
+      en: |
+        Near a critical point, $f(x + h) \approx f(x) + \tfrac12 h^{\mathsf T}Hh$: a quadratic bowl whose axes are the
+        eigenvectors of $H$ and whose steepness along each axis is the eigenvalue. All positive: a bowl (minimum). All
+        negative: a dome. Mixed signs: a saddle. Very different eigenvalues: a narrow ravine where gradient descent
+        bounces from wall to wall.
+      es: |
+        Cerca de un punto crítico, $f(x + h) \approx f(x) + \tfrac12 h^{\mathsf T}Hh$: un cuenco cuadrático cuyos ejes son
+        los vectores propios de $H$ y cuya inclinación en cada eje es el valor propio. Todos positivos: un cuenco
+        (mínimo). Todos negativos: una cúpula. Signos mezclados: una silla. Valores propios muy distintos: un barranco
+        estrecho donde el descenso de gradiente rebota de pared a pared.
+    formal:
+      en: |
+        For $f \in C^2$, $H_f(x) = \nabla^2 f(x) = \big(\partial_i\partial_j f(x)\big)_{ij}$, symmetric by Schwarz. At a
+        critical point $a$: $H \succ 0$ (positive definite) ⇒ strict local minimum; $H \prec 0$ ⇒ strict local maximum;
+        $H$ indefinite ⇒ saddle point.
+      es: |
+        Para $f \in C^2$, $H_f(x) = \nabla^2 f(x) = \big(\partial_i\partial_j f(x)\big)_{ij}$, simétrica por Schwarz. En un
+        punto crítico $a$: $H \succ 0$ (definida positiva) ⇒ mínimo local estricto; $H \prec 0$ ⇒ máximo local estricto;
+        $H$ indefinida ⇒ punto de silla.
+    formulas:
+      - tex: |-
+          H_f = \begin{pmatrix} f_{xx} & f_{xy} \\ f_{yx} & f_{yy}\end{pmatrix}
+      - tex: |-
+          f(x + h) \approx f(x) + \nabla f(x)^{\mathsf T}h + \tfrac12\,h^{\mathsf T}H_f(x)\,h
+      - tex: |-
+          \kappa = \frac{\lambda_{\max}(H)}{\lambda_{\min}(H)}, \qquad \eta < \frac{2}{\lambda_{\max}(H)}
+        label: {en: 'conditioning and the largest stable learning rate on a quadratic', es: 'condicionamiento y mayor learning rate estable en una cuadrática'}
+    example:
+      en: |
+        $f(x, y) = x^2 - y^2$: $\nabla f = 0$ at the origin, $H = \operatorname{diag}(2, -2)$, indefinite: a saddle (a
+        Pringles chip). Gradient descent started exactly on the $x$-axis converges to it; any tiny perturbation in $y$
+        escapes. That is why saddle points slow training down but rarely trap it.
+      es: |
+        $f(x, y) = x^2 - y^2$: $\nabla f = 0$ en el origen, $H = \operatorname{diag}(2, -2)$, indefinida: una silla (una
+        patata Pringles). El descenso de gradiente iniciado justo sobre el eje $x$ converge a ella; cualquier perturbación
+        mínima en $y$ escapa. Por eso los puntos de silla ralentizan el entrenamiento pero rara vez lo atrapan.
+    matters:
+      en: |
+        Newton's method uses $H^{-1}\nabla f$; quasi-Newton methods (BFGS, L-BFGS) approximate it; Adam and other adaptive
+        optimizers can be read as cheap diagonal approximations of curvature. In deep learning, the "sharpness" (largest
+        Hessian eigenvalue) is linked to generalization and to the edge-of-stability phenomenon. The full Hessian of a
+        billion-parameter model is never formed, but Hessian–vector products are cheap with autodiff.
+      es: |
+        El método de Newton usa $H^{-1}\nabla f$; los métodos cuasi-Newton (BFGS, L-BFGS) la aproximan; Adam y otros
+        optimizadores adaptativos se pueden leer como aproximaciones diagonales baratas de la curvatura. En deep learning
+        la «nitidez» (el mayor valor propio del hessiano) está ligada a la generalización y al fenómeno del borde de la
+        estabilidad. La hessiana completa de un modelo de mil millones de parámetros nunca se forma, pero los productos
+        hessiana–vector son baratos con diferenciación automática.
+    applications:
+      - to: second-order-optimization
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Newton, Gauss–Newton, natural gradient and K-FAC use the Hessian or an approximation of it.'
+          es: 'Newton, Gauss–Newton, el gradiente natural y K-FAC usan el hessiano o una aproximación suya.'
+      - to: loss-landscape
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Hessian eigenvalues measure sharpness, detect saddles and set the stable learning rate $\eta < 2/\lambda_{\max}$.'
+          es: 'Los valores propios del hessiano miden la nitidez, detectan sillas y fijan el learning rate estable $\eta < 2/\lambda_{\max}$.'
+      - to: image-processing
+        strength: 3
+        type: advanced
+        note:
+          en: 'Hessian-based detectors (determinant of Hessian in SURF, Frangi vesselness) find blobs and ridges.'
+          es: 'Los detectores basados en el hessiano (determinante del hessiano en SURF, vesselness de Frangi) encuentran manchas y crestas.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Classify the critical points of $f(x, y) = x^3 - 3x + y^2$.'
+          es: 'Clasifica los puntos críticos de $f(x, y) = x^3 - 3x + y^2$.'
+        solution:
+          en: '$\nabla f = (3x^2 - 3, 2y) = 0$ at $(\pm1, 0)$. $H = \operatorname{diag}(6x, 2)$: at $(1,0)$ positive definite → minimum; at $(-1, 0)$ indefinite → saddle.'
+          es: '$\nabla f = (3x^2 - 3, 2y) = 0$ en $(\pm1, 0)$. $H = \operatorname{diag}(6x, 2)$: en $(1,0)$ definida positiva → mínimo; en $(-1, 0)$ indefinida → silla.'
+      - type: ai
+        prompt:
+          en: 'On $f(x,y) = \frac12(x^2 + 100y^2)$, what is the largest learning rate for which gradient descent converges? How many steps to reduce the $x$-error by $10^{-3}$ at that rate?'
+          es: 'En $f(x,y) = \frac12(x^2 + 100y^2)$, ¿cuál es el mayor learning rate con el que converge el descenso de gradiente? ¿Cuántos pasos para reducir el error en $x$ a $10^{-3}$ con ese ritmo?'
+        solution:
+          en: '$H = \operatorname{diag}(1, 100)$, so $\eta < 2/100 = 0.02$. Along $x$ each step multiplies the error by $1 - \eta \approx 0.98$: $0.98^k = 10^{-3} \Rightarrow k \approx 342$. Condition number 100 makes it slow.'
+          es: '$H = \operatorname{diag}(1, 100)$, así que $\eta < 2/100 = 0{,}02$. En $x$ cada paso multiplica el error por $1 - \eta \approx 0{,}98$: $0{,}98^k = 10^{-3} \Rightarrow k \approx 342$. El número de condición 100 lo hace lento.'
+
+  - id: multivariable-extrema
+    level: university
+    prerequisites: [hessian, critical-points]
+    title: {en: 'Extrema in several variables', es: 'Extremos en varias variables'}
+    aliases: {en: [multivariable optimization, saddle point, normal equations, least squares], es: [optimización multivariable, punto de silla, ecuaciones normales, mínimos cuadrados]}
+    summary:
+      en: |
+        Solve $\nabla f = 0$, then classify with the Hessian. For least squares $\norm{Xw - y}^2$ this gives the normal
+        equations $X^{\mathsf T}Xw = X^{\mathsf T}y$ — linear regression in closed form.
+      es: |
+        Resuelve $\nabla f = 0$ y clasifica con la hessiana. Para mínimos cuadrados $\norm{Xw - y}^2$ esto da las ecuaciones
+        normales $X^{\mathsf T}Xw = X^{\mathsf T}y$: la regresión lineal en forma cerrada.
+    formulas:
+      - tex: |-
+          \nabla_w \norm{Xw - y}^2 = 2X^{\mathsf T}(Xw - y) = 0 \iff X^{\mathsf T}X\,w = X^{\mathsf T}y
+    applications:
+      - to: linear-regression
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Ordinary least squares is solved by setting the gradient to zero: the normal equations.'
+          es: 'Los mínimos cuadrados ordinarios se resuelven anulando el gradiente: las ecuaciones normales.'
+      - to: loss-landscape
+        strength: 4
+        type: frequent
+        note:
+          en: 'In high dimension most critical points of a random-looking loss are saddles, not minima.'
+          es: 'En dimensión alta, la mayoría de puntos críticos de una pérdida de aspecto aleatorio son sillas, no mínimos.'
+
+  - id: multiple-integrals
+    level: university
+    prerequisites: [definite-integral, multivariable-functions, jacobian]
+    title: {en: 'Multiple integrals and change of variables', es: 'Integrales múltiples y cambio de variables'}
+    aliases: {en: [double integral, triple integral, Fubini, polar coordinates, volume], es: [integral doble, integral triple, Fubini, coordenadas polares, volumen]}
+    summary:
+      en: |
+        Integrals over regions of $\R^n$: volumes, masses, probabilities of random vectors. Computed as iterated integrals
+        (Fubini) and transformed with the Jacobian determinant: $\dd x = |\det J|\,\dd u$.
+      es: |
+        Integrales sobre regiones de $\R^n$: volúmenes, masas, probabilidades de vectores aleatorios. Se calculan como
+        integrales iteradas (Fubini) y se transforman con el determinante jacobiano: $\dd x = |\det J|\,\dd u$.
+    formulas:
+      - tex: |-
+          \iint_R f(x,y)\,\dd A = \int_a^b\!\!\int_{c}^{d} f(x,y)\,\dd y\,\dd x
+      - tex: |-
+          \int_{F(U)} g(x)\,\dd x = \int_U g\big(F(u)\big)\,\big|\det J_F(u)\big|\,\dd u
+    applications:
+      - to: monte-carlo
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Grid quadrature in $d$ dimensions needs $n^d$ points; Monte Carlo''s $O(N^{-1/2})$ error does not depend on $d$.'
+          es: 'La cuadratura en rejilla en $d$ dimensiones necesita $n^d$ puntos; el error $O(N^{-1/2})$ de Monte Carlo no depende de $d$.'
+      - to: rendering-equation
+        strength: 4
+        type: frequent
+        note:
+          en: 'Lighting integrals run over the hemisphere of directions and over areas of light sources.'
+          es: 'Las integrales de iluminación recorren el hemisferio de direcciones y las áreas de las fuentes de luz.'
+      - to: generative-models
+        strength: 4
+        type: advanced
+        note:
+          en: 'Likelihoods of continuous generative models are multiple integrals; flows use the change-of-variables formula.'
+          es: 'Las verosimilitudes de los modelos generativos continuos son integrales múltiples; los flows usan la fórmula del cambio de variables.'
+
+  - id: curvature
+    level: advanced
+    prerequisites: [higher-order-derivatives, surfaces, vectors]
+    title: {en: 'Curvature (basic differential geometry)', es: 'Curvatura (geometría diferencial básica)'}
+    aliases: {en: [curvature of a curve, Gaussian curvature, mean curvature, Frenet frame, differential geometry], es: [curvatura de una curva, curvatura de Gauss, curvatura media, triedro de Frenet, geometría diferencial]}
+    summary:
+      en: |
+        How fast a curve turns ($\kappa = 1/\text{radius}$ of the best-fitting circle) or how a surface bends (mean and
+        Gaussian curvature). Graphics and CAD use it to judge smoothness, smooth meshes and design roads and rails.
+      es: |
+        Lo deprisa que gira una curva ($\kappa = 1/\text{radio}$ de la circunferencia que mejor se ajusta) o cómo se dobla
+        una superficie (curvatura media y de Gauss). Los gráficos y el CAD la usan para juzgar la suavidad, suavizar
+        mallas y diseñar carreteras y vías.
+    formulas:
+      - tex: |-
+          \kappa = \frac{|y''|}{\big(1 + y'^2\big)^{3/2}}, \qquad \kappa = \frac{\norm{r' \times r''}}{\norm{r'}^3}
+    applications:
+      - to: bezier-curves
+        strength: 4
+        type: frequent
+        note:
+          en: 'Curvature-continuous ($G^2$) joins and curvature combs are how type designers and CAD check fairness.'
+          es: 'Las uniones con curvatura continua ($G^2$) y los peines de curvatura son como los diseñadores tipográficos y el CAD comprueban la calidad.'
+      - to: mesh-processing
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Discrete mean curvature (from the cotangent Laplacian) drives smoothing, remeshing and feature detection.'
+          es: 'La curvatura media discreta (del laplaciano cotangente) gobierna el suavizado, el remallado y la detección de rasgos.'
+      - to: trajectory-optimization
+        strength: 3
+        type: frequent
+        note:
+          en: 'Vehicle paths must respect a maximum curvature (minimum turning radius).'
+          es: 'Las trayectorias de vehículos deben respetar una curvatura máxima (radio de giro mínimo).'

@@ -1,0 +1,243 @@
+kind: computing
+order: 23
+glyph: '⚙'
+title: {en: 'Robotics and control', es: 'Robótica y control'}
+summary:
+  en: |
+    Motion is derivatives: velocity, acceleration, Jacobians from joints to hands, dynamics as ODEs, and feedback
+    control that keeps it all stable.
+  es: |
+    El movimiento son derivadas: velocidad, aceleración, jacobianas de las articulaciones a la mano, la dinámica como
+    EDO y el control realimentado que lo mantiene todo estable.
+intro:
+  en: |
+    A robot is calculus with motors. Two chains summarize most of it:
+
+    ```
+    position ──d/dt──► velocity ──d/dt──► acceleration          (kinematics)
+    joint angles q ──► Jacobian J(q) ──► end-effector velocity ṗ = J(q) q̇
+    ```
+
+    On top come **dynamics** (forces and torques as differential equations), **state estimation** (fusing noisy sensors
+    with a model, the Kalman filter) and **control** (feedback laws such as PID, designed with Laplace transforms and
+    stability analysis).
+  es: |
+    Un robot es cálculo con motores. Dos cadenas resumen casi todo:
+
+    ```
+    posición ──d/dt──► velocidad ──d/dt──► aceleración          (cinemática)
+    ángulos articulares q ──► jacobiana J(q) ──► velocidad del efector ṗ = J(q) q̇
+    ```
+
+    Encima van la **dinámica** (fuerzas y pares como ecuaciones diferenciales), la **estimación de estado** (fusionar
+    sensores con ruido y un modelo: el filtro de Kalman) y el **control** (leyes de realimentación como el PID,
+    diseñadas con transformadas de Laplace y análisis de estabilidad).
+topics:
+  - id: kinematics
+    kind: application
+    level: university
+    core: true
+    title: {en: 'Kinematics: position, velocity, acceleration', es: 'Cinemática: posición, velocidad, aceleración'}
+    aliases: {en: [motion, velocity, acceleration, jerk, trajectory], es: [movimiento, velocidad, aceleración, tirón, trayectoria]}
+    summary:
+      en: |
+        Describing motion without its causes: velocity is the derivative of position, acceleration the derivative of
+        velocity. Robots, drones, cameras and game characters all plan and track trajectories with these derivatives.
+      es: |
+        Describir el movimiento sin sus causas: la velocidad es la derivada de la posición y la aceleración, la derivada de
+        la velocidad. Robots, drones, cámaras y personajes de videojuego planifican y siguen trayectorias con estas
+        derivadas.
+    formulas:
+      - tex: |-
+          v(t) = \dot x(t), \qquad a(t) = \ddot x(t), \qquad x(t) = x_0 + \int_0^t v(s)\,\dd s
+      - tex: |-
+          x(t) = x_0 + (x_1 - x_0)\big(10\tau^3 - 15\tau^4 + 6\tau^5\big), \quad \tau = t/T
+        label: {en: 'minimum-jerk point-to-point motion (zero velocity and acceleration at both ends)', es: 'movimiento punto a punto de mínimo tirón (velocidad y aceleración nulas en los extremos)'}
+    matters:
+      en: 'Smooth trajectories (bounded velocity, acceleration and jerk) protect motors, passengers and camera footage.'
+      es: 'Las trayectorias suaves (velocidad, aceleración y tirón acotados) protegen motores, pasajeros y grabaciones.'
+
+  - id: robot-jacobian
+    kind: application
+    level: advanced
+    core: true
+    prerequisites: [kinematics]
+    title: {en: 'Robot Jacobian (velocity kinematics)', es: 'Jacobiana del robot (cinemática de velocidades)'}
+    aliases: {en: [manipulator Jacobian, forward kinematics, singularity, end effector], es: [jacobiana del manipulador, cinemática directa, singularidad, efector final]}
+    summary:
+      en: |
+        Forward kinematics $p = f(q)$ gives the hand position from the joint angles; its Jacobian $J(q) = \partial f/\partial q$
+        maps joint velocities to hand velocities, $\dot p = J(q)\dot q$, and joint torques to hand forces,
+        $\tau = J^{\mathsf T}F$. Where $\det J = 0$ the arm is singular.
+      es: |
+        La cinemática directa $p = f(q)$ da la posición de la mano a partir de los ángulos articulares; su jacobiana
+        $J(q) = \partial f/\partial q$ transforma velocidades articulares en velocidades de la mano, $\dot p = J(q)\dot q$, y
+        fuerzas en la mano en pares articulares, $\tau = J^{\mathsf T}F$. Donde $\det J = 0$ el brazo es singular.
+    why:
+      en: |
+        Controllers command joint motors, but tasks are specified for the tool: "move the gripper 1 cm left". The Jacobian is
+        the local dictionary between the two languages, recomputed at every control cycle because it depends on the pose.
+      es: |
+        Los controladores mandan sobre los motores de las articulaciones, pero las tareas se especifican para la
+        herramienta: «mueve la pinza 1 cm a la izquierda». La jacobiana es el diccionario local entre los dos idiomas, y se
+        recalcula en cada ciclo de control porque depende de la postura.
+    formulas:
+      - tex: |-
+          \dot p = J(q)\,\dot q, \qquad J(q) = \frac{\partial f}{\partial q}
+      - tex: |-
+          J(q) = \begin{pmatrix} -\ell_1\sin q_1 - \ell_2\sin(q_1 + q_2) & -\ell_2\sin(q_1 + q_2) \\ \ell_1\cos q_1 + \ell_2\cos(q_1 + q_2) & \ell_2\cos(q_1 + q_2)\end{pmatrix}
+        label: {en: 'two-link planar arm', es: 'brazo plano de dos eslabones'}
+      - tex: |-
+          \tau = J(q)^{\mathsf T}F
+        label: {en: 'statics: forces at the hand ↔ joint torques', es: 'estática: fuerzas en la mano ↔ pares articulares'}
+    example:
+      en: |
+        Two-link arm with $\ell_1 = \ell_2 = 1$, $q = (0, \pi/2)$: the hand is at $(1, 1)$ and
+        $J = \begin{pmatrix}-1 & -1\\ 1 & 0\end{pmatrix}$, $\det J = 1$. Rotating only the elbow ($\dot q = (0, 1)$) moves the
+        hand with velocity $(-1, 0)$: straight left.
+      es: |
+        Brazo de dos eslabones con $\ell_1 = \ell_2 = 1$, $q = (0, \pi/2)$: la mano está en $(1, 1)$ y
+        $J = \begin{pmatrix}-1 & -1\\ 1 & 0\end{pmatrix}$, $\det J = 1$. Girar solo el codo ($\dot q = (0, 1)$) mueve la mano
+        con velocidad $(-1, 0)$: recto hacia la izquierda.
+    matters:
+      en: 'Every industrial arm, surgical robot and animation rig uses Jacobians for velocity control, force control and inverse kinematics.'
+      es: 'Todo brazo industrial, robot quirúrgico y rig de animación usa jacobianas para el control de velocidad, el de fuerza y la cinemática inversa.'
+
+  - id: inverse-kinematics
+    kind: application
+    level: advanced
+    prerequisites: [robot-jacobian]
+    title: {en: 'Inverse kinematics', es: 'Cinemática inversa'}
+    aliases: {en: [IK, damped least squares, pseudo-inverse, Jacobian transpose, CCD], es: [IK, mínimos cuadrados amortiguados, pseudoinversa, traspuesta de la jacobiana, CCD]}
+    summary:
+      en: |
+        Find joint angles that place the hand at a target: solve $f(q) = p^\ast$. Usually iteratively with the Jacobian
+        — Newton/Gauss–Newton steps $\Delta q = J^+(p^\ast - f(q))$, or damped least squares near singularities. Game
+        engines use it to plant feet and aim hands.
+      es: |
+        Encontrar los ángulos articulares que llevan la mano a un objetivo: resolver $f(q) = p^\ast$. Normalmente de forma
+        iterativa con la jacobiana: pasos de Newton/Gauss–Newton $\Delta q = J^+(p^\ast - f(q))$, o mínimos cuadrados
+        amortiguados cerca de las singularidades. Los motores de juego la usan para apoyar pies y orientar manos.
+    formulas:
+      - tex: |-
+          \Delta q = J^{\mathsf T}\big(JJ^{\mathsf T} + \lambda^2 I\big)^{-1}\big(p^\ast - f(q)\big)
+        label: {en: 'damped least squares (Levenberg–Marquardt)', es: 'mínimos cuadrados amortiguados (Levenberg–Marquardt)'}
+
+  - id: robot-dynamics
+    kind: application
+    level: advanced
+    prerequisites: [kinematics]
+    title: {en: 'Robot dynamics', es: 'Dinámica de robots'}
+    aliases: {en: [Euler-Lagrange, equations of motion, inertia matrix, torque], es: [Euler-Lagrange, ecuaciones del movimiento, matriz de inercia, par]}
+    summary:
+      en: |
+        How torques produce motion: the Euler–Lagrange equations of the Lagrangian $\mathcal L = T - V$ give
+        $M(q)\ddot q + C(q,\dot q)\dot q + g(q) = \tau$, a system of second-order ODEs simulated and inverted by controllers.
+      es: |
+        Cómo producen movimiento los pares: las ecuaciones de Euler–Lagrange del lagrangiano $\mathcal L = T - V$ dan
+        $M(q)\ddot q + C(q,\dot q)\dot q + g(q) = \tau$, un sistema de EDO de segundo orden que se simula y que los
+        controladores invierten.
+    formulas:
+      - tex: |-
+          \frac{\dd}{\dd t}\frac{\partial\mathcal L}{\partial\dot q_i} - \frac{\partial\mathcal L}{\partial q_i} = \tau_i
+      - tex: |-
+          M(q)\,\ddot q + C(q,\dot q)\,\dot q + g(q) = \tau
+
+  - id: pid-control
+    kind: application
+    level: university
+    title: {en: 'PID control', es: 'Control PID'}
+    aliases: {en: [PID, proportional integral derivative, feedback, setpoint], es: [PID, proporcional integral derivativo, realimentación, consigna]}
+    summary:
+      en: |
+        The most used controller in the world: correct proportionally to the error (P), to its accumulated integral (I,
+        removes steady offset) and to its derivative (D, anticipates and damps). Calculus in one line, running in
+        thermostats, drones, cruise control and hard-disk heads.
+      es: |
+        El controlador más usado del mundo: corregir en proporción al error (P), a su integral acumulada (I, elimina el
+        error estacionario) y a su derivada (D, anticipa y amortigua). Cálculo en una línea, funcionando en termostatos,
+        drones, controles de crucero y cabezales de disco duro.
+    formulas:
+      - tex: |-
+          u(t) = K_p\,e(t) + K_i\int_0^t e(s)\,\dd s + K_d\,\frac{\dd e}{\dd t}
+      - tex: |-
+          u_k = K_p e_k + K_i h\sum_{j\le k} e_j + K_d\,\frac{e_k - e_{k-1}}{h}
+        label: {en: 'discrete version on a microcontroller (Riemann sum + finite difference)', es: 'versión discreta en un microcontrolador (suma de Riemann + diferencia finita)'}
+    exercises:
+      - type: applied
+        prompt:
+          en: 'A drone hovers 2 m below its target height. Explain what each of P, I and D contributes, and what goes wrong with only P.'
+          es: 'Un dron está 2 m por debajo de la altura objetivo. Explica qué aporta cada término P, I y D, y qué falla con solo P.'
+        solution:
+          en: |
+            P pushes up in proportion to the 2 m error; D brakes as the error shrinks quickly, preventing overshoot; I
+            accumulates any persistent error. With only P, gravity needs a non-zero thrust, which requires a non-zero error:
+            the drone settles below the target (steady-state error) and may oscillate if $K_p$ is large.
+          es: |
+            P empuja hacia arriba en proporción a los 2 m de error; D frena cuando el error disminuye deprisa, evitando
+            pasarse; I acumula cualquier error persistente. Con solo P, compensar la gravedad necesita un empuje no nulo, que
+            exige un error no nulo: el dron se queda por debajo del objetivo (error estacionario) y puede oscilar si $K_p$ es
+            grande.
+
+  - id: control-theory
+    kind: application
+    level: advanced
+    prerequisites: [pid-control]
+    title: {en: 'Control theory', es: 'Teoría de control'}
+    aliases: {en: [feedback control, state space, transfer function, LQR, MPC, stability], es: [control realimentado, espacio de estados, función de transferencia, LQR, MPC, estabilidad]}
+    summary:
+      en: |
+        Designing feedback so a dynamical system does what we want, robustly. Classical control works with transfer
+        functions (Laplace); modern control with state-space ODEs $\dot x = Ax + Bu$, optimal control (LQR, MPC) and
+        stability theory (eigenvalues, Lyapunov).
+      es: |
+        Diseñar la realimentación para que un sistema dinámico haga lo que queremos, de forma robusta. El control clásico
+        trabaja con funciones de transferencia (Laplace); el moderno, con EDO en espacio de estados $\dot x = Ax + Bu$,
+        control óptimo (LQR, MPC) y teoría de estabilidad (valores propios, Liapunov).
+    formulas:
+      - tex: |-
+          \dot x = Ax + Bu,\ \ u = -Kx \implies \dot x = (A - BK)x
+        label: {en: 'state feedback: choose $K$ to place the eigenvalues of $A - BK$', es: 'realimentación de estado: elegir $K$ para colocar los valores propios de $A - BK$'}
+      - tex: |-
+          \min_u \int_0^\infty\big(x^{\mathsf T}Qx + u^{\mathsf T}Ru\big)\,\dd t
+        label: {en: 'linear-quadratic regulator (LQR)', es: 'regulador lineal cuadrático (LQR)'}
+
+  - id: kalman-filter
+    kind: application
+    level: advanced
+    title: {en: 'Kalman filter', es: 'Filtro de Kalman'}
+    aliases: {en: [state estimation, sensor fusion, EKF, extended Kalman filter, Bayesian filtering], es: [estimación de estado, fusión de sensores, EKF, filtro de Kalman extendido, filtrado bayesiano]}
+    summary:
+      en: |
+        Optimal state estimation for linear systems with Gaussian noise: predict with the model, correct with the
+        measurement, weighting each by its uncertainty. The extended version linearizes with Jacobians. Used in every GPS
+        receiver, phone, drone and spacecraft (Apollo).
+      es: |
+        Estimación óptima del estado para sistemas lineales con ruido gaussiano: predecir con el modelo, corregir con la
+        medida y ponderar cada uno según su incertidumbre. La versión extendida linealiza con jacobianas. Se usa en todo
+        receptor GPS, teléfono, dron y nave espacial (Apolo).
+    formulas:
+      - tex: |-
+          K = P^-H^{\mathsf T}\big(HP^-H^{\mathsf T} + R\big)^{-1}, \qquad \hat x = \hat x^- + K\big(z - H\hat x^-\big)
+      - tex: |-
+          \hat x = \frac{\sigma_2^2}{\sigma_1^2 + \sigma_2^2}x_1 + \frac{\sigma_1^2}{\sigma_1^2 + \sigma_2^2}x_2
+        label: {en: 'the 1D intuition: average two estimates, trusting the less noisy one more', es: 'la intuición en 1D: promediar dos estimaciones fiándose más de la menos ruidosa'}
+
+  - id: trajectory-optimization
+    kind: application
+    level: specialized
+    prerequisites: [robot-dynamics, control-theory]
+    title: {en: 'Trajectory optimization and MPC', es: 'Optimización de trayectorias y MPC'}
+    aliases: {en: [optimal control, model predictive control, motion planning, direct collocation], es: [control óptimo, control predictivo, planificación de movimiento, colocación directa]}
+    summary:
+      en: |
+        Choose the whole motion that minimizes a cost (time, energy, jerk) subject to dynamics, limits and obstacles — a
+        constrained optimization over functions, discretized into a large nonlinear program. Model predictive control
+        re-solves it every few milliseconds over a short horizon.
+      es: |
+        Elegir el movimiento completo que minimiza un coste (tiempo, energía, tirón) sujeto a la dinámica, los límites y los
+        obstáculos: una optimización con restricciones sobre funciones, discretizada en un gran programa no lineal. El
+        control predictivo la vuelve a resolver cada pocos milisegundos en un horizonte corto.
+    formulas:
+      - tex: |-
+          \min_{x(\cdot),\,u(\cdot)}\int_0^T \ell(x, u)\,\dd t, \qquad \dot x = f(x, u),\ \ g(x, u) \le 0

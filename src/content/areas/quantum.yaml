@@ -1,0 +1,110 @@
+kind: computing
+order: 28
+glyph: 'ψ'
+title: {en: 'Quantum computing and physics', es: 'Computación y física cuántica'}
+summary:
+  en: |
+    Quantum mechanics combines linear algebra, calculus, complex numbers and probability: wave functions, the Schrödinger
+    equation, Fourier duality and unitary evolution.
+  es: |
+    La mecánica cuántica combina álgebra lineal, cálculo, números complejos y probabilidad: funciones de onda, la ecuación
+    de Schrödinger, la dualidad de Fourier y la evolución unitaria.
+intro:
+  en: |
+    ```
+    Linear algebra  +  Calculus  +  Complex numbers  +  Probability  =  Quantum mechanics
+    ```
+
+    In wave mechanics the state is a complex function $\psi(x, t)$, its evolution a partial differential equation, and
+    probabilities are integrals of $|\psi|^2$. Quantum computing works in finite dimensions, where calculus recedes and
+    linear algebra takes over — see [Math of Quantum](https://toniferr.github.io/math-of-quantum/) for that side.
+  es: |
+    ```
+    Álgebra lineal  +  Cálculo  +  Números complejos  +  Probabilidad  =  Mecánica cuántica
+    ```
+
+    En la mecánica ondulatoria el estado es una función compleja $\psi(x, t)$, su evolución una ecuación en derivadas
+    parciales y las probabilidades, integrales de $|\psi|^2$. La computación cuántica trabaja en dimensión finita, donde el
+    cálculo se retira y manda el álgebra lineal; esa parte está en [Math of Quantum](https://toniferr.github.io/math-of-quantum/es/).
+topics:
+  - id: wave-function
+    kind: application
+    level: advanced
+    title: {en: 'Wave function', es: 'Función de onda'}
+    aliases: {en: [psi, Born rule, probability amplitude, quantum state], es: [psi, regla de Born, amplitud de probabilidad, estado cuántico]}
+    summary:
+      en: |
+        A complex-valued function $\psi(x)$ whose squared modulus is a probability density (Born rule): the probability of
+        finding the particle in $[a,b]$ is $\int_a^b|\psi|^2\,\dd x$, and normalization requires $\int|\psi|^2 = 1$.
+      es: |
+        Una función de valores complejos $\psi(x)$ cuyo módulo al cuadrado es una densidad de probabilidad (regla de Born):
+        la probabilidad de encontrar la partícula en $[a,b]$ es $\int_a^b|\psi|^2\,\dd x$, y normalizar exige $\int|\psi|^2 = 1$.
+    formulas:
+      - tex: |-
+          P(a \le X \le b) = \int_a^b |\psi(x)|^2\,\dd x, \qquad \int_{-\infty}^{\infty}|\psi|^2\,\dd x = 1
+
+  - id: schrodinger-equation
+    kind: application
+    level: specialized
+    prerequisites: [wave-function]
+    title: {en: 'Schrödinger equation', es: 'Ecuación de Schrödinger'}
+    aliases: {en: [Hamiltonian, time evolution, quantum operators, eigenstates], es: [hamiltoniano, evolución temporal, operadores cuánticos, estados propios]}
+    summary:
+      en: |
+        The PDE for the time evolution of a wave function: $i\hbar\,\partial_t\psi = \hat H\psi$, with the Hamiltonian
+        built from the Laplacian (kinetic energy) and a potential. Its operators — derivatives acting on functions — are
+        where calculus and linear algebra meet; in quantum computing the same equation becomes $|\psi(t)\rangle = e^{-iHt/\hbar}|\psi(0)\rangle$.
+      es: |
+        La EDP de la evolución temporal de una función de onda: $i\hbar\,\partial_t\psi = \hat H\psi$, con el hamiltoniano
+        construido con el laplaciano (energía cinética) y un potencial. Sus operadores (derivadas que actúan sobre funciones)
+        son el punto donde se encuentran el cálculo y el álgebra lineal; en computación cuántica la misma ecuación se
+        convierte en $|\psi(t)\rangle = e^{-iHt/\hbar}|\psi(0)\rangle$.
+    formulas:
+      - tex: |-
+          i\hbar\,\frac{\partial\psi}{\partial t} = -\frac{\hbar^2}{2m}\,\Delta\psi + V(x)\,\psi
+      - tex: |-
+          \hat p = -i\hbar\,\frac{\partial}{\partial x}
+        label: {en: 'momentum is a derivative operator', es: 'el momento es un operador derivada'}
+
+  - id: uncertainty-principle
+    kind: application
+    level: advanced
+    prerequisites: [wave-function]
+    title: {en: 'Uncertainty principle', es: 'Principio de incertidumbre'}
+    aliases: {en: [Heisenberg, Fourier duality, time-frequency uncertainty, Gabor limit], es: [Heisenberg, dualidad de Fourier, incertidumbre tiempo-frecuencia, límite de Gabor]}
+    summary:
+      en: |
+        Position and momentum wave functions are Fourier transforms of each other, and a function and its transform cannot
+        both be narrow: $\sigma_x\sigma_p \ge \hbar/2$. The same inequality limits time–frequency resolution in signal
+        processing (spectrograms, radar).
+      es: |
+        Las funciones de onda de posición y de momento son transformadas de Fourier una de la otra, y una función y su
+        transformada no pueden ser estrechas a la vez: $\sigma_x\sigma_p \ge \hbar/2$. La misma desigualdad limita la
+        resolución tiempo–frecuencia en procesamiento de señales (espectrogramas, radar).
+    formulas:
+      - tex: |-
+          \sigma_x\,\sigma_p \ge \frac{\hbar}{2}, \qquad \sigma_t\,\sigma_f \ge \frac{1}{4\pi}
+
+  - id: quantum-computing
+    kind: application
+    level: advanced
+    prerequisites: [wave-function]
+    title: {en: 'Quantum computing', es: 'Computación cuántica'}
+    aliases: {en: [qubits, quantum gates, Shor, Grover, quantum Fourier transform], es: [cúbits, puertas cuánticas, Shor, Grover, transformada cuántica de Fourier]}
+    summary:
+      en: |
+        Computing with qubits: states are unit vectors of complex amplitudes, gates are unitary matrices (exponentials
+        $e^{-iHt}$), measurement samples with probabilities $|\alpha|^2$. Shor's algorithm relies on a quantum Fourier
+        transform. Mostly linear algebra; calculus enters through complex exponentials, Fourier analysis and the physics of
+        the hardware.
+      es: |
+        Computar con cúbits: los estados son vectores unitarios de amplitudes complejas, las puertas son matrices unitarias
+        (exponenciales $e^{-iHt}$) y la medida muestrea con probabilidades $|\alpha|^2$. El algoritmo de Shor se apoya en una
+        transformada cuántica de Fourier. Es sobre todo álgebra lineal; el cálculo entra por las exponenciales complejas, el
+        análisis de Fourier y la física del hardware.
+    formulas:
+      - tex: |-
+          |\psi\rangle = \alpha|0\rangle + \beta|1\rangle, \quad |\alpha|^2 + |\beta|^2 = 1
+    links:
+      - href: 'https://toniferr.github.io/math-of-quantum/'
+        label: {en: 'Math of Quantum — the full story, with proofs and a simulator', es: 'Math of Quantum: la historia completa, con demostraciones y un simulador'}

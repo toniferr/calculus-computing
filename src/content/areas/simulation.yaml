@@ -1,0 +1,251 @@
+kind: computing
+order: 24
+glyph: '⚛'
+title: {en: 'Physics and simulation', es: 'Física y simulación'}
+summary:
+  en: |
+    Mechanics, gravity, heat, waves, fluids and electromagnetism written as differential equations — and the numerical
+    methods that turn them into games, films, forecasts and engineering software.
+  es: |
+    Mecánica, gravedad, calor, ondas, fluidos y electromagnetismo escritos como ecuaciones diferenciales, y los métodos
+    numéricos que los convierten en videojuegos, cine, predicciones y software de ingeniería.
+intro:
+  en: |
+    Physics states its laws as rates of change: ODEs for particles and rigid bodies, PDEs for fields. A simulator picks a
+    discretization in space (grid, particles, mesh) and an integrator in time (Euler, Verlet, Runge–Kutta, implicit), and
+    then fights stability, accuracy and cost. The same mathematics drives a game engine at 60 frames per second and a
+    climate model on a supercomputer.
+  es: |
+    La física enuncia sus leyes como tasas de cambio: EDO para partículas y sólidos rígidos, EDP para campos. Un simulador
+    elige una discretización en el espacio (malla, partículas, elementos) y un integrador en el tiempo (Euler, Verlet,
+    Runge–Kutta, implícito), y luego pelea con la estabilidad, la precisión y el coste. Las mismas matemáticas mueven un
+    motor de videojuegos a 60 fotogramas por segundo y un modelo climático en un superordenador.
+topics:
+  - id: classical-mechanics
+    kind: application
+    level: university
+    prerequisites: [kinematics]
+    title: {en: 'Classical mechanics', es: 'Mecánica clásica'}
+    aliases: {en: [Newton laws, F = ma, gravity, energy, momentum, projectile], es: [leyes de Newton, F = ma, gravedad, energía, momento lineal, proyectil]}
+    summary:
+      en: |
+        Newton's second law $F = m\ddot x$ turns forces into a second-order ODE for the motion. Gravity, springs, friction and
+        collisions are all modelled this way; energy and momentum are the conserved quantities that check a simulation.
+      es: |
+        La segunda ley de Newton $F = m\ddot x$ convierte las fuerzas en una EDO de segundo orden para el movimiento. La
+        gravedad, los muelles, el rozamiento y los choques se modelan así; la energía y el momento son las magnitudes
+        conservadas que permiten comprobar una simulación.
+    formulas:
+      - tex: |-
+          m\,\ddot x = F(x, \dot x, t), \qquad F_{\text{grav}} = -\frac{G\,m_1m_2}{r^2}\,\hat r
+      - tex: |-
+          E = \tfrac12 m\norm{\dot x}^2 + U(x), \qquad \frac{\dd E}{\dd t} = 0
+        label: {en: 'energy is conserved when the force is conservative, $F = -\nabla U$', es: 'la energía se conserva cuando la fuerza es conservativa, $F = -\nabla U$'}
+    exercises:
+      - type: computation
+        prompt:
+          en: 'A ball is thrown up at 20 m/s ($g = 9.8$ m/s²). Using calculus, find the maximum height and the time to reach it.'
+          es: 'Se lanza una pelota hacia arriba a 20 m/s ($g = 9{,}8$ m/s²). Con cálculo, halla la altura máxima y el tiempo que tarda en alcanzarla.'
+        solution:
+          en: '$y(t) = 20t - 4.9t^2$; $y''(t) = 20 - 9.8t = 0 \Rightarrow t \approx 2.04$ s, $y \approx 20.4$ m.'
+          es: '$y(t) = 20t - 4{,}9t^2$; $y''(t) = 20 - 9{,}8t = 0 \Rightarrow t \approx 2{,}04$ s, $y \approx 20{,}4$ m.'
+
+  - id: physics-engine
+    kind: application
+    level: university
+    core: true
+    prerequisites: [classical-mechanics]
+    title: {en: 'Physics engines', es: 'Motores físicos'}
+    aliases: {en: [game physics, rigid body simulation, Box2D, PhysX, Bullet, Verlet integration, time step], es: [física de videojuegos, simulación de sólidos rígidos, Box2D, PhysX, Bullet, integración de Verlet, paso de tiempo]}
+    summary:
+      en: |
+        Software that advances a world of bodies in small time steps: accumulate forces, integrate velocities and positions
+        (semi-implicit Euler or Verlet), detect collisions, resolve contacts. A numerical ODE solver tuned for speed and
+        stability rather than accuracy.
+      es: |
+        Software que hace avanzar un mundo de cuerpos en pasos de tiempo pequeños: acumular fuerzas, integrar velocidades y
+        posiciones (Euler semiimplícito o Verlet), detectar colisiones y resolver contactos. Un resolvedor numérico de EDO
+        ajustado para la velocidad y la estabilidad más que para la precisión.
+    why:
+      en: |
+        Games and films need plausible motion in real time for thousands of objects. Exact solutions do not exist, and
+        accuracy matters less than never exploding: a ragdoll that jitters is a bug, one that is 1% off is not.
+      es: |
+        Los videojuegos y el cine necesitan movimiento plausible en tiempo real para miles de objetos. No hay soluciones
+        exactas, y la precisión importa menos que no explotar nunca: un ragdoll que tiembla es un error; uno que se desvía
+        un 1 %, no.
+    formulas:
+      - tex: |-
+          v_{n+1} = v_n + h\,\frac{F_n}{m}, \qquad x_{n+1} = x_n + h\,v_{n+1}
+        label: {en: 'semi-implicit (symplectic) Euler', es: 'Euler semiimplícito (simpléctico)'}
+      - tex: |-
+          x_{n+1} = 2x_n - x_{n-1} + h^2\,\frac{F_n}{m}
+        label: {en: 'Verlet integration (second order, symplectic)', es: 'integración de Verlet (segundo orden, simpléctica)'}
+    compute:
+      en: |
+        ```
+        every frame (h = 1/60 s, often split into substeps):
+            for each body: F = gravity + springs + user forces
+            for each body: v += h · F/m ;  x += h · v        # semi-implicit Euler
+            detect collisions;  apply impulses to fix contacts
+        ```
+      es: |
+        ```
+        en cada fotograma (h = 1/60 s, a menudo en subpasos):
+            para cada cuerpo: F = gravedad + muelles + fuerzas del usuario
+            para cada cuerpo: v += h · F/m ;  x += h · v     # Euler semiimplícito
+            detectar colisiones;  aplicar impulsos para corregir contactos
+        ```
+    matters:
+      en: 'Unity, Unreal, Godot, robotics simulators (MuJoCo, Isaac) and VFX tools all have one at their core; differentiable versions let robots learn by gradient descent through physics.'
+      es: 'Unity, Unreal, Godot, los simuladores robóticos (MuJoCo, Isaac) y las herramientas de efectos visuales tienen uno en su núcleo; las versiones diferenciables permiten a los robots aprender por descenso de gradiente a través de la física.'
+
+  - id: n-body-simulation
+    kind: application
+    level: advanced
+    prerequisites: [physics-engine]
+    title: {en: 'N-body gravitational simulation', es: 'Simulación gravitatoria de N cuerpos'}
+    aliases: {en: [orbits, celestial mechanics, Barnes-Hut, leapfrog, galaxy simulation], es: [órbitas, mecánica celeste, Barnes-Hut, leapfrog, simulación de galaxias]}
+    summary:
+      en: |
+        Integrate the mutual gravity of $N$ bodies — planets, stars, dark-matter particles. Symplectic integrators
+        (leapfrog) keep orbits stable for billions of steps; tree codes (Barnes–Hut) and FMM cut the cost from $O(N^2)$ to
+        $O(N\log N)$ or $O(N)$.
+      es: |
+        Integrar la gravedad mutua de $N$ cuerpos: planetas, estrellas, partículas de materia oscura. Los integradores
+        simplécticos (leapfrog) mantienen estables las órbitas durante miles de millones de pasos; los códigos de árbol
+        (Barnes–Hut) y el FMM reducen el coste de $O(N^2)$ a $O(N\log N)$ u $O(N)$.
+    formulas:
+      - tex: |-
+          \ddot x_i = \sum_{j\ne i} G m_j\,\frac{x_j - x_i}{\norm{x_j - x_i}^3}
+
+  - id: heat-equation
+    kind: application
+    level: advanced
+    title: {en: 'Heat equation and diffusion', es: 'Ecuación del calor y difusión'}
+    aliases: {en: [diffusion, thermal simulation, Fourier law, blur as diffusion], es: [difusión, simulación térmica, ley de Fourier, desenfoque como difusión]}
+    summary:
+      en: |
+        $u_t = \alpha\Delta u$: temperature (or concentration, or probability) flows from high to low and smooths out.
+        Solved by finite differences or Fourier series; Gaussian blur of an image is exactly running this equation.
+      es: |
+        $u_t = \alpha\Delta u$: la temperatura (o la concentración, o la probabilidad) fluye de lo alto a lo bajo y se
+        suaviza. Se resuelve con diferencias finitas o series de Fourier; el desenfoque gaussiano de una imagen es
+        exactamente ejecutar esta ecuación.
+    formulas:
+      - tex: |-
+          \frac{\partial u}{\partial t} = \alpha\,\Delta u
+      - tex: |-
+          u_i^{n+1} = u_i^n + \frac{\alpha\,\Delta t}{\Delta x^2}\big(u_{i+1}^n - 2u_i^n + u_{i-1}^n\big), \qquad \frac{\alpha\,\Delta t}{\Delta x^2} \le \frac12
+        label: {en: 'explicit scheme and its stability condition', es: 'esquema explícito y su condición de estabilidad'}
+    matters:
+      en: 'CPU and battery thermal design, materials processing, and — through the same mathematics — image smoothing and diffusion-based generative models.'
+      es: 'El diseño térmico de CPU y baterías, el procesado de materiales y, con las mismas matemáticas, el suavizado de imágenes y los modelos generativos de difusión.'
+
+  - id: wave-equation
+    kind: application
+    level: advanced
+    title: {en: 'Wave equation', es: 'Ecuación de ondas'}
+    aliases: {en: [waves, acoustics, vibrating string, seismic, water ripples], es: [ondas, acústica, cuerda vibrante, sísmica, ondas en el agua]}
+    summary:
+      en: |
+        $u_{tt} = c^2\Delta u$: disturbances travel at speed $c$. Sound, vibrating strings, seismic waves and light obey it;
+        games use discretized versions for water ripples and room acoustics.
+      es: |
+        $u_{tt} = c^2\Delta u$: las perturbaciones viajan a velocidad $c$. El sonido, las cuerdas vibrantes, las ondas
+        sísmicas y la luz la obedecen; los videojuegos usan versiones discretizadas para ondas en el agua y acústica de salas.
+    formulas:
+      - tex: |-
+          \frac{\partial^2 u}{\partial t^2} = c^2\,\Delta u, \qquad u(x,t) = f(x - ct) + g(x + ct)
+        label: {en: 'd''Alembert: in 1D, two shapes travelling in opposite directions', es: 'd''Alembert: en 1D, dos perfiles que viajan en sentidos opuestos'}
+
+  - id: electromagnetism
+    kind: application
+    level: advanced
+    title: {en: 'Electromagnetism (Maxwell''s equations)', es: 'Electromagnetismo (ecuaciones de Maxwell)'}
+    aliases: {en: [Maxwell equations, antennas, FDTD, electric field, magnetic field], es: [ecuaciones de Maxwell, antenas, FDTD, campo eléctrico, campo magnético]}
+    summary:
+      en: |
+        Four equations in divergence and curl govern all of electricity, magnetism and light. Simulated (FDTD, FEM) to design
+        antennas, chips, MRI coils and wireless links.
+      es: |
+        Cuatro ecuaciones de divergencia y rotacional gobiernan toda la electricidad, el magnetismo y la luz. Se simulan
+        (FDTD, elementos finitos) para diseñar antenas, chips, bobinas de resonancia magnética y enlaces inalámbricos.
+    formulas:
+      - tex: |-
+          \nabla\cdot E = \frac{\rho}{\varepsilon_0}, \quad \nabla\cdot B = 0, \quad \nabla\times E = -\frac{\partial B}{\partial t}, \quad \nabla\times B = \mu_0 J + \mu_0\varepsilon_0\frac{\partial E}{\partial t}
+
+  - id: fluid-dynamics
+    kind: application
+    level: specialized
+    prerequisites: [physics-engine]
+    title: {en: 'Fluid dynamics and CFD', es: 'Dinámica de fluidos y CFD'}
+    aliases: {en: [Navier-Stokes, CFD, stable fluids, smoke simulation, aerodynamics, SPH], es: [Navier-Stokes, CFD, stable fluids, simulación de humo, aerodinámica, SPH]}
+    summary:
+      en: |
+        The Navier–Stokes equations for a velocity field $u$ and pressure $p$. Engineering CFD solves them on meshes with
+        finite volumes; film and games use "stable fluids" (Stam, 1999): advect, add forces, and project to zero divergence
+        by solving a Poisson equation.
+      es: |
+        Las ecuaciones de Navier–Stokes para un campo de velocidades $u$ y una presión $p$. La CFD de ingeniería las resuelve
+        sobre mallas con volúmenes finitos; el cine y los videojuegos usan «stable fluids» (Stam, 1999): advectar, añadir
+        fuerzas y proyectar a divergencia nula resolviendo una ecuación de Poisson.
+    formulas:
+      - tex: |-
+          \frac{\partial u}{\partial t} + (u\cdot\nabla)u = -\frac{1}{\rho}\nabla p + \nu\,\Delta u + f, \qquad \nabla\cdot u = 0
+
+  - id: finite-elements
+    kind: application
+    level: specialized
+    title: {en: 'Finite element method', es: 'Método de los elementos finitos'}
+    aliases: {en: [FEM, weak form, Galerkin, structural analysis, mesh], es: [MEF, forma débil, Galerkin, análisis estructural, malla]}
+    summary:
+      en: |
+        Solve a PDE on a complicated shape by splitting it into small elements, writing the weak form (integration by
+        parts) and approximating the solution by piecewise polynomials. The standard tool of structural, thermal and
+        electromagnetic engineering.
+      es: |
+        Resolver una EDP sobre una forma complicada dividiéndola en elementos pequeños, escribiendo la forma débil
+        (integración por partes) y aproximando la solución con polinomios a trozos. La herramienta estándar de la
+        ingeniería estructural, térmica y electromagnética.
+    formulas:
+      - tex: |-
+          -\Delta u = f \ \longrightarrow\ \int_\Omega\nabla u\cdot\nabla v\,\dd x = \int_\Omega f\,v\,\dd x\ \ \forall v \ \longrightarrow\ K\mathbf u = \mathbf f
+
+  - id: weather-climate
+    kind: application
+    level: specialized
+    prerequisites: [fluid-dynamics]
+    title: {en: 'Weather and climate modelling', es: 'Predicción meteorológica y clima'}
+    aliases: {en: [numerical weather prediction, climate models, ensemble forecast, data assimilation], es: [predicción numérica del tiempo, modelos climáticos, predicción por conjuntos, asimilación de datos]}
+    summary:
+      en: |
+        Integrate the equations of the atmosphere and oceans on a global grid. Chaos limits deterministic forecasts to about
+        two weeks, so services run ensembles; data assimilation fits the initial state to observations using adjoint
+        (reverse-mode) gradients. Machine-learned forecasters now compete with physics models.
+      es: |
+        Integrar las ecuaciones de la atmósfera y los océanos sobre una malla global. El caos limita la predicción
+        determinista a unas dos semanas, así que los servicios ejecutan conjuntos; la asimilación de datos ajusta el estado
+        inicial a las observaciones con gradientes adjuntos (modo inverso). Los predictores aprendidos ya compiten con los
+        modelos físicos.
+    formulas:
+      - tex: |-
+          J(x_0) = \tfrac12\norm{x_0 - x_b}^2_{B^{-1}} + \tfrac12\sum_k\norm{y_k - H(x_k)}^2_{R^{-1}}
+        label: {en: '4D-Var cost function, minimized with adjoint gradients', es: 'función de coste 4D-Var, minimizada con gradientes adjuntos'}
+
+  - id: population-models
+    kind: application
+    level: university
+    title: {en: 'Population and epidemic models', es: 'Modelos de poblaciones y epidemias'}
+    aliases: {en: [SIR model, logistic growth, Lotka-Volterra, computational biology, R0], es: [modelo SIR, crecimiento logístico, Lotka-Volterra, biología computacional, R0]}
+    summary:
+      en: |
+        Computational biology with ODEs: logistic growth, predator–prey cycles, and SIR epidemics whose basic reproduction
+        number $R_0 = \beta/\gamma$ decides whether an outbreak grows. These models informed policy during COVID-19.
+      es: |
+        Biología computacional con EDO: crecimiento logístico, ciclos depredador–presa y epidemias SIR cuyo número básico de
+        reproducción $R_0 = \beta/\gamma$ decide si un brote crece. Estos modelos informaron decisiones durante la COVID-19.
+    formulas:
+      - tex: |-
+          \dot I = (\beta S - \gamma)\,I
+        label: {en: 'infections grow while $\beta S/\gamma > 1$', es: 'los contagios crecen mientras $\beta S/\gamma > 1$'}

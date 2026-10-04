@@ -1,0 +1,291 @@
+kind: math
+order: 11
+glyph: 'Σ'
+title: {en: 'Series', es: 'Series'}
+summary:
+  en: |
+    Infinite sums and when they make sense: the tests for convergence, and their use in analysing algorithms,
+    discounting rewards and summing numbers safely in floating point.
+  es: |
+    Sumas infinitas y cuándo tienen sentido: los criterios de convergencia y su uso para analizar algoritmos, descontar
+    recompensas y sumar números con seguridad en coma flotante.
+topics:
+  - id: series
+    level: fundamental
+    core: true
+    prerequisites: [sequence-convergence]
+    title: {en: 'Numerical series', es: 'Series numéricas'}
+    aliases: {en: [infinite sum, partial sums, harmonic series, convergence of series, divergence], es: [suma infinita, sumas parciales, serie armónica, convergencia de series, divergencia]}
+    summary:
+      en: |
+        $\sum_{k=1}^\infty a_k$ is the limit of the partial sums $S_n = a_1 + \dots + a_n$. Terms going to zero is
+        necessary but not sufficient: the harmonic series $\sum 1/k$ diverges, while $\sum 1/k^2 = \pi^2/6$.
+      es: |
+        $\sum_{k=1}^\infty a_k$ es el límite de las sumas parciales $S_n = a_1 + \dots + a_n$. Que los términos tiendan a
+        cero es necesario pero no suficiente: la serie armónica $\sum 1/k$ diverge, mientras que $\sum 1/k^2 = \pi^2/6$.
+    why:
+      en: |
+        Zeno's paradox (infinitely many steps, finite distance), the decimal expansion of $\pi$, the total cost of an
+        infinite process: we need to know when adding infinitely many numbers gives a finite answer, and how fast the
+        partial sums get there.
+      es: |
+        La paradoja de Zenón (infinitos pasos, distancia finita), el desarrollo decimal de $\pi$, el coste total de un
+        proceso infinito: hace falta saber cuándo sumar infinitos números da un resultado finito, y a qué velocidad se
+        acercan las sumas parciales.
+    intuition:
+      en: |
+        The harmonic series is the classic warning. Its terms shrink to zero, but group them: $\frac13 + \frac14 > \frac12$,
+        $\frac15 + \dots + \frac18 > \frac12$, … infinitely many halves. It grows like $\ln n$ — so slowly that the sum of
+        the first $10^{43}$ terms is only about 100, yet it never stops.
+      es: |
+        La serie armónica es la advertencia clásica. Sus términos tienden a cero, pero agrúpalos: $\frac13 + \frac14 > \frac12$,
+        $\frac15 + \dots + \frac18 > \frac12$, … infinitas mitades. Crece como $\ln n$: tan despacio que la suma de los
+        primeros $10^{43}$ términos apenas llega a 100, pero nunca se detiene.
+    formal:
+      en: |
+        $\sum a_k$ converges to $S$ if $S_n = \sum_{k=1}^n a_k \to S$. Necessary condition: $a_k \to 0$. Cauchy criterion:
+        $\sum a_k$ converges iff $\forall\varepsilon\ \exists N:\ |a_{m+1} + \dots + a_n| < \varepsilon$ for $n > m \ge N$.
+      es: |
+        $\sum a_k$ converge a $S$ si $S_n = \sum_{k=1}^n a_k \to S$. Condición necesaria: $a_k \to 0$. Criterio de Cauchy:
+        $\sum a_k$ converge si y solo si $\forall\varepsilon\ \exists N:\ |a_{m+1} + \dots + a_n| < \varepsilon$ para $n > m \ge N$.
+    formulas:
+      - tex: |-
+          H_n = \sum_{k=1}^{n}\frac1k = \ln n + \gamma + O(1/n), \quad \gamma \approx 0.5772
+        label: {en: 'harmonic numbers', es: 'números armónicos'}
+      - tex: |-
+          \sum_{k=1}^{\infty}\frac{1}{k^p} < \infty \iff p > 1
+        label: {en: 'p-series', es: 'serie p'}
+    matters:
+      en: |
+        Algorithm analysis is full of series: the expected number of comparisons of quicksort is $\approx 2n\ln n$
+        because of $H_n$; the coupon collector needs $nH_n$ draws; amortized costs are geometric sums. In numerics,
+        series give the values of functions — and summing them in floating point needs care.
+      es: |
+        El análisis de algoritmos está lleno de series: el número esperado de comparaciones de quicksort es
+        $\approx 2n\ln n$ por $H_n$; el coleccionista de cromos necesita $nH_n$ extracciones; los costes amortizados son
+        sumas geométricas. En cálculo numérico las series dan los valores de las funciones, y sumarlas en coma flotante
+        exige cuidado.
+    applications:
+      - to: algorithm-complexity
+        strength: 4
+        type: frequent
+        note:
+          en: 'Costs of loops and recursions are sums; harmonic numbers give quicksort''s $\Theta(n\log n)$ average.'
+          es: 'Los costes de bucles y recursiones son sumas; los números armónicos dan el $\Theta(n\log n)$ medio de quicksort.'
+      - to: scientific-computing
+        strength: 3
+        type: frequent
+        note:
+          en: 'Summing many terms accurately requires compensated (Kahan) or pairwise summation.'
+          es: 'Sumar muchos términos con precisión requiere suma compensada (Kahan) o por pares.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Does $\sum_{k\ge1}\frac{k}{k^2 + 1}$ converge?'
+          es: '¿Converge $\sum_{k\ge1}\frac{k}{k^2 + 1}$?'
+        solution:
+          en: 'No: $\frac{k}{k^2+1} \ge \frac{1}{2k}$ for $k \ge 1$, and $\sum\frac1{2k}$ diverges (comparison with the harmonic series).'
+          es: 'No: $\frac{k}{k^2+1} \ge \frac{1}{2k}$ para $k \ge 1$, y $\sum\frac1{2k}$ diverge (comparación con la armónica).'
+      - type: computing
+        prompt:
+          en: 'Quicksort makes about $2(n+1)H_n - 4n$ comparisons on average. Estimate it for $n = 10^6$.'
+          es: 'Quicksort hace de media unas $2(n+1)H_n - 4n$ comparaciones. Estímalo para $n = 10^6$.'
+        solution:
+          en: '$H_{10^6} \approx \ln 10^6 + 0.577 \approx 14.39$, so about $2\cdot10^6\cdot14.39 - 4\cdot10^6 \approx 2.5\cdot10^7$ comparisons ($\approx 1.39\,n\log_2 n$).'
+          es: '$H_{10^6} \approx \ln 10^6 + 0{,}577 \approx 14{,}39$, así que unas $2\cdot10^6\cdot14{,}39 - 4\cdot10^6 \approx 2{,}5\cdot10^7$ comparaciones ($\approx 1{,}39\,n\log_2 n$).'
+
+  - id: geometric-series
+    level: fundamental
+    core: true
+    prerequisites: [series]
+    title: {en: 'Geometric series', es: 'Serie geométrica'}
+    aliases: {en: [geometric sum, ratio, discount factor, amortized], es: [suma geométrica, razón, factor de descuento, amortizado]}
+    summary:
+      en: |
+        $\sum_{k\ge0} r^k = \frac{1}{1 - r}$ for $|r| < 1$. The one series everyone can sum in closed form — and the one
+        behind dynamic arrays, divide-and-conquer recurrences and the discounted rewards of reinforcement learning.
+      es: |
+        $\sum_{k\ge0} r^k = \frac{1}{1 - r}$ si $|r| < 1$. La serie que todo el mundo sabe sumar en forma cerrada, y la que
+        hay detrás de los arrays dinámicos, las recurrencias de divide y vencerás y las recompensas descontadas del
+        aprendizaje por refuerzo.
+    intuition:
+      en: |
+        Multiply $S = 1 + r + r^2 + \dots$ by $r$ and subtract: everything cancels except the 1, so $S(1 - r) = 1$. When
+        $r = 1/2$: $1 + \frac12 + \frac14 + \dots = 2$ — the total is dominated by the first terms, which is why the
+        last level of a halving recursion costs as much as all the rest.
+      es: |
+        Multiplica $S = 1 + r + r^2 + \dots$ por $r$ y resta: todo se cancela salvo el 1, así que $S(1 - r) = 1$. Con
+        $r = 1/2$: $1 + \frac12 + \frac14 + \dots = 2$; el total lo dominan los primeros términos, y por eso el primer
+        nivel de una recursión que divide por dos cuesta tanto como todo el resto.
+    formulas:
+      - tex: |-
+          \sum_{k=0}^{n-1} r^k = \frac{1 - r^n}{1 - r}, \qquad \sum_{k=0}^{\infty} r^k = \frac{1}{1 - r}\ \ (|r| < 1)
+      - tex: |-
+          G_t = \sum_{k=0}^{\infty}\gamma^k r_{t+k} \le \frac{r_{\max}}{1 - \gamma}
+        label: {en: 'discounted return in reinforcement learning', es: 'retorno descontado en aprendizaje por refuerzo'}
+    example:
+      en: |
+        A dynamic array doubles its capacity when full. Inserting $n$ elements copies at most $1 + 2 + 4 + \dots + n/2 < n$
+        elements in total — $O(1)$ amortized per insertion. With growth factor 1.5 the bound is $\frac{1}{1 - 2/3} = 3$
+        copies per element.
+      es: |
+        Un array dinámico duplica su capacidad cuando se llena. Insertar $n$ elementos copia en total como mucho
+        $1 + 2 + 4 + \dots + n/2 < n$ elementos: $O(1)$ amortizado por inserción. Con factor de crecimiento 1,5 la cota es
+        $\frac{1}{1 - 2/3} = 3$ copias por elemento.
+    applications:
+      - to: algorithm-complexity
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Amortized analysis of dynamic arrays and the master theorem cases are geometric sums.'
+          es: 'El análisis amortizado de los arrays dinámicos y los casos del teorema maestro son sumas geométricas.'
+      - to: reinforcement-learning
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Discounting with $\gamma < 1$ makes the infinite return a convergent geometric-type series.'
+          es: 'Descontar con $\gamma < 1$ convierte el retorno infinito en una serie convergente de tipo geométrico.'
+      - to: queueing-theory
+        strength: 3
+        type: frequent
+        note:
+          en: 'In an M/M/1 queue the number of customers is geometric: $P(N = n) = (1 - \rho)\rho^n$.'
+          es: 'En una cola M/M/1 el número de clientes es geométrico: $P(N = n) = (1 - \rho)\rho^n$.'
+    exercises:
+      - type: ai
+        prompt:
+          en: 'An agent gets reward 1 every step forever, with $\gamma = 0.99$. What is the return? What is the "effective horizon"?'
+          es: 'Un agente recibe recompensa 1 en cada paso para siempre, con $\gamma = 0{,}99$. ¿Cuál es el retorno? ¿Cuál es el «horizonte efectivo»?'
+        solution:
+          en: '$\sum 0.99^k = \frac{1}{0.01} = 100$. Rewards beyond about $\frac{1}{1-\gamma} = 100$ steps contribute little: the effective horizon is ~100 steps.'
+          es: '$\sum 0{,}99^k = \frac{1}{0{,}01} = 100$. Las recompensas más allá de unos $\frac{1}{1-\gamma} = 100$ pasos aportan poco: el horizonte efectivo es de unos 100 pasos.'
+
+  - id: comparison-test
+    level: university
+    prerequisites: [series]
+    title: {en: 'Comparison tests', es: 'Criterios de comparación'}
+    aliases: {en: [direct comparison, limit comparison], es: [comparación directa, comparación por paso al límite]}
+    summary:
+      en: |
+        For positive terms: if $a_k \le b_k$ and $\sum b_k$ converges, so does $\sum a_k$. The limit version: if
+        $a_k / b_k \to c \in (0, \infty)$, both series behave the same. In practice, compare with geometric or $p$-series.
+      es: |
+        Para términos positivos: si $a_k \le b_k$ y $\sum b_k$ converge, también $\sum a_k$. La versión por paso al límite:
+        si $a_k / b_k \to c \in (0, \infty)$, las dos series se comportan igual. En la práctica se compara con series
+        geométricas o $p$-series.
+    formulas:
+      - tex: |-
+          0 \le a_k \le b_k,\ \sum b_k < \infty \implies \sum a_k < \infty
+      - tex: |-
+          \frac{a_k}{b_k} \to c \in (0,\infty) \implies \Big(\sum a_k < \infty \iff \sum b_k < \infty\Big)
+    applications:
+      - to: algorithm-complexity
+        strength: 3
+        type: frequent
+        note:
+          en: 'Bounding a messy cost sum by a simpler one is exactly how asymptotic bounds are proved.'
+          es: 'Acotar una suma de costes complicada por otra más sencilla es exactamente como se prueban las cotas asintóticas.'
+
+  - id: integral-test
+    level: university
+    prerequisites: [series, improper-integrals]
+    title: {en: 'Integral test', es: 'Criterio de la integral'}
+    aliases: {en: [Cauchy integral test, sum vs integral], es: [criterio integral de Cauchy, suma frente a integral]}
+    summary:
+      en: |
+        For positive decreasing $f$, $\sum f(k)$ and $\int_1^\infty f$ converge or diverge together, and the integral
+        estimates the sum: that is how $H_n \approx \ln n$ is obtained.
+      es: |
+        Para $f$ positiva y decreciente, $\sum f(k)$ e $\int_1^\infty f$ convergen o divergen a la vez, y la integral estima
+        la suma: así se obtiene $H_n \approx \ln n$.
+    formulas:
+      - tex: |-
+          \int_1^{n+1} f(x)\,\dd x \le \sum_{k=1}^{n} f(k) \le f(1) + \int_1^{n} f(x)\,\dd x
+    applications:
+      - to: algorithm-complexity
+        strength: 4
+        type: frequent
+        note:
+          en: 'Turning sums like $\sum_{k\le n} \log k$ into integrals gives $\log n! = n\log n - n + O(\log n)$.'
+          es: 'Convertir sumas como $\sum_{k\le n} \log k$ en integrales da $\log n! = n\log n - n + O(\log n)$.'
+
+  - id: ratio-test
+    level: university
+    prerequisites: [series, geometric-series]
+    title: {en: 'Ratio test', es: 'Criterio del cociente'}
+    aliases: {en: [d'Alembert test], es: [criterio de d'Alembert]}
+    summary:
+      en: |
+        If $|a_{k+1}/a_k| \to L$: $L < 1$ converges, $L > 1$ diverges, $L = 1$ says nothing. It compares the series with
+        a geometric one, and it is the natural test for series with factorials.
+      es: |
+        Si $|a_{k+1}/a_k| \to L$: con $L < 1$ converge, con $L > 1$ diverge y con $L = 1$ no dice nada. Compara la serie con
+        una geométrica, y es el criterio natural para series con factoriales.
+    formulas:
+      - tex: |-
+          \lim_{k\to\infty}\left|\frac{a_{k+1}}{a_k}\right| = L < 1 \implies \sum |a_k| < \infty
+    applications: []
+
+  - id: root-test
+    level: university
+    prerequisites: [series, geometric-series]
+    title: {en: 'Root test', es: 'Criterio de la raíz'}
+    aliases: {en: [Cauchy root test], es: [criterio de la raíz de Cauchy]}
+    summary:
+      en: |
+        If $\limsup |a_k|^{1/k} = L$: $L < 1$ converges, $L > 1$ diverges. Slightly stronger than the ratio test; it
+        gives the radius of convergence of power series (Cauchy–Hadamard).
+      es: |
+        Si $\limsup |a_k|^{1/k} = L$: con $L < 1$ converge, con $L > 1$ diverge. Algo más fuerte que el criterio del
+        cociente; da el radio de convergencia de las series de potencias (Cauchy–Hadamard).
+    formulas:
+      - tex: |-
+          \limsup_{k\to\infty}|a_k|^{1/k} < 1 \implies \sum |a_k| < \infty
+    applications: []
+
+  - id: alternating-series
+    level: university
+    prerequisites: [series, monotone-sequences]
+    title: {en: 'Alternating series', es: 'Series alternadas'}
+    aliases: {en: [Leibniz test, alternating sign], es: [criterio de Leibniz, signo alterno]}
+    summary:
+      en: |
+        $\sum (-1)^k b_k$ with $b_k$ decreasing to 0 converges (Leibniz), and the error of stopping at term $n$ is at most
+        the first omitted term $b_{n+1}$ — a free error bound.
+      es: |
+        $\sum (-1)^k b_k$ con $b_k$ decreciente hacia 0 converge (Leibniz), y el error de parar en el término $n$ es como
+        mucho el primer término omitido $b_{n+1}$: una cota de error gratis.
+    formulas:
+      - tex: |-
+          \Big|S - \sum_{k=0}^{n}(-1)^k b_k\Big| \le b_{n+1}
+    applications:
+      - to: floating-point
+        strength: 2
+        type: frequent
+        note:
+          en: 'Summing alternating terms of large size cancels digits; evaluating $e^{-20}$ by its series in floating point gives garbage.'
+          es: 'Sumar términos alternos grandes cancela cifras; evaluar $e^{-20}$ con su serie en coma flotante da basura.'
+
+  - id: absolute-convergence
+    level: university
+    prerequisites: [series, comparison-test]
+    title: {en: 'Absolute and conditional convergence', es: 'Convergencia absoluta y condicional'}
+    aliases: {en: [absolutely convergent, conditionally convergent, Riemann rearrangement theorem], es: [absolutamente convergente, condicionalmente convergente, teorema de reordenación de Riemann]}
+    summary:
+      en: |
+        $\sum a_k$ converges absolutely if $\sum |a_k|$ does. Absolutely convergent series can be reordered freely;
+        conditionally convergent ones cannot — Riemann showed a rearrangement can make them sum to *any* number.
+      es: |
+        $\sum a_k$ converge absolutamente si lo hace $\sum |a_k|$. Las series absolutamente convergentes se pueden
+        reordenar libremente; las condicionalmente convergentes no: Riemann demostró que una reordenación puede hacer
+        que sumen *cualquier* número.
+    formulas:
+      - tex: |-
+          \sum |a_k| < \infty \implies \sum a_{\pi(k)} = \sum a_k \ \ \forall\,\pi
+    applications:
+      - to: floating-point
+        strength: 3
+        type: frequent
+        note:
+          en: 'Float addition is not associative; parallel reductions reorder terms and give run-to-run differences — order matters.'
+          es: 'La suma en coma flotante no es asociativa; las reducciones paralelas reordenan los términos y dan diferencias entre ejecuciones: el orden importa.'

@@ -1,0 +1,386 @@
+kind: math
+order: 16
+glyph: 'ℱ'
+title: {en: 'Transforms', es: 'Transformadas'}
+summary:
+  en: |
+    Fourier, Laplace and Z: changing the point of view from time to frequency, where convolutions become products and
+    differential equations become algebra. The mathematics of audio, images, compression and telecommunications.
+  es: |
+    Fourier, Laplace y Z: cambiar el punto de vista del tiempo a la frecuencia, donde las convoluciones se vuelven
+    productos y las ecuaciones diferenciales, álgebra. Las matemáticas del audio, la imagen, la compresión y las
+    telecomunicaciones.
+topics:
+  - id: fourier-series
+    level: advanced
+    core: true
+    prerequisites: [trigonometric-integrals, series, complex-numbers]
+    title: {en: 'Fourier series', es: 'Series de Fourier'}
+    aliases: {en: [harmonics, Fourier coefficients, Gibbs phenomenon, periodic signal, spectrum], es: [armónicos, coeficientes de Fourier, fenómeno de Gibbs, señal periódica, espectro]}
+    summary:
+      en: |
+        Any reasonable periodic function is a sum of sines and cosines of multiples of a base frequency:
+        $f(t) = \sum_n c_n e^{2\pi i n t/T}$. The coefficients $c_n$ — the spectrum — say how much of each harmonic it
+        contains.
+      es: |
+        Toda función periódica razonable es una suma de senos y cosenos de múltiplos de una frecuencia base:
+        $f(t) = \sum_n c_n e^{2\pi i n t/T}$. Los coeficientes $c_n$ (el espectro) dicen cuánto contiene de cada armónico.
+    why:
+      en: |
+        Fourier (1807) needed to solve the heat equation: sines are the shapes that keep their form while decaying, so if
+        any initial temperature can be written as a sum of sines, the problem splits into independent easy pieces. The
+        claim that *any* function could be so written was shocking — and it changed analysis.
+      es: |
+        Fourier (1807) necesitaba resolver la ecuación del calor: los senos son las formas que conservan su perfil mientras
+        decaen, así que si cualquier temperatura inicial se puede escribir como suma de senos, el problema se separa en
+        trozos fáciles e independientes. Afirmar que *cualquier* función podía escribirse así fue escandaloso, y cambió el
+        análisis.
+    intuition:
+      en: |
+        Sines of different frequencies are orthogonal, like perpendicular axes. The coefficient $c_n$ is the projection of
+        $f$ onto the $n$-th harmonic, $\frac1T\int f(t)e^{-2\pi int/T}\,\dd t$ — a correlation that measures how much $f$
+        "resonates" at that frequency. A square wave is the sum of odd harmonics $\frac{4}{\pi}\big(\sin t + \frac13\sin 3t + \frac15\sin5t + \dots\big)$;
+        its jump causes a 9% overshoot that never disappears (Gibbs phenomenon) — the ringing you see around edges in
+        over-compressed JPEGs.
+      es: |
+        Los senos de frecuencias distintas son ortogonales, como ejes perpendiculares. El coeficiente $c_n$ es la proyección
+        de $f$ sobre el $n$-ésimo armónico, $\frac1T\int f(t)e^{-2\pi int/T}\,\dd t$: una correlación que mide cuánto
+        «resuena» $f$ en esa frecuencia. Una onda cuadrada es la suma de los armónicos impares
+        $\frac{4}{\pi}\big(\sin t + \frac13\sin 3t + \frac15\sin5t + \dots\big)$; su salto provoca una sobreoscilación del 9 %
+        que nunca desaparece (fenómeno de Gibbs), el «halo» que se ve alrededor de los bordes en los JPEG muy comprimidos.
+    formal:
+      en: |
+        For $f$ with period $T$ and $\int_0^T|f|^2 < \infty$,
+        $$f(t) = \sum_{n=-\infty}^{\infty} c_n\,e^{2\pi i n t/T}, \qquad c_n = \frac1T\int_0^T f(t)\,e^{-2\pi i n t/T}\,\dd t,$$
+        with convergence in mean square, and pointwise wherever $f$ is smooth. **Parseval:** $\frac1T\int_0^T|f|^2 = \sum|c_n|^2$
+        (energy is the same in time and frequency).
+      es: |
+        Para $f$ de periodo $T$ con $\int_0^T|f|^2 < \infty$,
+        $$f(t) = \sum_{n=-\infty}^{\infty} c_n\,e^{2\pi i n t/T}, \qquad c_n = \frac1T\int_0^T f(t)\,e^{-2\pi i n t/T}\,\dd t,$$
+        con convergencia en media cuadrática, y puntual allí donde $f$ es suave. **Parseval:** $\frac1T\int_0^T|f|^2 = \sum|c_n|^2$
+        (la energía es la misma en el tiempo y en la frecuencia).
+    formulas:
+      - tex: |-
+          f(t) = \frac{a_0}{2} + \sum_{n=1}^{\infty}\big(a_n\cos n\omega t + b_n\sin n\omega t\big), \quad \omega = \frac{2\pi}{T}
+      - tex: |-
+          \operatorname{sq}(t) = \frac4\pi\sum_{k=0}^{\infty}\frac{\sin\big((2k+1)t\big)}{2k+1}
+        label: {en: 'square wave', es: 'onda cuadrada'}
+    matters:
+      en: |
+        Musical timbre is the pattern of harmonic amplitudes; audio equalizers boost or cut frequency bands; the heat and
+        wave equations are solved term by term; and the discrete version (DFT/FFT) is the workhorse of digital signal
+        processing.
+      es: |
+        El timbre musical es el patrón de amplitudes de los armónicos; los ecualizadores de audio suben o bajan bandas de
+        frecuencia; las ecuaciones del calor y de ondas se resuelven término a término; y la versión discreta (DFT/FFT) es
+        el caballo de batalla del procesado digital de señales.
+    applications:
+      - to: signal-processing
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Periodic signals are described and filtered through their harmonic content.'
+          es: 'Las señales periódicas se describen y filtran a través de su contenido armónico.'
+      - to: compression
+        strength: 4
+        type: frequent
+        note:
+          en: 'JPEG and MP3 use cosine transforms (DCT/MDCT), close relatives of Fourier series, then drop small coefficients.'
+          es: 'JPEG y MP3 usan transformadas del coseno (DCT/MDCT), parientes cercanas de las series de Fourier, y descartan los coeficientes pequeños.'
+      - to: heat-equation
+        strength: 5
+        type: historical
+        note:
+          en: 'Fourier invented his series to solve the heat equation; spectral methods still do.'
+          es: 'Fourier inventó sus series para resolver la ecuación del calor; los métodos espectrales aún lo hacen.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Compute the Fourier coefficients $b_n$ of the odd square wave $f = 1$ on $(0, \pi)$, $-1$ on $(-\pi, 0)$.'
+          es: 'Calcula los coeficientes de Fourier $b_n$ de la onda cuadrada impar $f = 1$ en $(0, \pi)$, $-1$ en $(-\pi, 0)$.'
+        solution:
+          en: '$b_n = \frac2\pi\int_0^\pi\sin nt\,\dd t = \frac{2}{n\pi}(1 - (-1)^n)$: $\frac{4}{n\pi}$ for odd $n$, 0 for even $n$.'
+          es: '$b_n = \frac2\pi\int_0^\pi\sin nt\,\dd t = \frac{2}{n\pi}(1 - (-1)^n)$: $\frac{4}{n\pi}$ para $n$ impar y 0 para $n$ par.'
+
+  - id: fourier-transform
+    level: advanced
+    core: true
+    prerequisites: [fourier-series, improper-integrals]
+    related: [fft, convolution, sampling-theorem]
+    title: {en: 'Fourier transform', es: 'Transformada de Fourier'}
+    aliases: {en: [frequency domain, spectrum, DFT, Fourier analysis, convolution theorem], es: [dominio de la frecuencia, espectro, DFT, análisis de Fourier, teorema de convolución]}
+    summary:
+      en: |
+        The continuous version for non-periodic signals: $\hat f(\xi) = \int f(t)\,e^{-2\pi i\xi t}\,\dd t$ gives the amount of
+        each frequency $\xi$. It turns convolution into multiplication and differentiation into multiplication by
+        $2\pi i\xi$ — which is why filtering, compression and solving linear PDEs are easier in frequency space.
+      es: |
+        La versión continua para señales no periódicas: $\hat f(\xi) = \int f(t)\,e^{-2\pi i\xi t}\,\dd t$ da la cantidad de
+        cada frecuencia $\xi$. Convierte la convolución en multiplicación y la derivación en multiplicar por $2\pi i\xi$; por
+        eso filtrar, comprimir y resolver EDP lineales es más fácil en el espacio de frecuencias.
+    why:
+      en: |
+        Linear, time-invariant systems — filters, lenses, rooms, transmission lines, the heat equation — do not mix
+        frequencies: a sinusoid goes in, the same sinusoid comes out, scaled and shifted. In the frequency domain such a
+        system is just a multiplication, so the Fourier transform diagonalizes it.
+      es: |
+        Los sistemas lineales e invariantes en el tiempo (filtros, lentes, salas, líneas de transmisión, la ecuación del
+        calor) no mezclan frecuencias: entra una sinusoide y sale la misma sinusoide, escalada y desplazada. En el dominio
+        de la frecuencia un sistema así es solo una multiplicación, así que la transformada de Fourier lo diagonaliza.
+    intuition:
+      en: |
+        Wind the signal around a circle at frequency $\xi$ (multiply by $e^{-2\pi i\xi t}$) and compute the centre of mass.
+        If the signal has a component at $\xi$, the winding piles it up on one side and the centre moves away from zero;
+        otherwise everything averages out. $\hat f(\xi)$ is that centre of mass. A narrow signal needs many frequencies
+        (wide spectrum); a pure tone has a single spike — the time–frequency uncertainty principle.
+      es: |
+        Enrolla la señal alrededor de una circunferencia a frecuencia $\xi$ (multiplica por $e^{-2\pi i\xi t}$) y calcula el
+        centro de masas. Si la señal tiene una componente en $\xi$, el enrollado la acumula en un lado y el centro se aleja
+        de cero; si no, todo se compensa. $\hat f(\xi)$ es ese centro de masas. Una señal estrecha necesita muchas
+        frecuencias (espectro ancho); un tono puro tiene un único pico: el principio de incertidumbre tiempo–frecuencia.
+    formal:
+      en: |
+        $$\hat f(\xi) = \int_{-\infty}^{\infty} f(t)\,e^{-2\pi i\xi t}\,\dd t, \qquad f(t) = \int_{-\infty}^{\infty}\hat f(\xi)\,e^{2\pi i\xi t}\,\dd\xi.$$
+        Key properties: $\widehat{f * g} = \hat f\,\hat g$ (convolution theorem), $\widehat{f'}(\xi) = 2\pi i\xi\,\hat f(\xi)$,
+        $\int|f|^2 = \int|\hat f|^2$ (Plancherel). The discrete Fourier transform of $N$ samples,
+        $X_k = \sum_{n=0}^{N-1} x_n e^{-2\pi i kn/N}$, is computed in $O(N\log N)$ by the FFT.
+      es: |
+        $$\hat f(\xi) = \int_{-\infty}^{\infty} f(t)\,e^{-2\pi i\xi t}\,\dd t, \qquad f(t) = \int_{-\infty}^{\infty}\hat f(\xi)\,e^{2\pi i\xi t}\,\dd\xi.$$
+        Propiedades clave: $\widehat{f * g} = \hat f\,\hat g$ (teorema de convolución), $\widehat{f'}(\xi) = 2\pi i\xi\,\hat f(\xi)$,
+        $\int|f|^2 = \int|\hat f|^2$ (Plancherel). La transformada discreta de $N$ muestras,
+        $X_k = \sum_{n=0}^{N-1} x_n e^{-2\pi i kn/N}$, se calcula en $O(N\log N)$ con la FFT.
+    formulas:
+      - tex: |-
+          \hat f(\xi) = \int_{-\infty}^{\infty} f(t)\,e^{-2\pi i\xi t}\,\dd t
+      - tex: |-
+          \widehat{f * g} = \hat f\cdot\hat g
+        label: {en: 'convolution theorem', es: 'teorema de convolución'}
+      - tex: |-
+          X_k = \sum_{n=0}^{N-1} x_n\,e^{-2\pi i k n/N}
+        label: {en: 'discrete Fourier transform (DFT)', es: 'transformada discreta de Fourier (DFT)'}
+      - tex: |-
+          \widehat{e^{-\pi t^2}} = e^{-\pi\xi^2}
+        label: {en: 'the Gaussian is its own transform', es: 'la gaussiana es su propia transformada'}
+    example:
+      en: |
+        A 3-second recording of A440 plus a little noise: its DFT shows a sharp peak at 440 Hz (and 880, 1320… if the
+        instrument has harmonics). A guitar tuner is literally this computation followed by `argmax`.
+      es: |
+        Una grabación de 3 segundos de un la 440 con algo de ruido: su DFT muestra un pico nítido en 440 Hz (y en 880, 1320…
+        si el instrumento tiene armónicos). Un afinador de guitarra es literalmente este cálculo seguido de un `argmax`.
+    matters:
+      en: |
+        Audio codecs, image compression, Wi-Fi and 4G/5G (OFDM), MRI reconstruction, radar, spectroscopy, fast polynomial and
+        integer multiplication, large convolutions — all run on Fourier transforms computed by the FFT, one of the most
+        important algorithms ever written.
+      es: |
+        Los códecs de audio, la compresión de imagen, el wifi y el 4G/5G (OFDM), la reconstrucción de resonancias
+        magnéticas, el radar, la espectroscopia, la multiplicación rápida de polinomios y enteros, las convoluciones
+        grandes: todo funciona con transformadas de Fourier calculadas por la FFT, uno de los algoritmos más importantes
+        jamás escritos.
+    applications:
+      - to: signal-processing
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Spectral analysis, filtering and modulation are defined in the frequency domain.'
+          es: 'El análisis espectral, el filtrado y la modulación se definen en el dominio de la frecuencia.'
+      - to: fft
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The FFT computes the DFT in $O(N\log N)$ instead of $O(N^2)$.'
+          es: 'La FFT calcula la DFT en $O(N\log N)$ en vez de $O(N^2)$.'
+      - to: sampling-theorem
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Sampling replicates the spectrum; Nyquist''s condition keeps the copies from overlapping.'
+          es: 'Muestrear replica el espectro; la condición de Nyquist evita que las copias se solapen.'
+      - to: communications
+        strength: 5
+        type: fundamental
+        note:
+          en: 'OFDM (Wi-Fi, 4G/5G, DSL) sends data on many orthogonal subcarriers using inverse FFT and FFT.'
+          es: 'OFDM (wifi, 4G/5G, ADSL) envía datos en muchas subportadoras ortogonales usando FFT inversa y FFT.'
+      - to: uncertainty-principle
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Position and momentum wave functions are Fourier pairs; the uncertainty principle is a Fourier inequality.'
+          es: 'Las funciones de onda de posición y momento son pares de Fourier; el principio de incertidumbre es una desigualdad de Fourier.'
+      - to: image-processing
+        strength: 4
+        type: frequent
+        note:
+          en: 'Frequency-domain filtering, deblurring and image registration (phase correlation).'
+          es: 'Filtrado en el dominio de la frecuencia, eliminación de desenfoque y registro de imágenes (correlación de fase).'
+      - to: convolutional-networks
+        strength: 2
+        type: advanced
+        note:
+          en: 'Large convolutions can be computed by FFT; Fourier neural operators learn directly in frequency space.'
+          es: 'Las convoluciones grandes se pueden calcular con FFT; los Fourier neural operators aprenden directamente en el espacio de frecuencias.'
+    exercises:
+      - type: computing
+        prompt:
+          en: 'Convolving two signals of length $N = 10^6$ directly costs $\approx N^2$ operations. Estimate the cost via FFT.'
+          es: 'Convolucionar directamente dos señales de longitud $N = 10^6$ cuesta $\approx N^2$ operaciones. Estima el coste con FFT.'
+        solution:
+          en: 'Three FFTs of size ~$2N$ plus a pointwise product: about $3\cdot 2N\log_2(2N) \approx 1.3\cdot10^8$ vs $10^{12}$ — roughly 8000 times faster.'
+          es: 'Tres FFT de tamaño ~$2N$ más un producto punto a punto: unas $3\cdot 2N\log_2(2N) \approx 1{,}3\cdot10^8$ frente a $10^{12}$, unas 8000 veces más rápido.'
+      - type: graphical
+        prompt:
+          en: 'A signal is a short click (a narrow pulse). What does its spectrum look like? And a long pure tone?'
+          es: 'Una señal es un chasquido corto (un pulso estrecho). ¿Cómo es su espectro? ¿Y el de un tono puro largo?'
+        solution:
+          en: 'A narrow pulse has a very wide, flat spectrum (all frequencies); a long pure tone has a narrow peak. Time width × frequency width is bounded below.'
+          es: 'Un pulso estrecho tiene un espectro muy ancho y plano (todas las frecuencias); un tono puro largo, un pico estrecho. El producto anchura temporal × anchura en frecuencia está acotado inferiormente.'
+
+  - id: convolution
+    level: advanced
+    prerequisites: [definite-integral]
+    title: {en: 'Convolution', es: 'Convolución'}
+    aliases: {en: [convolution, kernel, filter, cross-correlation, blur], es: [convolución, núcleo, filtro, correlación cruzada, desenfoque]}
+    summary:
+      en: |
+        $(f * g)(t) = \int f(\tau)\,g(t - \tau)\,\dd\tau$: a sliding weighted average of one function by another. Blur,
+        echo, smoothing, the output of any linear time-invariant system — and, discretized, the operation that gives
+        convolutional neural networks their name.
+      es: |
+        $(f * g)(t) = \int f(\tau)\,g(t - \tau)\,\dd\tau$: una media ponderada deslizante de una función por otra. El
+        desenfoque, el eco, el suavizado, la salida de cualquier sistema lineal invariante en el tiempo y, discretizada, la
+        operación que da nombre a las redes neuronales convolucionales.
+    formulas:
+      - tex: |-
+          (f * g)(t) = \int_{-\infty}^{\infty} f(\tau)\,g(t - \tau)\,\dd\tau, \qquad (x * h)[n] = \sum_k x[k]\,h[n - k]
+      - tex: |-
+          p_{X+Y} = p_X * p_Y
+        label: {en: 'the density of a sum of independent variables $X$, $Y$', es: 'la densidad de una suma de variables independientes $X$, $Y$'}
+    applications:
+      - to: convolutional-networks
+        strength: 5
+        type: fundamental
+        note:
+          en: 'A conv layer slides learned kernels over the input (strictly, a cross-correlation: the kernel is not flipped).'
+          es: 'Una capa convolucional desliza núcleos aprendidos sobre la entrada (en rigor, una correlación cruzada: el núcleo no se invierte).'
+      - to: image-processing
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Blur, sharpen and edge filters are convolutions with small kernels.'
+          es: 'Los filtros de desenfoque, realce y bordes son convoluciones con núcleos pequeños.'
+      - to: digital-filters
+        strength: 5
+        type: fundamental
+        note:
+          en: 'An FIR filter is a convolution of the signal with its impulse response.'
+          es: 'Un filtro FIR es la convolución de la señal con su respuesta al impulso.'
+      - to: signal-processing
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The output of any LTI system is the input convolved with the impulse response (reverb = convolution with a room).'
+          es: 'La salida de cualquier sistema LTI es la entrada convolucionada con la respuesta al impulso (reverberación = convolución con una sala).'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Convolve the sequence $[1, 2, 3]$ with the kernel $[1, 1]/2$.'
+          es: 'Convoluciona la sucesión $[1, 2, 3]$ con el núcleo $[1, 1]/2$.'
+        solution:
+          en: '$[0.5,\ 1.5,\ 2.5,\ 1.5]$: a moving average (with the edges padded by zeros).'
+          es: '$[0{,}5;\ 1{,}5;\ 2{,}5;\ 1{,}5]$: una media móvil (con los bordes rellenos de ceros).'
+
+  - id: laplace-transform
+    level: advanced
+    prerequisites: [improper-integrals, exponential-functions, ode]
+    title: {en: 'Laplace transform', es: 'Transformada de Laplace'}
+    aliases: {en: [s-domain, transfer function, poles and zeros], es: [dominio s, función de transferencia, polos y ceros]}
+    summary:
+      en: |
+        $F(s) = \int_0^\infty f(t)\,e^{-st}\,\dd t$: like Fourier but with complex $s$, it handles growth, decay and initial
+        conditions. Linear ODEs become algebraic equations in $s$, and a system becomes its transfer function $G(s)$.
+      es: |
+        $F(s) = \int_0^\infty f(t)\,e^{-st}\,\dd t$: como Fourier pero con $s$ complejo, maneja crecimiento, decaimiento y
+        condiciones iniciales. Las EDO lineales se convierten en ecuaciones algebraicas en $s$ y un sistema, en su función
+        de transferencia $G(s)$.
+    formulas:
+      - tex: |-
+          \mathcal L\{f'\}(s) = s F(s) - f(0), \qquad \mathcal L\{e^{at}\} = \frac{1}{s - a}
+      - tex: |-
+          G(s) = \frac{Y(s)}{U(s)}, \qquad C_{\text{PID}}(s) = K_p + \frac{K_i}{s} + K_d\,s
+        label: {en: 'transfer function; a PID controller in the $s$-domain', es: 'función de transferencia; un controlador PID en el dominio $s$'}
+    applications:
+      - to: control-theory
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Classical control (Bode, Nyquist, root locus) works with transfer functions in the Laplace domain.'
+          es: 'El control clásico (Bode, Nyquist, lugar de las raíces) trabaja con funciones de transferencia en el dominio de Laplace.'
+      - to: pid-control
+        strength: 4
+        type: frequent
+        note:
+          en: 'Derivative and integral actions become $s$ and $1/s$: PID design is pole placement in $s$.'
+          es: 'Las acciones derivativa e integral se convierten en $s$ y $1/s$: diseñar un PID es colocar polos en $s$.'
+
+  - id: z-transform
+    level: specialized
+    prerequisites: [laplace-transform, power-series]
+    title: {en: 'Z-transform', es: 'Transformada Z'}
+    aliases: {en: [discrete-time transform, IIR, difference equations, unit circle], es: [transformada en tiempo discreto, IIR, ecuaciones en diferencias, circunferencia unidad]}
+    summary:
+      en: |
+        The discrete-time Laplace transform: $X(z) = \sum_n x[n]z^{-n}$, a power series in $z^{-1}$. Difference equations
+        (digital filters, discrete controllers) become rational functions of $z$; stability means poles inside the unit
+        circle. It is the bridge from calculus to digital signal processing.
+      es: |
+        La transformada de Laplace en tiempo discreto: $X(z) = \sum_n x[n]z^{-n}$, una serie de potencias en $z^{-1}$. Las
+        ecuaciones en diferencias (filtros digitales, controladores discretos) se convierten en funciones racionales de
+        $z$; ser estable es tener los polos dentro de la circunferencia unidad. Es el puente del cálculo al procesado
+        digital de señales.
+    formulas:
+      - tex: |-
+          X(z) = \sum_{n=0}^{\infty}x[n]\,z^{-n}, \qquad x[n-1] \longleftrightarrow z^{-1}X(z), \qquad z = e^{sT}
+    applications:
+      - to: digital-filters
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Filter design and analysis (IIR/FIR, poles and zeros, frequency response on $|z| = 1$) is done with the Z-transform.'
+          es: 'El diseño y análisis de filtros (IIR/FIR, polos y ceros, respuesta en frecuencia sobre $|z| = 1$) se hace con la transformada Z.'
+      - to: control-theory
+        strength: 4
+        type: frequent
+        note:
+          en: 'Digital controllers running on microcontrollers are designed in the $z$-domain.'
+          es: 'Los controladores digitales que corren en microcontroladores se diseñan en el dominio $z$.'
+
+  - id: wavelets
+    level: specialized
+    prerequisites: [fourier-transform]
+    title: {en: 'Wavelets', es: 'Wavelets (ondículas)'}
+    aliases: {en: [wavelet transform, multiresolution, time-frequency, JPEG 2000], es: [transformada wavelet, multirresolución, tiempo-frecuencia, JPEG 2000]}
+    summary:
+      en: |
+        Localized oscillations at several scales: unlike sines, they say *when* a frequency occurs. Multiresolution analysis
+        underlies JPEG 2000, denoising and some feature extractors.
+      es: |
+        Oscilaciones localizadas a varias escalas: a diferencia de los senos, dicen *cuándo* aparece una frecuencia. El
+        análisis multirresolución está detrás de JPEG 2000, la eliminación de ruido y algunos extractores de rasgos.
+    formulas:
+      - tex: |-
+          \psi_{a,b}(t) = \frac{1}{\sqrt{|a|}}\,\psi\Big(\frac{t - b}{a}\Big)
+    applications:
+      - to: compression
+        strength: 4
+        type: frequent
+        note:
+          en: 'JPEG 2000 and many medical/scientific image formats use wavelet transforms.'
+          es: 'JPEG 2000 y muchos formatos de imagen médica y científica usan transformadas wavelet.'
+      - to: image-processing
+        strength: 3
+        type: frequent
+        note:
+          en: 'Wavelet shrinkage is a classic denoising method.'
+          es: 'El encogimiento de coeficientes wavelet es un método clásico de eliminación de ruido.'

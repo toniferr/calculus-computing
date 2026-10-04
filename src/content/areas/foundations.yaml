@@ -1,0 +1,741 @@
+kind: math
+order: 1
+glyph: 'ƒ'
+title: {en: 'Foundations', es: 'Fundamentos'}
+summary:
+  en: |
+    Numbers, functions and the families of functions that the rest of calculus works with — and how a computer
+    represents them.
+  es: |
+    Los números, las funciones y las familias de funciones con las que trabaja el resto del cálculo, y cómo las
+    representa un ordenador.
+topics:
+  - id: real-numbers
+    level: fundamental
+    title: {en: 'Real numbers', es: 'Números reales'}
+    aliases: {en: [reals, completeness, supremum, R], es: [reales, completitud, supremo, R]}
+    summary:
+      en: |
+        The number line $\R$: the rationals plus the limits of all their convergent sequences. Its defining property
+        is **completeness** — every non-empty set bounded above has a least upper bound — and calculus depends on it.
+      es: |
+        La recta numérica $\R$: los racionales más los límites de todas sus sucesiones convergentes. Su propiedad
+        definitoria es la **completitud** (todo conjunto no vacío acotado superiormente tiene supremo) y el cálculo
+        entero se apoya en ella.
+    why:
+      en: |
+        The rationals have holes: $x^2 = 2$ has no rational solution, and the sequence $1, 1.4, 1.41, 1.414, \dots$
+        gets ever closer to something that is not there. Limits, derivatives and integrals would all break on those
+        holes. The reals are the smallest number system without them.
+      es: |
+        Los racionales tienen agujeros: $x^2 = 2$ no tiene solución racional y la sucesión $1;\ 1{,}4;\ 1{,}41;\ 1{,}414;\dots$
+        se acerca cada vez más a algo que no está ahí. Los límites, las derivadas y las integrales se romperían en esos
+        agujeros. Los reales son el menor sistema numérico que no los tiene.
+    formal:
+      en: |
+        $\R$ is a complete ordered field. Completeness (the supremum axiom): if $A \subset \R$ is non-empty and bounded
+        above, there is a least upper bound $\sup A \in \R$.
+      es: |
+        $\R$ es un cuerpo ordenado completo. Completitud (axioma del supremo): si $A \subset \R$ es no vacío y está
+        acotado superiormente, existe una menor cota superior $\sup A \in \R$.
+    formulas:
+      - tex: |-
+          \N \subset \Z \subset \Q \subset \R \subset \C
+        label: {en: 'the number systems', es: 'los sistemas numéricos'}
+      - tex: |-
+          \sup A = s \iff \big(\forall a \in A:\ a \le s\big) \ \wedge\ \big(\forall \varepsilon > 0\ \exists a \in A:\ a > s - \varepsilon\big)
+        label: {en: 'least upper bound', es: 'supremo'}
+    matters:
+      en: |
+        A computer cannot store $\R$: a 64-bit word has only $2^{64}$ values, and almost every real number needs
+        infinitely many digits. Everything numerical software does is a careful approximation of this ideal object,
+        and most numerical bugs live in the gap between the two.
+      es: |
+        Un ordenador no puede guardar $\R$: una palabra de 64 bits solo tiene $2^{64}$ valores y casi todo número real
+        necesita infinitos dígitos. Todo el software numérico es una aproximación cuidadosa de este objeto ideal, y la
+        mayoría de los errores numéricos viven en el hueco entre ambos.
+    applications:
+      - to: floating-point
+        strength: 5
+        type: fundamental
+        note:
+          en: 'IEEE 754 doubles are a finite, unevenly spaced subset of $\R$; every operation rounds back into it.'
+          es: 'Los dobles IEEE 754 son un subconjunto finito y no uniforme de $\R$; cada operación redondea de vuelta a él.'
+      - to: symbolic-computation
+        strength: 3
+        type: frequent
+        note:
+          en: 'Computer algebra systems keep $\sqrt 2$ or $\pi$ exact as symbols instead of approximating them.'
+          es: 'Los sistemas de álgebra computacional mantienen $\sqrt 2$ o $\pi$ exactos como símbolos en vez de aproximarlos.'
+    exercises:
+      - type: proof
+        prompt:
+          en: 'Prove that $\sqrt 2$ is irrational.'
+          es: 'Demuestra que $\sqrt 2$ es irracional.'
+        hint:
+          en: 'Assume $\sqrt 2 = p/q$ in lowest terms and look at parity.'
+          es: 'Supón $\sqrt 2 = p/q$ irreducible y mira la paridad.'
+        solution:
+          en: |
+            If $p^2 = 2q^2$ then $p^2$ is even, so $p$ is even: $p = 2k$. Then $4k^2 = 2q^2$, so $q^2 = 2k^2$ and $q$ is
+            even too, contradicting that $p/q$ was in lowest terms.
+          es: |
+            Si $p^2 = 2q^2$, entonces $p^2$ es par, luego $p$ es par: $p = 2k$. Así $4k^2 = 2q^2$, de modo que
+            $q^2 = 2k^2$ y $q$ también es par, en contra de que $p/q$ fuera irreducible.
+      - type: computing
+        prompt:
+          en: 'In most languages `0.1 + 0.2 == 0.3` is false. Explain why in terms of real numbers.'
+          es: 'En casi todos los lenguajes `0.1 + 0.2 == 0.3` es falso. Explícalo en términos de números reales.'
+        solution:
+          en: |
+            $0.1$, $0.2$ and $0.3$ have infinite binary expansions, so each is rounded to the nearest double. The rounded
+            $0.1$ plus the rounded $0.2$, rounded again, lands on a different double than the rounded $0.3$. Compare
+            with a tolerance: $|a - b| \le \varepsilon \max(|a|, |b|)$.
+          es: |
+            $0{,}1$, $0{,}2$ y $0{,}3$ tienen desarrollos binarios infinitos, así que cada uno se redondea al doble más
+            cercano. El $0{,}1$ redondeado más el $0{,}2$ redondeado, redondeado otra vez, cae en un doble distinto del
+            $0{,}3$ redondeado. Hay que comparar con tolerancia: $|a - b| \le \varepsilon \max(|a|, |b|)$.
+
+  - id: complex-numbers
+    level: university
+    prerequisites: [real-numbers, trigonometric-functions]
+    related: [fourier-transform, exponential-functions]
+    title: {en: 'Complex numbers', es: 'Números complejos'}
+    aliases: {en: [imaginary unit, Euler formula, phasor, argument, modulus], es: [unidad imaginaria, fórmula de Euler, fasor, argumento, módulo]}
+    summary:
+      en: |
+        Numbers $z = a + bi$ with $i^2 = -1$. Geometrically they are points of the plane, and multiplying by
+        $e^{i\theta}$ is a rotation — which is why they are the natural language of oscillations, waves and
+        signals.
+      es: |
+        Números $z = a + bi$ con $i^2 = -1$. Geométricamente son puntos del plano, y multiplicar por $e^{i\theta}$ es
+        una rotación: por eso son el lenguaje natural de las oscilaciones, las ondas y las señales.
+    why:
+      en: |
+        Historically, to solve cubic equations: the formula for real roots passed through square roots of negative
+        numbers. Today the reason is different: every polynomial of degree $n$ has exactly $n$ complex roots
+        (fundamental theorem of algebra), and rotations and oscillations become simple multiplications.
+      es: |
+        Históricamente, para resolver ecuaciones cúbicas: la fórmula de las raíces reales pasaba por raíces cuadradas de
+        negativos. Hoy la razón es otra: todo polinomio de grado $n$ tiene exactamente $n$ raíces complejas (teorema
+        fundamental del álgebra), y las rotaciones y oscilaciones se convierten en simples multiplicaciones.
+    intuition:
+      en: |
+        Write $z = r e^{i\theta}$: a length $r = |z|$ and an angle $\theta = \arg z$. Multiplying two complex numbers
+        multiplies the lengths and **adds the angles**. So $e^{i\omega t}$ is a point spinning around the unit circle at
+        angular speed $\omega$; its shadow on the real axis is $\cos \omega t$. A signal is a sum of such spinning
+        arrows, and that is the whole idea of Fourier analysis.
+      es: |
+        Escribe $z = r e^{i\theta}$: una longitud $r = |z|$ y un ángulo $\theta = \arg z$. Multiplicar dos complejos
+        multiplica las longitudes y **suma los ángulos**. Así, $e^{i\omega t}$ es un punto que gira sobre la
+        circunferencia unidad con velocidad angular $\omega$; su sombra sobre el eje real es $\cos \omega t$. Una señal
+        es una suma de flechas que giran así, y esa es toda la idea del análisis de Fourier.
+    formulas:
+      - tex: |-
+          e^{i\theta} = \cos\theta + i \sin\theta
+        label: {en: 'Euler''s formula', es: 'fórmula de Euler'}
+      - tex: |-
+          |z| = \sqrt{a^2 + b^2}, \qquad \bar z = a - bi, \qquad z \bar z = |z|^2
+        label: {en: 'modulus and conjugate', es: 'módulo y conjugado'}
+      - tex: |-
+          \omega_N = e^{-2\pi i / N}, \qquad \omega_N^N = 1
+        label: {en: 'roots of unity (the heart of the FFT)', es: 'raíces de la unidad (el corazón de la FFT)'}
+    applications:
+      - to: fft
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The FFT is built on the symmetries of the $N$-th roots of unity $e^{-2\pi i k/N}$.'
+          es: 'La FFT se basa en las simetrías de las raíces $N$-ésimas de la unidad $e^{-2\pi i k/N}$.'
+      - to: quantum-computing
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Qubit amplitudes are complex numbers; interference is addition of complex phases.'
+          es: 'Las amplitudes de un cúbit son complejas; la interferencia es la suma de fases complejas.'
+      - to: signal-processing
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Sinusoids are handled as phasors $Ae^{i(\omega t + \varphi)}$: amplitude and phase in one number.'
+          es: 'Las sinusoides se manejan como fasores $Ae^{i(\omega t + \varphi)}$: amplitud y fase en un solo número.'
+      - to: control-theory
+        strength: 4
+        type: frequent
+        note:
+          en: 'A linear system is stable when the poles of its transfer function lie in the left half of the complex plane.'
+          es: 'Un sistema lineal es estable si los polos de su función de transferencia están en el semiplano complejo izquierdo.'
+      - to: wave-function
+        strength: 5
+        type: fundamental
+        note:
+          en: 'A wave function takes complex values; only $|\psi|^2$ is a probability.'
+          es: 'Una función de onda toma valores complejos; solo $|\psi|^2$ es una probabilidad.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Compute $(1+i)^8$ using the polar form.'
+          es: 'Calcula $(1+i)^8$ usando la forma polar.'
+        solution:
+          en: '$1 + i = \sqrt 2\, e^{i\pi/4}$, so $(1+i)^8 = 2^4 e^{2\pi i} = 16$.'
+          es: '$1 + i = \sqrt 2\, e^{i\pi/4}$, así que $(1+i)^8 = 2^4 e^{2\pi i} = 16$.'
+      - type: graphical
+        prompt:
+          en: 'Where in the plane are the solutions of $z^6 = 1$? What shape do they form?'
+          es: '¿Dónde están en el plano las soluciones de $z^6 = 1$? ¿Qué figura forman?'
+        solution:
+          en: 'At $e^{2\pi i k/6}$, $k = 0,\dots,5$: the vertices of a regular hexagon inscribed in the unit circle.'
+          es: 'En $e^{2\pi i k/6}$, $k = 0,\dots,5$: los vértices de un hexágono regular inscrito en la circunferencia unidad.'
+
+  - id: intervals
+    level: fundamental
+    prerequisites: [real-numbers]
+    title: {en: 'Intervals', es: 'Intervalos'}
+    aliases: {en: [open interval, closed interval, interval arithmetic], es: [intervalo abierto, intervalo cerrado, aritmética de intervalos]}
+    summary:
+      en: |
+        Connected pieces of the real line: $[a,b]$, $(a,b)$, $[a,\infty)$… Closed and bounded intervals are where the
+        big theorems of calculus (Bolzano, Weierstrass) hold.
+      es: |
+        Trozos conexos de la recta real: $[a,b]$, $(a,b)$, $[a,\infty)$… Los intervalos cerrados y acotados son donde se
+        cumplen los grandes teoremas del cálculo (Bolzano, Weierstrass).
+    formulas:
+      - tex: |-
+          [a,b] = \{x \in \R : a \le x \le b\}, \qquad (a,b) = \{x \in \R : a < x < b\}
+    applications:
+      - to: scientific-computing
+        strength: 2
+        type: advanced
+        note:
+          en: 'Interval arithmetic computes with enclosures $[\underline x, \overline x]$ to get guaranteed error bounds.'
+          es: 'La aritmética de intervalos calcula con cotas $[\underline x, \overline x]$ para obtener errores garantizados.'
+
+  - id: absolute-value
+    level: fundamental
+    prerequisites: [real-numbers]
+    related: [numerical-error]
+    title: {en: 'Absolute value', es: 'Valor absoluto'}
+    aliases: {en: [modulus, distance, triangle inequality], es: [módulo, distancia, desigualdad triangular]}
+    summary:
+      en: |
+        $|x|$ is the distance from $x$ to $0$, and $|x - y|$ the distance between two numbers. "Close to" in every
+        definition of calculus means a small absolute value.
+      es: |
+        $|x|$ es la distancia de $x$ a $0$, y $|x - y|$ la distancia entre dos números. «Cerca de», en todas las
+        definiciones del cálculo, significa un valor absoluto pequeño.
+    formulas:
+      - tex: |-
+          |x| = \begin{cases} x & x \ge 0 \\ -x & x < 0 \end{cases}, \qquad |x + y| \le |x| + |y|
+        label: {en: 'definition and triangle inequality', es: 'definición y desigualdad triangular'}
+    applications:
+      - to: loss-function
+        strength: 3
+        type: frequent
+        note:
+          en: 'The L1 / mean absolute error loss $\frac1n\sum|y_i - \hat y_i|$ is robust to outliers but not differentiable at 0.'
+          es: 'La pérdida L1 o error absoluto medio $\frac1n\sum|y_i - \hat y_i|$ es robusta a valores atípicos pero no es derivable en 0.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Solve $|2x - 3| < 5$.'
+          es: 'Resuelve $|2x - 3| < 5$.'
+        solution:
+          en: '$-5 < 2x - 3 < 5 \iff -1 < x < 4$, i.e. $x \in (-1, 4)$.'
+          es: '$-5 < 2x - 3 < 5 \iff -1 < x < 4$, es decir, $x \in (-1, 4)$.'
+
+  - id: inequalities
+    level: fundamental
+    prerequisites: [absolute-value, intervals]
+    title: {en: 'Inequalities', es: 'Desigualdades'}
+    aliases: {en: [bounds, AM-GM, Cauchy-Schwarz, Jensen], es: [cotas, media aritmética geométrica, Cauchy-Schwarz, Jensen]}
+    summary:
+      en: |
+        Calculus is mostly the art of bounding: proving that an error is smaller than $\varepsilon$, that a term is
+        negligible, that an algorithm takes at most so many steps. The tools are the triangle inequality, AM–GM,
+        Cauchy–Schwarz and Jensen.
+      es: |
+        El cálculo es sobre todo el arte de acotar: probar que un error es menor que $\varepsilon$, que un término es
+        despreciable, que un algoritmo tarda como mucho tantos pasos. Las herramientas son la desigualdad triangular,
+        la de las medias, Cauchy–Schwarz y Jensen.
+    formulas:
+      - tex: |-
+          \frac{a + b}{2} \ge \sqrt{ab} \quad (a, b \ge 0)
+        label: {en: 'AM–GM', es: 'media aritmética ≥ media geométrica'}
+      - tex: |-
+          |x \cdot y| \le \norm{x}\,\norm{y}
+        label: {en: 'Cauchy–Schwarz', es: 'Cauchy–Schwarz'}
+    applications:
+      - to: algorithm-complexity
+        strength: 4
+        type: frequent
+        note:
+          en: 'Upper and lower bounds on running time are proved by chains of inequalities.'
+          es: 'Las cotas superiores e inferiores de tiempo de ejecución se demuestran con cadenas de desigualdades.'
+
+  - id: functions
+    level: fundamental
+    core: true
+    prerequisites: [real-numbers]
+    title: {en: 'Functions', es: 'Funciones'}
+    aliases: {en: [map, mapping, graph of a function], es: [aplicación, gráfica de una función]}
+    summary:
+      en: |
+        A rule $f$ that assigns to each input $x$ of a set $A$ exactly one output $f(x)$ in a set $B$. Calculus studies
+        how outputs change when inputs change; computing is, quite literally, evaluating functions.
+      es: |
+        Una regla $f$ que asigna a cada entrada $x$ de un conjunto $A$ exactamente una salida $f(x)$ de un conjunto $B$.
+        El cálculo estudia cómo cambian las salidas cuando cambian las entradas; computar es, literalmente, evaluar
+        funciones.
+    why:
+      en: |
+        To talk about dependence: the position of a planet depends on time, the cost of an algorithm on the input
+        size, the error of a neural network on its weights. A function packages that dependence as a single object
+        we can add, compose, differentiate and integrate.
+      es: |
+        Para hablar de dependencia: la posición de un planeta depende del tiempo, el coste de un algoritmo del tamaño de
+        la entrada, el error de una red neuronal de sus pesos. Una función empaqueta esa dependencia en un único objeto
+        que se puede sumar, componer, derivar e integrar.
+    intuition:
+      en: |
+        Think of a machine: put $x$ in, get $f(x)$ out, always the same output for the same input. Its **graph**
+        $\{(x, f(x))\}$ is a curve in the plane that every vertical line crosses at most once. Most of calculus is
+        reading geometric properties of that curve — slope, area, curvature — from the formula.
+      es: |
+        Piensa en una máquina: entra $x$, sale $f(x)$, y siempre la misma salida para la misma entrada. Su **gráfica**
+        $\{(x, f(x))\}$ es una curva en el plano que toda recta vertical corta como mucho una vez. Casi todo el cálculo
+        consiste en leer propiedades geométricas de esa curva (pendiente, área, curvatura) a partir de la fórmula.
+    formal:
+      en: |
+        A function $f : A \to B$ is a subset $G \subset A \times B$ such that for each $x \in A$ there is exactly one
+        $y \in B$ with $(x, y) \in G$; we write $y = f(x)$. $A$ is the **domain**, $B$ the **codomain**, and
+        $f(A) = \{f(x) : x \in A\}$ the **range** (image).
+      es: |
+        Una función $f : A \to B$ es un subconjunto $G \subset A \times B$ tal que para cada $x \in A$ hay exactamente un
+        $y \in B$ con $(x, y) \in G$; se escribe $y = f(x)$. $A$ es el **dominio**, $B$ el **codominio** y
+        $f(A) = \{f(x) : x \in A\}$ el **recorrido** (imagen).
+    formulas:
+      - tex: |-
+          f : A \to B, \qquad x \mapsto f(x)
+      - tex: |-
+          \operatorname{graph}(f) = \{(x, f(x)) : x \in A\}
+    example:
+      en: |
+        $f(x) = \sqrt{x - 1}$ has domain $[1, \infty)$ and range $[0, \infty)$. The softmax function of machine
+        learning, $\operatorname{softmax}(z)_i = e^{z_i} / \sum_j e^{z_j}$, is a function $\R^n \to \R^n$ whose range is
+        the set of probability vectors with positive entries.
+      es: |
+        $f(x) = \sqrt{x - 1}$ tiene dominio $[1, \infty)$ y recorrido $[0, \infty)$. La función softmax del aprendizaje
+        automático, $\operatorname{softmax}(z)_i = e^{z_i} / \sum_j e^{z_j}$, es una función $\R^n \to \R^n$ cuyo
+        recorrido es el conjunto de vectores de probabilidad con entradas positivas.
+    matters:
+      en: |
+        A trained neural network *is* a function — millions of parameters fixing one particular $f : \R^n \to \R^m$.
+        Pure functions (same input, same output, no side effects) are also the unit of reasoning in functional
+        programming, and the reason caching and parallelism are safe.
+      es: |
+        Una red neuronal entrenada *es* una función: millones de parámetros que fijan una $f : \R^n \to \R^m$ concreta.
+        Las funciones puras (misma entrada, misma salida, sin efectos secundarios) son además la unidad de razonamiento
+        de la programación funcional y la razón de que cachear y paralelizar sea seguro.
+    applications:
+      - to: neural-networks
+        strength: 5
+        type: fundamental
+        note:
+          en: 'A network is a parametrized function $f_\theta : \R^n \to \R^m$; training chooses $\theta$.'
+          es: 'Una red es una función parametrizada $f_\theta : \R^n \to \R^m$; entrenar es elegir $\theta$.'
+      - to: symbolic-computation
+        strength: 3
+        type: frequent
+        note:
+          en: 'A CAS represents functions as expression trees that can be simplified, differentiated and integrated.'
+          es: 'Un CAS representa funciones como árboles de expresiones que se pueden simplificar, derivar e integrar.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Find the domain and range of $f(x) = \ln(4 - x^2)$.'
+          es: 'Halla el dominio y el recorrido de $f(x) = \ln(4 - x^2)$.'
+        solution:
+          en: 'Domain: $4 - x^2 > 0 \iff x \in (-2, 2)$. On it $4 - x^2 \in (0, 4]$, so the range is $(-\infty, \ln 4]$.'
+          es: 'Dominio: $4 - x^2 > 0 \iff x \in (-2, 2)$. Ahí $4 - x^2 \in (0, 4]$, así que el recorrido es $(-\infty, \ln 4]$.'
+      - type: computing
+        prompt:
+          en: 'Is a function that reads the system clock a function in the mathematical sense? What is missing?'
+          es: '¿Es una función que lee el reloj del sistema una función en sentido matemático? ¿Qué le falta?'
+        solution:
+          en: |
+            No: the same (empty) input gives different outputs. It becomes a mathematical function if the time is made an
+            explicit input, $f(t)$ — which is exactly what makes code testable.
+          es: |
+            No: la misma entrada (vacía) da salidas distintas. Se convierte en función matemática si el tiempo pasa a ser
+            una entrada explícita, $f(t)$, que es justo lo que hace testeable el código.
+
+  - id: domain-range
+    level: fundamental
+    prerequisites: [functions, intervals]
+    title: {en: 'Domain and range', es: 'Dominio y recorrido'}
+    aliases: {en: [image, codomain, NaN], es: [imagen, codominio, NaN]}
+    summary:
+      en: |
+        Where a function is defined and which values it actually takes. Getting them wrong is the mathematical version
+        of a runtime error: $\sqrt{-1}$ or $\log 0$ have no real value.
+      es: |
+        Dónde está definida una función y qué valores toma de verdad. Equivocarse con ellos es la versión matemática de
+        un error en tiempo de ejecución: $\sqrt{-1}$ o $\log 0$ no tienen valor real.
+    formulas:
+      - tex: |-
+          \operatorname{dom}\sqrt{x} = [0,\infty), \quad \operatorname{dom}\ln x = (0,\infty), \quad \sigma(\R) = (0,1)
+    applications:
+      - to: floating-point
+        strength: 3
+        type: frequent
+        note:
+          en: 'Outside the domain IEEE 754 returns NaN (`sqrt(-1)`) or ±∞ (`log(0)`) instead of failing.'
+          es: 'Fuera del dominio, IEEE 754 devuelve NaN (`sqrt(-1)`) o ±∞ (`log(0)`) en vez de fallar.'
+      - to: activation-functions
+        strength: 3
+        type: frequent
+        note:
+          en: 'The range of the sigmoid, $(0,1)$, is why its output can be read as a probability.'
+          es: 'El recorrido de la sigmoide, $(0,1)$, es lo que permite leer su salida como una probabilidad.'
+
+  - id: composition
+    level: fundamental
+    prerequisites: [functions]
+    title: {en: 'Composition', es: 'Composición'}
+    aliases: {en: [function composition, pipeline], es: [composición de funciones, encadenar]}
+    summary:
+      en: |
+        Applying one function after another: $(g \circ f)(x) = g(f(x))$. Deep networks, compilers and data pipelines
+        are long compositions, and the chain rule tells how to differentiate them.
+      es: |
+        Aplicar una función tras otra: $(g \circ f)(x) = g(f(x))$. Las redes profundas, los compiladores y los
+        pipelines de datos son composiciones largas, y la regla de la cadena dice cómo derivarlas.
+    formulas:
+      - tex: |-
+          (g \circ f)(x) = g(f(x)), \qquad f_L \circ \cdots \circ f_2 \circ f_1
+    applications:
+      - to: neural-networks
+        strength: 5
+        type: fundamental
+        note:
+          en: 'A deep network is the composition of its layers, $f_L \circ \dots \circ f_1$.'
+          es: 'Una red profunda es la composición de sus capas, $f_L \circ \dots \circ f_1$.'
+      - to: automatic-differentiation
+        strength: 4
+        type: fundamental
+        note:
+          en: 'AD sees a program as a composition of primitive operations and differentiates each one.'
+          es: 'La diferenciación automática ve un programa como composición de operaciones primitivas y deriva cada una.'
+
+  - id: inverse-functions
+    level: fundamental
+    prerequisites: [composition, domain-range]
+    title: {en: 'Inverse functions', es: 'Funciones inversas'}
+    aliases: {en: [bijection, injective, invertible], es: [biyección, inyectiva, invertible]}
+    summary:
+      en: |
+        $f^{-1}$ undoes $f$: $f^{-1}(f(x)) = x$. It exists when $f$ is one-to-one; its graph is the mirror image of
+        $f$'s across the line $y = x$.
+      es: |
+        $f^{-1}$ deshace $f$: $f^{-1}(f(x)) = x$. Existe cuando $f$ es inyectiva; su gráfica es la de $f$ reflejada en la
+        recta $y = x$.
+    formulas:
+      - tex: |-
+          f^{-1}(f(x)) = x, \qquad (f^{-1})'(y) = \frac{1}{f'(f^{-1}(y))}
+    applications:
+      - to: monte-carlo
+        strength: 4
+        type: frequent
+        note:
+          en: 'Inverse transform sampling: if $U$ is uniform on $(0,1)$, $F^{-1}(U)$ has distribution $F$.'
+          es: 'Muestreo por transformada inversa: si $U$ es uniforme en $(0,1)$, $F^{-1}(U)$ tiene distribución $F$.'
+      - to: generative-models
+        strength: 4
+        type: advanced
+        note:
+          en: 'Normalizing flows are invertible networks: sample with $f$, evaluate densities with $f^{-1}$.'
+          es: 'Los normalizing flows son redes invertibles: se muestrea con $f$ y se evalúan densidades con $f^{-1}$.'
+
+  - id: polynomial-functions
+    level: fundamental
+    prerequisites: [functions]
+    title: {en: 'Polynomial functions', es: 'Funciones polinómicas'}
+    aliases: {en: [polynomial, degree, roots, Horner], es: [polinomio, grado, raíces, Horner]}
+    summary:
+      en: |
+        $p(x) = a_n x^n + \dots + a_1 x + a_0$. Computed with additions and multiplications only, they are what a
+        processor evaluates best — and other functions are approximated by them (Taylor, interpolation).
+      es: |
+        $p(x) = a_n x^n + \dots + a_1 x + a_0$. Se calculan solo con sumas y productos, son lo que mejor evalúa un
+        procesador, y el resto de funciones se aproximan con ellos (Taylor, interpolación).
+    formulas:
+      - tex: |-
+          p(x) = a_0 + x\big(a_1 + x(a_2 + \dots + x\,a_n)\big)
+        label: {en: 'Horner''s rule: $n$ multiplications', es: 'regla de Horner: $n$ multiplicaciones'}
+    applications:
+      - to: bezier-curves
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Bézier curves and splines are polynomial pieces written in the Bernstein basis.'
+          es: 'Las curvas de Bézier y los splines son trozos polinómicos escritos en la base de Bernstein.'
+      - to: algorithm-complexity
+        strength: 3
+        type: frequent
+        note:
+          en: '"Polynomial time" $O(n^k)$ is the dividing line between tractable and intractable problems (P).'
+          es: '«Tiempo polinómico» $O(n^k)$ es la frontera entre problemas tratables e intratables (P).'
+      - to: elliptic-curve-cryptography
+        strength: 2
+        type: indirect
+        note:
+          en: 'The curve is the zero set of the polynomial $y^2 - x^3 - ax - b$, but over a finite field, where calculus does not apply.'
+          es: 'La curva es el conjunto de ceros del polinomio $y^2 - x^3 - ax - b$, pero sobre un cuerpo finito, donde el cálculo no se aplica.'
+    exercises:
+      - type: computing
+        prompt:
+          en: 'How many multiplications does evaluating $p(x) = 3x^4 - 2x^3 + x - 7$ take naively, and with Horner?'
+          es: '¿Cuántas multiplicaciones cuesta evaluar $p(x) = 3x^4 - 2x^3 + x - 7$ de forma ingenua y con Horner?'
+        solution:
+          en: 'Naively $4 + 3 + 1 = 8$ (computing each power from scratch). Horner: $((3x - 2)x + 0)x + 1)x - 7$, 4 multiplications.'
+          es: 'Ingenuamente $4 + 3 + 1 = 8$ (calculando cada potencia desde cero). Horner: $(((3x - 2)x + 0)x + 1)x - 7$, 4 multiplicaciones.'
+
+  - id: rational-functions
+    level: fundamental
+    prerequisites: [polynomial-functions]
+    title: {en: 'Rational functions', es: 'Funciones racionales'}
+    aliases: {en: [quotient of polynomials, poles, asymptotes, transfer function], es: [cociente de polinomios, polos, asíntotas, función de transferencia]}
+    summary:
+      en: |
+        Quotients of polynomials $p(x)/q(x)$. They blow up at the zeros of $q$ (poles) and are the exact form of the
+        transfer functions of linear filters and control systems.
+      es: |
+        Cocientes de polinomios $p(x)/q(x)$. Se disparan en los ceros de $q$ (polos) y son la forma exacta de las
+        funciones de transferencia de los filtros lineales y de los sistemas de control.
+    formulas:
+      - tex: |-
+          R(x) = \frac{p(x)}{q(x)}, \qquad H(z) = \frac{b_0 + b_1 z^{-1} + \dots}{1 + a_1 z^{-1} + \dots}
+    applications:
+      - to: digital-filters
+        strength: 4
+        type: frequent
+        note:
+          en: 'An IIR filter''s transfer function $H(z)$ is rational; its poles decide stability.'
+          es: 'La función de transferencia $H(z)$ de un filtro IIR es racional; sus polos deciden la estabilidad.'
+      - to: control-theory
+        strength: 4
+        type: frequent
+        note:
+          en: 'Linear time-invariant systems have rational transfer functions $G(s)$.'
+          es: 'Los sistemas lineales invariantes en el tiempo tienen funciones de transferencia racionales $G(s)$.'
+
+  - id: exponential-functions
+    level: fundamental
+    core: true
+    prerequisites: [functions]
+    title: {en: 'Exponential functions', es: 'Funciones exponenciales'}
+    aliases: {en: [exp, e, exponential growth, decay], es: [exp, número e, crecimiento exponencial, decaimiento]}
+    summary:
+      en: |
+        $a^x$, and above all $e^x$: the only function (up to a factor) that is its own derivative. It models anything
+        whose rate of change is proportional to its size — populations, interest, radioactive decay, and exponential
+        algorithms.
+      es: |
+        $a^x$, y sobre todo $e^x$: la única función (salvo un factor) que es su propia derivada. Modela todo lo que cambia
+        a un ritmo proporcional a su tamaño: poblaciones, intereses, desintegración radiactiva y algoritmos
+        exponenciales.
+    intuition:
+      en: |
+        Adding a constant to the input multiplies the output by a constant: $e^{x+h} = e^x e^h$. Doubling time is
+        constant. That is why exponential growth always wins in the end: every $n^k$ is eventually overtaken by $2^n$.
+      es: |
+        Sumar una constante a la entrada multiplica la salida por una constante: $e^{x+h} = e^x e^h$. El tiempo de
+        duplicación es constante. Por eso el crecimiento exponencial siempre acaba ganando: todo $n^k$ termina superado
+        por $2^n$.
+    formulas:
+      - tex: |-
+          e = \lim_{n\to\infty}\left(1 + \frac1n\right)^n \approx 2.71828
+      - tex: |-
+          \frac{\dd}{\dd x} e^x = e^x, \qquad e^{a+b} = e^a e^b
+      - tex: |-
+          y' = ky \iff y(t) = y_0 e^{kt}
+        label: {en: 'growth proportional to size', es: 'crecimiento proporcional al tamaño'}
+    applications:
+      - to: algorithm-complexity
+        strength: 4
+        type: frequent
+        note:
+          en: 'Brute-force search over $n$ bits takes $2^n$ steps: exponential time is the signature of intractability.'
+          es: 'La búsqueda exhaustiva sobre $n$ bits cuesta $2^n$ pasos: el tiempo exponencial es la firma de lo intratable.'
+      - to: population-models
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Early epidemic growth and unconstrained populations are exponential, $N(t) = N_0 e^{rt}$.'
+          es: 'El inicio de una epidemia y las poblaciones sin límites crecen exponencialmente, $N(t) = N_0 e^{rt}$.'
+      - to: activation-functions
+        strength: 4
+        type: frequent
+        note:
+          en: 'Sigmoid, softmax and tanh are all built from $e^x$.'
+          es: 'La sigmoide, la softmax y la tanh se construyen con $e^x$.'
+    exercises:
+      - type: applied
+        prompt:
+          en: 'A dataset doubles every 18 months. How long until it is 100 times larger?'
+          es: 'Un conjunto de datos se duplica cada 18 meses. ¿Cuánto tarda en ser 100 veces mayor?'
+        solution:
+          en: '$2^{t/1.5} = 100 \Rightarrow t = 1.5 \log_2 100 \approx 1.5 \cdot 6.64 \approx 10$ years.'
+          es: '$2^{t/1{,}5} = 100 \Rightarrow t = 1{,}5 \log_2 100 \approx 1{,}5 \cdot 6{,}64 \approx 10$ años.'
+
+  - id: logarithmic-functions
+    level: fundamental
+    core: true
+    prerequisites: [exponential-functions, inverse-functions]
+    title: {en: 'Logarithmic functions', es: 'Funciones logarítmicas'}
+    aliases: {en: [log, ln, logarithm, log-likelihood, log-sum-exp], es: [log, ln, logaritmo, log-verosimilitud, log-sum-exp]}
+    summary:
+      en: |
+        The inverse of the exponential: $\log_a x$ is the power you raise $a$ to in order to get $x$. Logarithms turn
+        products into sums, which is why they appear in algorithm costs, information theory and every loss function
+        based on likelihood.
+      es: |
+        La inversa de la exponencial: $\log_a x$ es la potencia a la que hay que elevar $a$ para obtener $x$. Los
+        logaritmos convierten productos en sumas, y por eso aparecen en el coste de los algoritmos, en la teoría de la
+        información y en toda función de pérdida basada en la verosimilitud.
+    intuition:
+      en: |
+        $\log_2 n$ counts how many times you can halve $n$ before reaching 1 — the number of steps of binary search,
+        the depth of a balanced tree, the number of bits needed to write $n$.
+      es: |
+        $\log_2 n$ cuenta cuántas veces se puede partir $n$ por la mitad hasta llegar a 1: los pasos de una búsqueda
+        binaria, la profundidad de un árbol equilibrado, los bits necesarios para escribir $n$.
+    formulas:
+      - tex: |-
+          \log(xy) = \log x + \log y, \qquad \frac{\dd}{\dd x}\ln x = \frac1x
+      - tex: |-
+          \log \prod_i p(x_i) = \sum_i \log p(x_i)
+        label: {en: 'products of probabilities become sums', es: 'productos de probabilidades se vuelven sumas'}
+    applications:
+      - to: algorithm-complexity
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Binary search is $O(\log n)$ and comparison sorting $\Theta(n \log n)$.'
+          es: 'La búsqueda binaria es $O(\log n)$ y la ordenación por comparaciones $\Theta(n \log n)$.'
+      - to: loss-function
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Cross-entropy is a negative log-likelihood; the log turns a product over samples into a sum.'
+          es: 'La entropía cruzada es una log-verosimilitud negativa; el log convierte el producto sobre muestras en una suma.'
+      - to: floating-point
+        strength: 4
+        type: frequent
+        note:
+          en: 'Multiplying many small probabilities underflows to 0; summing their logs (log-sum-exp) does not.'
+          es: 'Multiplicar muchas probabilidades pequeñas da 0 por desbordamiento inferior; sumar sus logaritmos (log-sum-exp) no.'
+    exercises:
+      - type: computing
+        prompt:
+          en: 'Why do ML libraries compute $\log \sum_i e^{z_i}$ as $m + \log\sum_i e^{z_i - m}$ with $m = \max_i z_i$?'
+          es: '¿Por qué las librerías de ML calculan $\log \sum_i e^{z_i}$ como $m + \log\sum_i e^{z_i - m}$ con $m = \max_i z_i$?'
+        solution:
+          en: |
+            Both are equal since $e^{z_i} = e^m e^{z_i - m}$. But $e^{1000}$ overflows a double, while every
+            $e^{z_i - m} \le 1$ and at least one equals 1, so the sum is in $[1, n]$ and safe.
+          es: |
+            Son iguales porque $e^{z_i} = e^m e^{z_i - m}$. Pero $e^{1000}$ desborda un doble, mientras que todo
+            $e^{z_i - m} \le 1$ y al menos uno vale 1, así que la suma está en $[1, n]$ y es segura.
+
+  - id: trigonometric-functions
+    level: fundamental
+    prerequisites: [functions]
+    title: {en: 'Trigonometric functions', es: 'Funciones trigonométricas'}
+    aliases: {en: [sine, cosine, tangent, radians, periodic], es: [seno, coseno, tangente, radianes, periódica]}
+    summary:
+      en: |
+        $\sin$ and $\cos$ are the coordinates of a point turning around the unit circle. They describe every
+        rotation and every oscillation, and therefore graphics, robotics, sound and signals.
+      es: |
+        $\sin$ y $\cos$ son las coordenadas de un punto que gira sobre la circunferencia unidad. Describen toda rotación
+        y toda oscilación y, por tanto, gráficos, robótica, sonido y señales.
+    formulas:
+      - tex: |-
+          \sin^2 x + \cos^2 x = 1, \qquad \sin' = \cos, \quad \cos' = -\sin
+      - tex: |-
+          R(\theta) = \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix}
+        label: {en: 'rotation of the plane', es: 'rotación del plano'}
+    applications:
+      - to: signal-processing
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Pure tones are sinusoids; every signal is analysed as a sum of them.'
+          es: 'Los tonos puros son sinusoides; toda señal se analiza como una suma de ellas.'
+      - to: shading
+        strength: 4
+        type: frequent
+        note:
+          en: 'Lambert''s law: diffuse light is proportional to $\cos\theta$ between normal and light direction.'
+          es: 'Ley de Lambert: la luz difusa es proporcional a $\cos\theta$ entre la normal y la dirección de la luz.'
+      - to: robot-jacobian
+        strength: 4
+        type: frequent
+        note:
+          en: 'Forward kinematics of a revolute arm is sums of $\cos$ and $\sin$ of joint angles.'
+          es: 'La cinemática directa de un brazo con articulaciones de rotación son sumas de $\cos$ y $\sin$ de los ángulos.'
+
+  - id: hyperbolic-functions
+    level: university
+    prerequisites: [exponential-functions]
+    title: {en: 'Hyperbolic functions', es: 'Funciones hiperbólicas'}
+    aliases: {en: [sinh, cosh, tanh, catenary], es: [senh, cosh, tanh, catenaria]}
+    summary:
+      en: |
+        $\sinh x = \frac{e^x - e^{-x}}{2}$, $\cosh x = \frac{e^x + e^{-x}}{2}$, $\tanh = \sinh/\cosh$. They play for the
+        hyperbola $x^2 - y^2 = 1$ the role $\sin$ and $\cos$ play for the circle; $\tanh$ is a classic activation
+        function.
+      es: |
+        $\operatorname{senh} x = \frac{e^x - e^{-x}}{2}$, $\cosh x = \frac{e^x + e^{-x}}{2}$, $\tanh = \operatorname{senh}/\cosh$.
+        Hacen para la hipérbola $x^2 - y^2 = 1$ el papel que $\sin$ y $\cos$ hacen para la circunferencia; $\tanh$ es
+        una función de activación clásica.
+    formulas:
+      - tex: |-
+          \cosh^2 x - \sinh^2 x = 1, \qquad \tanh' x = 1 - \tanh^2 x
+    applications:
+      - to: activation-functions
+        strength: 4
+        type: frequent
+        note:
+          en: '$\tanh$ squashes to $(-1,1)$ and its derivative $1 - \tanh^2$ is cheap to compute from the output.'
+          es: '$\tanh$ comprime a $(-1,1)$ y su derivada $1 - \tanh^2$ se calcula barato a partir de la salida.'
+
+  - id: function-transformations
+    level: fundamental
+    prerequisites: [functions]
+    title: {en: 'Transformations of functions', es: 'Transformaciones de funciones'}
+    aliases: {en: [shift, scale, translation, reflection], es: [desplazamiento, escalado, traslación, reflexión]}
+    summary:
+      en: |
+        $a\,f(bx + c) + d$: shifting, stretching and reflecting a graph. A delay in a signal, a zoom in an image or a
+        change of units are all such transformations.
+      es: |
+        $a\,f(bx + c) + d$: desplazar, estirar y reflejar una gráfica. Un retardo en una señal, un zoom en una imagen o un
+        cambio de unidades son transformaciones de este tipo.
+    formulas:
+      - tex: |-
+          g(x) = a\, f\big(b(x - h)\big) + k
+    applications:
+      - to: signal-processing
+        strength: 3
+        type: frequent
+        note:
+          en: 'Delaying a signal is $x(t - t_0)$; speeding it up is $x(\alpha t)$, which stretches its spectrum.'
+          es: 'Retrasar una señal es $x(t - t_0)$; acelerarla es $x(\alpha t)$, lo que estira su espectro.'
+      - to: image-processing
+        strength: 3
+        type: frequent
+        note:
+          en: 'Brightness and contrast adjustments are $a\,I(x,y) + b$.'
+          es: 'Los ajustes de brillo y contraste son $a\,I(x,y) + b$.'

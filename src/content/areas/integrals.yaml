@@ -1,0 +1,381 @@
+kind: math
+order: 10
+glyph: '∫'
+title: {en: 'Integrals', es: 'Integrales'}
+summary:
+  en: |
+    Accumulation: areas, totals, averages and probabilities. The other half of calculus, and the mathematics of
+    Monte Carlo, rendering and probabilistic machine learning.
+  es: |
+    Acumulación: áreas, totales, medias y probabilidades. La otra mitad del cálculo, y las matemáticas de Monte Carlo,
+    del renderizado y del aprendizaje automático probabilístico.
+intro:
+  en: |
+    Where the derivative asks *how fast*, the integral asks *how much in total*. Adding up infinitely many infinitely
+    thin contributions turns out to be everywhere in computing:
+
+    ```
+    INTEGRAL
+       ├──► Probability (probabilities are areas under densities; expectations are integrals)
+       ├──► Physics (work, mass, energy, position from velocity)
+       ├──► Simulation (every time step integrates the equations of motion)
+       ├──► Signals (energy, convolution, Fourier coefficients)
+       └──► Monte Carlo (estimate an integral by averaging random samples — and render images with it)
+    ```
+
+    In machine learning the connection is real but less direct than with derivatives: the true objective is an
+    *expected* loss — an integral over the data distribution — which training approximates with averages over
+    mini-batches.
+  es: |
+    Donde la derivada pregunta *a qué velocidad*, la integral pregunta *cuánto en total*. Sumar infinitas aportaciones
+    infinitamente finas resulta estar en toda la informática:
+
+    ```
+    INTEGRAL
+       ├──► Probabilidad (las probabilidades son áreas bajo densidades; las esperanzas, integrales)
+       ├──► Física (trabajo, masa, energía, posición a partir de la velocidad)
+       ├──► Simulación (cada paso de tiempo integra las ecuaciones del movimiento)
+       ├──► Señales (energía, convolución, coeficientes de Fourier)
+       └──► Monte Carlo (estimar una integral promediando muestras aleatorias, y renderizar imágenes así)
+    ```
+
+    En aprendizaje automático la conexión es real pero menos directa que con las derivadas: el objetivo verdadero es
+    una pérdida *esperada* (una integral sobre la distribución de los datos), que el entrenamiento aproxima con medias
+    sobre mini-lotes.
+topics:
+  - id: antiderivative
+    level: fundamental
+    prerequisites: [derivative, elementary-derivatives]
+    title: {en: 'Antiderivatives and indefinite integrals', es: 'Primitivas e integral indefinida'}
+    aliases: {en: [primitive, indefinite integral, integration constant], es: [primitiva, integral indefinida, constante de integración]}
+    summary:
+      en: |
+        $F$ is an antiderivative of $f$ if $F' = f$; all of them differ by a constant, written $\int f(x)\,\dd x = F(x) + C$.
+        Many elementary functions, such as $e^{-x^2}$, have no elementary antiderivative.
+      es: |
+        $F$ es una primitiva de $f$ si $F' = f$; todas difieren en una constante, y se escribe
+        $\int f(x)\,\dd x = F(x) + C$. Muchas funciones elementales, como $e^{-x^2}$, no tienen primitiva elemental.
+    formulas:
+      - tex: |-
+          \int x^n\,\dd x = \frac{x^{n+1}}{n+1} + C\ (n \ne -1), \quad \int\frac{\dd x}{x} = \ln|x| + C, \quad \int e^x\,\dd x = e^x + C
+    applications:
+      - to: symbolic-computation
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The Risch algorithm decides whether an elementary antiderivative exists and finds it — a landmark of computer algebra.'
+          es: 'El algoritmo de Risch decide si existe una primitiva elemental y la encuentra: un hito del álgebra computacional.'
+
+  - id: riemann-sum
+    level: fundamental
+    demo: riemann
+    prerequisites: [limit, functions, sequence-convergence]
+    title: {en: 'Riemann sums', es: 'Sumas de Riemann'}
+    aliases: {en: [rectangles, left sum, right sum, midpoint rule, partition], es: [rectángulos, suma por la izquierda, suma por la derecha, regla del punto medio, partición]}
+    summary:
+      en: |
+        Approximate the area under a curve by $n$ thin rectangles, $\sum f(x_i^\ast)\,\Delta x$. As $n \to \infty$ the sum
+        converges to the integral — slowly for the left/right rule ($O(1/n)$), faster for the midpoint ($O(1/n^2)$).
+      es: |
+        Aproxima el área bajo una curva con $n$ rectángulos finos, $\sum f(x_i^\ast)\,\Delta x$. Cuando $n \to \infty$ la
+        suma converge a la integral: despacio con la regla izquierda/derecha ($O(1/n)$), más deprisa con la del punto
+        medio ($O(1/n^2)$).
+    formulas:
+      - tex: |-
+          S_n = \sum_{i=1}^{n} f(x_i^\ast)\,\Delta x, \qquad \Delta x = \frac{b - a}{n}, \quad x_i^\ast \in [x_{i-1}, x_i]
+    applications:
+      - to: monte-carlo
+        strength: 3
+        type: frequent
+        note:
+          en: 'Monte Carlo integration is a Riemann-like sum with random sample points instead of a grid.'
+          es: 'La integración de Monte Carlo es una suma tipo Riemann con puntos de muestra aleatorios en vez de una rejilla.'
+    exercises:
+      - type: graphical
+        prompt:
+          en: 'In the demo, compare the left and midpoint sums for $\sin x$ on $[0,\pi]$ with $n = 10$. Why is the midpoint so much better?'
+          es: 'En la demo, compara las sumas por la izquierda y del punto medio para $\sin x$ en $[0,\pi]$ con $n = 10$. ¿Por qué es tan mejor el punto medio?'
+        solution:
+          en: |
+            On each strip the midpoint rectangle over- and under-estimates by nearly equal amounts on the two halves, so
+            the first-order errors cancel and only a curvature term $O(\Delta x^3)$ per strip survives: total $O(1/n^2)$
+            instead of $O(1/n)$.
+          es: |
+            En cada franja el rectángulo del punto medio se pasa y se queda corto en cantidades casi iguales en las dos
+            mitades, así que los errores de primer orden se cancelan y solo sobrevive un término de curvatura
+            $O(\Delta x^3)$ por franja: en total $O(1/n^2)$ en vez de $O(1/n)$.
+
+  - id: definite-integral
+    level: fundamental
+    core: true
+    prerequisites: [riemann-sum, continuity]
+    related: [fundamental-theorem-calculus, numerical-integration, monte-carlo]
+    title: {en: 'Definite integral', es: 'Integral definida'}
+    aliases: {en: [Riemann integral, area under the curve, accumulation, integral], es: [integral de Riemann, área bajo la curva, acumulación, integral]}
+    summary:
+      en: |
+        $\int_a^b f(x)\,\dd x$ is the limit of Riemann sums: the signed area between the graph and the axis, or, more
+        generally, the total accumulated by a rate $f$ over $[a, b]$.
+      es: |
+        $\int_a^b f(x)\,\dd x$ es el límite de las sumas de Riemann: el área con signo entre la gráfica y el eje o, más en
+        general, el total acumulado por una tasa $f$ en $[a, b]$.
+    why:
+      en: |
+        Many quantities are "rate × amount" only when the rate is constant: distance = speed × time, mass = density ×
+        volume, work = force × distance. When the rate varies, chop the domain into pieces where it is nearly constant,
+        add up, and take the limit. The integral is that procedure, and it solves the problem of **accumulating a
+        varying quantity**.
+      es: |
+        Muchas magnitudes son «tasa × cantidad» solo cuando la tasa es constante: distancia = velocidad × tiempo,
+        masa = densidad × volumen, trabajo = fuerza × distancia. Cuando la tasa varía, se trocea el dominio en partes
+        donde es casi constante, se suma y se toma el límite. La integral es ese procedimiento, y resuelve el problema de
+        **acumular una magnitud variable**.
+    intuition:
+      en: |
+        Geometrically: area under the curve, counting area below the axis as negative. Statistically: $\frac{1}{b-a}\int_a^b f$
+        is the **average value** of $f$ on $[a,b]$ — which is why an integral can be estimated by averaging $f$ at random
+        points (Monte Carlo). Physically: the total change produced by a rate.
+      es: |
+        Geométricamente: el área bajo la curva, contando como negativa el área bajo el eje. Estadísticamente:
+        $\frac{1}{b-a}\int_a^b f$ es el **valor medio** de $f$ en $[a,b]$, y por eso una integral se puede estimar
+        promediando $f$ en puntos aleatorios (Monte Carlo). Físicamente: el cambio total que produce una tasa.
+    formal:
+      en: |
+        $f$ is Riemann integrable on $[a,b]$ if the Riemann sums $\sum f(x_i^\ast)\Delta x_i$ converge to the same number
+        $I$ for every choice of sample points as the mesh $\max\Delta x_i \to 0$; then $\int_a^b f = I$. Every continuous
+        function (and every bounded function with finitely many discontinuities) is integrable. Properties: linearity,
+        additivity over intervals, monotonicity ($f \le g \Rightarrow \int f \le \int g$).
+      es: |
+        $f$ es integrable Riemann en $[a,b]$ si las sumas de Riemann $\sum f(x_i^\ast)\Delta x_i$ convergen al mismo número
+        $I$ para cualquier elección de puntos cuando la norma de la partición $\max\Delta x_i \to 0$; entonces
+        $\int_a^b f = I$. Toda función continua (y toda función acotada con un número finito de discontinuidades) es
+        integrable. Propiedades: linealidad, aditividad respecto del intervalo, monotonía
+        ($f \le g \Rightarrow \int f \le \int g$).
+    formulas:
+      - tex: |-
+          \int_a^b f(x)\,\dd x = \lim_{n\to\infty}\sum_{i=1}^{n} f(x_i^\ast)\,\Delta x
+      - tex: |-
+          \bar f = \frac{1}{b - a}\int_a^b f(x)\,\dd x
+        label: {en: 'average value', es: 'valor medio'}
+      - tex: |-
+          P(a \le X \le b) = \int_a^b p(x)\,\dd x
+        label: {en: 'probability as an integral of a density', es: 'probabilidad como integral de una densidad'}
+    compute:
+      en: |
+        Exactly, when an antiderivative is known: Barrow's rule $F(b) - F(a)$ (fundamental theorem). Otherwise
+        numerically: Riemann/trapezoid/Simpson/Gaussian quadrature in low dimension, Monte Carlo in high dimension.
+      es: |
+        De forma exacta, cuando se conoce una primitiva: regla de Barrow $F(b) - F(a)$ (teorema fundamental). Si no,
+        numéricamente: Riemann, trapecio, Simpson o cuadratura de Gauss en dimensión baja, Monte Carlo en dimensión alta.
+    example:
+      en: |
+        Energy of a signal $x(t) = \sin(2\pi t)$ over one second: $\int_0^1 \sin^2(2\pi t)\,\dd t = \frac12$. The same
+        integral, as a sum over samples $\frac1N\sum x[n]^2$, is how audio software measures loudness (RMS).
+      es: |
+        Energía de una señal $x(t) = \sin(2\pi t)$ en un segundo: $\int_0^1 \sin^2(2\pi t)\,\dd t = \frac12$. La misma
+        integral, como suma sobre muestras $\frac1N\sum x[n]^2$, es como el software de audio mide el volumen (RMS).
+    matters:
+      en: |
+        Probabilities, expectations, energies, masses, light arriving at a pixel, the expected loss of a model: all are
+        integrals. Most cannot be computed exactly, and a large part of computational science is about approximating
+        them well — quadrature in low dimensions, Monte Carlo in high ones.
+      es: |
+        Probabilidades, esperanzas, energías, masas, la luz que llega a un píxel, la pérdida esperada de un modelo:
+        todo son integrales. La mayoría no se pueden calcular exactamente, y buena parte de la ciencia computacional
+        consiste en aproximarlas bien: cuadratura en pocas dimensiones, Monte Carlo en muchas.
+    applications:
+      - to: monte-carlo
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Monte Carlo estimates $\int f$ as an average of $f$ at random points; error $O(N^{-1/2})$ in any dimension.'
+          es: 'Monte Carlo estima $\int f$ como la media de $f$ en puntos aleatorios; error $O(N^{-1/2})$ en cualquier dimensión.'
+      - to: rendering-equation
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The colour of a pixel is an integral of incoming light over directions.'
+          es: 'El color de un píxel es una integral de la luz entrante sobre las direcciones.'
+      - to: signal-processing
+        strength: 4
+        type: frequent
+        note:
+          en: 'Signal energy, correlation and convolution are integrals (sums, once sampled).'
+          es: 'La energía, la correlación y la convolución de señales son integrales (sumas, una vez muestreadas).'
+      - to: loss-function
+        strength: 3
+        type: frequent
+        note:
+          en: 'The true risk $\E[\ell] = \int \ell\,\dd P$ is an integral; the training loss is its sample average.'
+          es: 'El riesgo verdadero $\E[\ell] = \int \ell\,\dd P$ es una integral; la pérdida de entrenamiento es su media muestral.'
+      - to: physics-engine
+        strength: 4
+        type: frequent
+        note:
+          en: 'Positions are integrals of velocities, velocities integrals of accelerations.'
+          es: 'Las posiciones son integrales de las velocidades, y las velocidades, de las aceleraciones.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Compute $\int_0^2 (3x^2 - 2x)\,\dd x$ and interpret the sign.'
+          es: 'Calcula $\int_0^2 (3x^2 - 2x)\,\dd x$ e interpreta el signo.'
+        solution:
+          en: '$[x^3 - x^2]_0^2 = 8 - 4 = 4$. Positive: the area above the axis (for $x > 2/3$) exceeds the small negative part on $(0, 2/3)$.'
+          es: '$[x^3 - x^2]_0^2 = 8 - 4 = 4$. Positiva: el área sobre el eje (para $x > 2/3$) supera la pequeña parte negativa en $(0, 2/3)$.'
+      - type: computing
+        prompt:
+          en: 'Estimate $\pi$ with an integral and random numbers. How many samples for 3 correct decimals?'
+          es: 'Estima $\pi$ con una integral y números aleatorios. ¿Cuántas muestras para 3 decimales correctos?'
+        solution:
+          en: |
+            $\pi = 4\int_0^1\sqrt{1 - x^2}\,\dd x \approx \frac4N\sum\sqrt{1 - u_i^2}$ with $u_i$ uniform. The standard error is
+            about $0.9/\sqrt N$; for $\pm 0.0005$ you need $N \approx 3\cdot10^6$. Monte Carlo is simple but slow.
+          es: |
+            $\pi = 4\int_0^1\sqrt{1 - x^2}\,\dd x \approx \frac4N\sum\sqrt{1 - u_i^2}$ con $u_i$ uniformes. El error típico es
+            del orden de $0{,}9/\sqrt N$; para $\pm 0{,}0005$ hacen falta $N \approx 3\cdot10^6$. Monte Carlo es sencillo pero
+            lento.
+
+  - id: substitution
+    level: fundamental
+    kind: method
+    prerequisites: [antiderivative, chain-rule]
+    title: {en: 'Integration by substitution', es: 'Cambio de variable'}
+    aliases: {en: [u-substitution, change of variables, reverse chain rule], es: [sustitución, cambio de variable, regla de la cadena inversa]}
+    summary:
+      en: |
+        The chain rule read backwards: $\int f(g(x))\,g'(x)\,\dd x = \int f(u)\,\dd u$. In probability it is how densities
+        transform when a random variable is transformed.
+      es: |
+        La regla de la cadena leída al revés: $\int f(g(x))\,g'(x)\,\dd x = \int f(u)\,\dd u$. En probabilidad es como se
+        transforman las densidades cuando se transforma una variable aleatoria.
+    formulas:
+      - tex: |-
+          \int_a^b f\big(g(x)\big)\,g'(x)\,\dd x = \int_{g(a)}^{g(b)} f(u)\,\dd u
+      - tex: |-
+          Y = g(X) \implies p_Y(y) = p_X\big(g^{-1}(y)\big)\left|\frac{\dd g^{-1}}{\dd y}\right|
+        label: {en: 'change of variables for densities', es: 'cambio de variable para densidades'}
+    applications:
+      - to: monte-carlo
+        strength: 3
+        type: frequent
+        note:
+          en: 'Importance sampling and inverse-transform sampling are changes of variable in the integral being estimated.'
+          es: 'El muestreo por importancia y por transformada inversa son cambios de variable en la integral que se estima.'
+      - to: generative-models
+        strength: 4
+        type: advanced
+        note:
+          en: 'In 1D, a normalizing flow is exactly the density change-of-variables formula.'
+          es: 'En 1D, un normalizing flow es exactamente la fórmula de cambio de variable para densidades.'
+
+  - id: integration-by-parts
+    level: fundamental
+    kind: method
+    prerequisites: [antiderivative, differentiation-rules]
+    title: {en: 'Integration by parts', es: 'Integración por partes'}
+    aliases: {en: [product rule for integrals, weak formulation], es: [regla del producto para integrales, formulación débil]}
+    summary:
+      en: |
+        The product rule read backwards: $\int u\,\dd v = uv - \int v\,\dd u$. It moves a derivative from one factor to
+        the other — the trick behind the weak formulation of differential equations and finite elements.
+      es: |
+        La regla del producto leída al revés: $\int u\,\dd v = uv - \int v\,\dd u$. Pasa una derivada de un factor al
+        otro, el truco detrás de la formulación débil de las ecuaciones diferenciales y de los elementos finitos.
+    formulas:
+      - tex: |-
+          \int_a^b u\,v'\,\dd x = \big[u\,v\big]_a^b - \int_a^b u'\,v\,\dd x
+      - tex: |-
+          \int x e^x\,\dd x = x e^x - e^x + C
+    applications:
+      - to: finite-elements
+        strength: 5
+        type: fundamental
+        note:
+          en: 'FEM rewrites $-u'''' = f$ as $\int u''v'' = \int fv$ by parts, lowering the smoothness required of $u$.'
+          es: 'Los elementos finitos reescriben $-u'''' = f$ como $\int u''v'' = \int fv$ por partes, rebajando la suavidad exigida a $u$.'
+      - to: symbolic-computation
+        strength: 3
+        type: frequent
+        note:
+          en: 'A standard heuristic of symbolic integrators (LIATE ordering).'
+          es: 'Una heurística estándar de los integradores simbólicos (orden ILATE).'
+
+  - id: trigonometric-integrals
+    level: university
+    prerequisites: [substitution, trigonometric-functions]
+    title: {en: 'Trigonometric integrals', es: 'Integrales trigonométricas'}
+    aliases: {en: [orthogonality of sines, integrals of sin and cos], es: [ortogonalidad de senos, integrales de seno y coseno]}
+    summary:
+      en: |
+        Integrals of products of $\sin$ and $\cos$. The key fact: different frequencies are **orthogonal** —
+        $\int_0^{2\pi}\sin(mx)\sin(nx)\,\dd x = 0$ for $m \ne n$ — which is what makes Fourier series work.
+      es: |
+        Integrales de productos de $\sin$ y $\cos$. El hecho clave: frecuencias distintas son **ortogonales**
+        ($\int_0^{2\pi}\sin(mx)\sin(nx)\,\dd x = 0$ si $m \ne n$), y eso es lo que hace funcionar las series de Fourier.
+    formulas:
+      - tex: |-
+          \int_0^{2\pi}\sin(mx)\sin(nx)\,\dd x = \pi\,\delta_{mn}, \qquad \int_0^{2\pi}\sin(mx)\cos(nx)\,\dd x = 0
+    applications:
+      - to: signal-processing
+        strength: 3
+        type: frequent
+        note:
+          en: 'Orthogonality lets a filter bank or a DFT pick out one frequency and ignore the rest.'
+          es: 'La ortogonalidad permite a un banco de filtros o a una DFT aislar una frecuencia e ignorar el resto.'
+
+  - id: partial-fractions
+    level: university
+    kind: method
+    prerequisites: [antiderivative, rational-functions]
+    title: {en: 'Partial fractions', es: 'Fracciones simples'}
+    aliases: {en: [partial fraction decomposition, rational integrals], es: [descomposición en fracciones simples, integrales racionales]}
+    summary:
+      en: |
+        Split a rational function into simple pieces $\frac{A}{x - r}$, $\frac{Bx + C}{x^2 + px + q}$ that integrate to
+        logarithms and arctangents. Engineers use the same decomposition to invert Laplace and Z transforms.
+      es: |
+        Descomponer una función racional en piezas simples $\frac{A}{x - r}$, $\frac{Bx + C}{x^2 + px + q}$ que se integran
+        como logaritmos y arcotangentes. Los ingenieros usan la misma descomposición para invertir transformadas de
+        Laplace y Z.
+    formulas:
+      - tex: |-
+          \frac{1}{x^2 - 1} = \frac{1/2}{x - 1} - \frac{1/2}{x + 1}
+    applications:
+      - to: control-theory
+        strength: 4
+        type: frequent
+        note:
+          en: 'The time response of a system is found by splitting $G(s)$ into partial fractions and inverting each term.'
+          es: 'La respuesta temporal de un sistema se obtiene descomponiendo $G(s)$ en fracciones simples e invirtiendo cada término.'
+      - to: digital-filters
+        strength: 4
+        type: frequent
+        note:
+          en: 'Inverse Z-transforms and parallel filter realizations use partial fractions of $H(z)$.'
+          es: 'Las transformadas Z inversas y las realizaciones de filtros en paralelo usan fracciones simples de $H(z)$.'
+
+  - id: improper-integrals
+    level: university
+    prerequisites: [definite-integral, limits-at-infinity, fundamental-theorem-calculus]
+    title: {en: 'Improper integrals', es: 'Integrales impropias'}
+    aliases: {en: [infinite interval, convergent integral, Gaussian integral], es: [intervalo infinito, integral convergente, integral de Gauss]}
+    summary:
+      en: |
+        Integrals over infinite intervals or of unbounded functions, defined as limits:
+        $\int_a^\infty f = \lim_{b\to\infty}\int_a^b f$. Every probability density over $\R$ integrates to 1 this way.
+      es: |
+        Integrales sobre intervalos infinitos o de funciones no acotadas, definidas como límites:
+        $\int_a^\infty f = \lim_{b\to\infty}\int_a^b f$. Toda densidad de probabilidad sobre $\R$ integra 1 de esta forma.
+    formulas:
+      - tex: |-
+          \int_{-\infty}^{\infty} e^{-x^2/2}\,\dd x = \sqrt{2\pi}
+        label: {en: 'the Gaussian integral (normalizes the normal distribution)', es: 'la integral de Gauss (normaliza la distribución normal)'}
+      - tex: |-
+          \int_1^\infty \frac{\dd x}{x^p} < \infty \iff p > 1
+    applications:
+      - to: bayesian-inference
+        strength: 4
+        type: fundamental
+        note:
+          en: 'The evidence $p(D) = \int p(D\mid\theta)\,p(\theta)\,\dd\theta$ is an integral over the whole parameter space.'
+          es: 'La evidencia $p(D) = \int p(D\mid\theta)\,p(\theta)\,\dd\theta$ es una integral sobre todo el espacio de parámetros.'

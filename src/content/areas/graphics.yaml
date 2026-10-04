@@ -1,0 +1,205 @@
+kind: computing
+order: 22
+glyph: '3D'
+title: {en: 'Computer graphics', es: 'Gráficos por computador'}
+summary:
+  en: |
+    Normals, lighting, curves, ray tracing and rendering: derivatives orient surfaces, interpolation fills triangles and
+    integrals gather light.
+  es: |
+    Normales, iluminación, curvas, ray tracing y renderizado: las derivadas orientan las superficies, la interpolación
+    rellena los triángulos y las integrales recogen la luz.
+intro:
+  en: |
+    Rendering an image asks two calculus questions per pixel. **Geometry**: where does the ray hit, and which way does the
+    surface face there? The answer is a derivative — the normal is the gradient of an implicit surface or the cross product
+    of the partial derivatives of a parametric one. **Light**: how much arrives at that point from every direction? The
+    answer is an integral over the hemisphere, the rendering equation, estimated by Monte Carlo. Curves and surfaces for
+    design are polynomials glued with continuity conditions on their derivatives.
+  es: |
+    Renderizar una imagen plantea dos preguntas de cálculo por píxel. **Geometría**: ¿dónde choca el rayo y hacia dónde mira
+    ahí la superficie? La respuesta es una derivada: la normal es el gradiente de una superficie implícita o el producto
+    vectorial de las derivadas parciales de una paramétrica. **Luz**: ¿cuánta llega a ese punto desde cada dirección? La
+    respuesta es una integral sobre el hemisferio, la ecuación de renderizado, estimada por Monte Carlo. Las curvas y
+    superficies de diseño son polinomios pegados con condiciones de continuidad sobre sus derivadas.
+topics:
+  - id: surface-normals
+    kind: application
+    level: university
+    core: true
+    title: {en: 'Surface normals', es: 'Normales de superficie'}
+    aliases: {en: [normal vector, normal mapping, bump mapping, tangent space], es: [vector normal, normal mapping, bump mapping, espacio tangente]}
+    summary:
+      en: |
+        The unit vector perpendicular to a surface at a point. For an implicit surface $F = 0$ it is
+        $\nabla F/\norm{\nabla F}$; for a parametric one $r(u,v)$, the normalized cross product $r_u \times r_v$. Every
+        lighting computation starts from it.
+      es: |
+        El vector unitario perpendicular a una superficie en un punto. Para una superficie implícita $F = 0$ es
+        $\nabla F/\norm{\nabla F}$; para una paramétrica $r(u,v)$, el producto vectorial normalizado $r_u \times r_v$. Todo
+        cálculo de iluminación empieza por ella.
+    why:
+      en: |
+        Light reflects depending on the angle between the incoming ray and the surface. That angle is measured against the
+        normal — and the normal is a derivative: the gradient points across level sets, so it is perpendicular to the
+        surface $F = 0$.
+      es: |
+        La luz se refleja según el ángulo entre el rayo que llega y la superficie. Ese ángulo se mide respecto de la normal,
+        y la normal es una derivada: el gradiente apunta a través de los conjuntos de nivel, así que es perpendicular a la
+        superficie $F = 0$.
+    formulas:
+      - tex: |-
+          n = \frac{\nabla F}{\norm{\nabla F}}, \qquad n = \frac{r_u \times r_v}{\norm{r_u \times r_v}}
+      - tex: |-
+          z = h(x, y) \implies n \propto \big(-h_x,\ -h_y,\ 1\big)
+        label: {en: 'height fields and bump maps', es: 'mapas de alturas y bump maps'}
+    example:
+      en: |
+        Sphere $F = x^2 + y^2 + z^2 - R^2$: $\nabla F = 2(x, y, z)$, so the normal at a point is the point itself divided by
+        $R$ — radial, as expected. A bump map perturbs $h$ with a texture and recomputes $n$ from its partial derivatives:
+        flat geometry that looks rough.
+      es: |
+        Esfera $F = x^2 + y^2 + z^2 - R^2$: $\nabla F = 2(x, y, z)$, así que la normal en un punto es el propio punto dividido
+        entre $R$, radial como cabía esperar. Un bump map perturba $h$ con una textura y recalcula $n$ a partir de sus
+        derivadas parciales: geometría plana que parece rugosa.
+    matters:
+      en: 'Wrong normals are the most visible rendering bug; normal maps are how games show detail without millions of triangles.'
+      es: 'Unas normales mal calculadas son el error de renderizado más visible; los normal maps son como los videojuegos muestran detalle sin millones de triángulos.'
+
+  - id: shading
+    kind: application
+    level: university
+    prerequisites: [surface-normals]
+    title: {en: 'Lighting and shading', es: 'Iluminación y sombreado'}
+    aliases: {en: [Lambert, Phong, Blinn-Phong, BRDF, diffuse, specular, Gouraud], es: [Lambert, Phong, Blinn-Phong, BRDF, difusa, especular, Gouraud]}
+    summary:
+      en: |
+        Computing the colour of a surface point from the light, the normal and the viewer. Lambertian diffuse light is
+        $\max(0, n\cdot l)$; specular highlights use $(n\cdot h)^s$. Values are interpolated across triangles.
+      es: |
+        Calcular el color de un punto de una superficie a partir de la luz, la normal y el observador. La luz difusa
+        lambertiana es $\max(0, n\cdot l)$; los brillos especulares usan $(n\cdot h)^s$. Los valores se interpolan dentro de
+        los triángulos.
+    formulas:
+      - tex: |-
+          I = k_d\max(0, n\cdot l) + k_s\big(\max(0, n\cdot h)\big)^{s}, \qquad h = \frac{l + v}{\norm{l + v}}
+        label: {en: 'Blinn–Phong', es: 'Blinn–Phong'}
+
+  - id: bezier-curves
+    kind: application
+    level: university
+    title: {en: 'Bézier curves and splines', es: 'Curvas de Bézier y splines'}
+    aliases: {en: [Bezier, B-spline, NURBS, de Casteljau, fonts, vector graphics], es: [Bézier, B-spline, NURBS, de Casteljau, tipografías, gráficos vectoriales]}
+    summary:
+      en: |
+        Polynomial curves controlled by a few points, glued with continuity conditions on derivatives ($C^1$: same tangent,
+        $C^2$: same curvature). Fonts, SVG paths, CAD surfaces and animation curves are built from them.
+      es: |
+        Curvas polinómicas controladas por unos pocos puntos, pegadas con condiciones de continuidad sobre las derivadas
+        ($C^1$: misma tangente, $C^2$: misma curvatura). Las tipografías, los trazados SVG, las superficies CAD y las curvas de
+        animación se construyen con ellas.
+    formulas:
+      - tex: |-
+          B(t) = (1-t)^3P_0 + 3(1-t)^2t\,P_1 + 3(1-t)t^2P_2 + t^3P_3, \quad t \in [0,1]
+      - tex: |-
+          B'(0) = 3(P_1 - P_0), \qquad B'(1) = 3(P_3 - P_2)
+        label: {en: 'tangents at the ends: how $C^1$ joins are built', es: 'tangentes en los extremos: así se construyen las uniones $C^1$'}
+
+  - id: procedural-generation
+    kind: application
+    level: university
+    title: {en: 'Procedural generation and noise', es: 'Generación procedural y ruido'}
+    aliases: {en: [Perlin noise, simplex noise, fBm, terrain generation, procedural textures], es: [ruido de Perlin, ruido simplex, fBm, generación de terreno, texturas procedurales]}
+    summary:
+      en: |
+        Generating terrain, clouds and textures from smooth random functions (Perlin noise) summed over octaves (fractal
+        Brownian motion). Smooth interpolants ($6t^5 - 15t^4 + 10t^3$, with zero first and second derivatives at the ends)
+        avoid visible grid artefacts; analytic derivatives give normals for lighting.
+      es: |
+        Generar terrenos, nubes y texturas a partir de funciones aleatorias suaves (ruido de Perlin) sumadas en octavas
+        (movimiento browniano fraccionario). Los interpoladores suaves ($6t^5 - 15t^4 + 10t^3$, con primera y segunda
+        derivadas nulas en los extremos) evitan artefactos visibles de la rejilla; las derivadas analíticas dan normales para
+        iluminar.
+    formulas:
+      - tex: |-
+          \operatorname{fBm}(x) = \sum_{k=0}^{K-1} a^k\,\operatorname{noise}(2^k x), \quad a \approx \tfrac12
+
+  - id: ray-tracing
+    kind: application
+    level: advanced
+    prerequisites: [surface-normals, shading]
+    title: {en: 'Ray tracing', es: 'Ray tracing (trazado de rayos)'}
+    aliases: {en: [ray casting, intersection, reflection, refraction, Snell, path tracing], es: [ray casting, intersección, reflexión, refracción, Snell, path tracing]}
+    summary:
+      en: |
+        Follow rays of light from the camera into the scene: solve for intersections (roots of equations), reflect and
+        refract using the normal, and recurse. Real-time ray tracing is now in consumer GPUs.
+      es: |
+        Seguir rayos de luz desde la cámara hacia la escena: resolver intersecciones (raíces de ecuaciones), reflejar y
+        refractar usando la normal, y recurrir. El ray tracing en tiempo real ya está en las GPU de consumo.
+    formulas:
+      - tex: |-
+          \norm{o + t\,d - c}^2 = R^2 \implies t^2 + 2t\,d\cdot(o - c) + \norm{o - c}^2 - R^2 = 0 \quad (\norm d = 1)
+        label: {en: 'ray–sphere intersection: a quadratic', es: 'intersección rayo–esfera: una cuadrática'}
+      - tex: |-
+          r = d - 2(d\cdot n)\,n
+        label: {en: 'reflection', es: 'reflexión'}
+
+  - id: rendering-equation
+    kind: application
+    level: specialized
+    prerequisites: [ray-tracing, monte-carlo]
+    title: {en: 'The rendering equation', es: 'La ecuación de renderizado'}
+    aliases: {en: [global illumination, path tracing, radiance, BRDF integral, Kajiya], es: [iluminación global, path tracing, radiancia, integral de la BRDF, Kajiya]}
+    summary:
+      en: |
+        Kajiya (1986): the light leaving a point equals the light it emits plus the integral, over all incoming directions,
+        of incoming light times the material's reflectance times a cosine. An integral equation solved by Monte Carlo path
+        tracing — the method behind modern film rendering.
+      es: |
+        Kajiya (1986): la luz que sale de un punto es la que emite más la integral, sobre todas las direcciones de llegada, de
+        la luz entrante por la reflectancia del material por un coseno. Una ecuación integral que se resuelve con path
+        tracing de Monte Carlo, el método del renderizado de cine actual.
+    formulas:
+      - tex: |-
+          L_o(x, \omega_o) = L_e(x, \omega_o) + \int_{\Omega} f_r(x, \omega_i, \omega_o)\,L_i(x, \omega_i)\,(\omega_i\cdot n)\,\dd\omega_i
+    matters:
+      en: 'Pixar''s RenderMan, Blender Cycles and Arnold are Monte Carlo estimators of this integral; denoisers (often neural) clean up the $1/\sqrt N$ noise.'
+      es: 'RenderMan de Pixar, Cycles de Blender y Arnold son estimadores de Monte Carlo de esta integral; los eliminadores de ruido (a menudo neuronales) limpian el ruido $1/\sqrt N$.'
+
+  - id: signed-distance-fields
+    kind: application
+    level: advanced
+    prerequisites: [ray-tracing]
+    title: {en: 'Signed distance fields and ray marching', es: 'Campos de distancia con signo y ray marching'}
+    aliases: {en: [SDF, ray marching, sphere tracing, implicit surfaces, neural implicit], es: [SDF, ray marching, sphere tracing, superficies implícitas, implícitas neuronales]}
+    summary:
+      en: |
+        Represent a shape by the signed distance $d(x)$ to its surface. Rays march forward by $d(x)$ (it is always safe), the
+        surface is $d = 0$, and the normal is $\nabla d$. Neural SDFs learn $d$ with a network.
+      es: |
+        Representar una forma por la distancia con signo $d(x)$ a su superficie. Los rayos avanzan $d(x)$ (siempre es seguro),
+        la superficie es $d = 0$ y la normal es $\nabla d$. Los SDF neuronales aprenden $d$ con una red.
+    formulas:
+      - tex: |-
+          \norm{\nabla d} = 1, \qquad n(x) = \nabla d(x) \approx \frac{1}{2h}\big(d(x + h e_i) - d(x - h e_i)\big)_{i=1}^{3}
+        label: {en: 'eikonal property; normal by central differences', es: 'propiedad eikonal; normal por diferencias centradas'}
+
+  - id: mesh-processing
+    kind: application
+    level: advanced
+    prerequisites: [surface-normals]
+    title: {en: 'Mesh processing (discrete differential geometry)', es: 'Procesado de mallas (geometría diferencial discreta)'}
+    aliases: {en: [Laplacian smoothing, cotangent Laplacian, remeshing, discrete curvature, geometry processing], es: [suavizado laplaciano, laplaciano cotangente, remallado, curvatura discreta, procesado geométrico]}
+    summary:
+      en: |
+        Calculus on triangle meshes: a discrete Laplacian (cotangent weights), discrete curvatures and integrals over faces.
+        Used for smoothing scanned models, parametrizing for textures, deforming characters and computing geodesics.
+      es: |
+        Cálculo sobre mallas de triángulos: un laplaciano discreto (pesos cotangente), curvaturas discretas e integrales
+        sobre caras. Se usa para suavizar modelos escaneados, parametrizar para texturas, deformar personajes y calcular
+        geodésicas.
+    formulas:
+      - tex: |-
+          (\Delta f)_i = \frac{1}{2A_i}\sum_{j\in N(i)}\big(\cot\alpha_{ij} + \cot\beta_{ij}\big)\big(f_j - f_i\big)
+        label: {en: 'cotangent Laplacian', es: 'laplaciano cotangente'}

@@ -1,0 +1,763 @@
+kind: computing
+order: 21
+glyph: 'ℒ'
+title: {en: 'AI and machine learning', es: 'IA y machine learning'}
+summary:
+  en: |
+    The calculus behind modern AI: loss functions, gradients, backpropagation, optimizers and probabilistic models.
+  es: |
+    El cálculo detrás de la IA moderna: funciones de pérdida, gradientes, retropropagación, optimizadores y modelos
+    probabilísticos.
+intro:
+  en: |
+    ## The calculus behind modern AI
+
+    Strip a neural network of its jargon and what remains is calculus: a big differentiable function, a scalar loss that
+    measures its error, and an algorithm that follows the derivative of the loss downhill.
+
+    ```
+    Calculus
+       ├── Derivatives ──► Gradients ──► Optimization ──► Gradient descent
+       ├── Partial derivatives + chain rule ──► Backpropagation
+       ├── Integrals ──► Probability ──► Probabilistic ML (likelihoods, Bayes, diffusion)
+       └── Linear algebra + calculus ──► Neural networks
+    ```
+
+    One training step, end to end:
+
+    ```
+    input x ─► layer z = Wx + b ─► activation a = σ(z) ─► prediction ŷ ─► loss L(ŷ, y)
+                                                                              │
+    weights update W ← W − η ∂L/∂W ◄── gradient ∂L/∂W, ∂L/∂b (chain rule, backwards) ◄─┘
+    ```
+
+    Derivatives connect to machine learning with **★★★★★ fundamental** strength — no gradient, no deep learning.
+    Integrals connect with **★★★★ important** strength — through probability: the true objective is an expected loss, and
+    generative models are densities. Every arrow below is a page you can open.
+  es: |
+    ## El cálculo detrás de la IA moderna
+
+    Quítale la jerga a una red neuronal y lo que queda es cálculo: una gran función derivable, una pérdida escalar que
+    mide su error y un algoritmo que sigue cuesta abajo la derivada de la pérdida.
+
+    ```
+    Cálculo
+       ├── Derivadas ──► Gradientes ──► Optimización ──► Descenso de gradiente
+       ├── Derivadas parciales + regla de la cadena ──► Retropropagación
+       ├── Integrales ──► Probabilidad ──► ML probabilístico (verosimilitudes, Bayes, difusión)
+       └── Álgebra lineal + cálculo ──► Redes neuronales
+    ```
+
+    Un paso de entrenamiento, de principio a fin:
+
+    ```
+    entrada x ─► capa z = Wx + b ─► activación a = σ(z) ─► predicción ŷ ─► pérdida L(ŷ, y)
+                                                                                 │
+    actualizar pesos W ← W − η ∂L/∂W ◄── gradiente ∂L/∂W, ∂L/∂b (regla de la cadena, hacia atrás) ◄─┘
+    ```
+
+    Las derivadas se conectan con el aprendizaje automático con fuerza **★★★★★ fundamental**: sin gradiente no hay deep
+    learning. Las integrales, con fuerza **★★★★ importante**, a través de la probabilidad: el objetivo verdadero es una
+    pérdida esperada y los modelos generativos son densidades. Cada flecha de abajo es una página que puedes abrir.
+topics:
+  - id: linear-regression
+    kind: application
+    level: university
+    title: {en: 'Linear regression', es: 'Regresión lineal'}
+    aliases: {en: [least squares, OLS, line fitting, normal equations], es: [mínimos cuadrados, MCO, ajuste de rectas, ecuaciones normales]}
+    summary:
+      en: |
+        Fit $\hat y = w\cdot x + b$ by minimizing the squared error. The simplest learning problem, solvable in closed form
+        by setting the gradient to zero — and the template for everything that follows.
+      es: |
+        Ajustar $\hat y = w\cdot x + b$ minimizando el error cuadrático. El problema de aprendizaje más sencillo, resoluble
+        en forma cerrada anulando el gradiente, y la plantilla de todo lo que viene después.
+    formulas:
+      - tex: |-
+          \min_w \frac1N\norm{Xw - y}^2 \implies w^\ast = (X^{\mathsf T}X)^{-1}X^{\mathsf T}y
+    matters:
+      en: 'Still the first model to try, the baseline for every other, and the place where the link "derivative = 0 ⇒ optimum" is clearest.'
+      es: 'Sigue siendo el primer modelo que probar, la referencia para todos los demás y el lugar donde el vínculo «derivada = 0 ⇒ óptimo» se ve más claro.'
+
+  - id: loss-function
+    kind: application
+    level: university
+    core: true
+    title: {en: 'Loss function', es: 'Función de pérdida'}
+    aliases: {en: [cost function, objective, MSE, cross-entropy, risk, error function], es: [función de coste, objetivo, MSE, entropía cruzada, riesgo, función de error]}
+    summary:
+      en: |
+        A single number $L(\theta)$ measuring how wrong a model with parameters $\theta$ is on the data. Learning is
+        minimizing it. Mean squared error for regression and cross-entropy for classification are the two everyone uses.
+      es: |
+        Un único número $L(\theta)$ que mide lo equivocado que está un modelo de parámetros $\theta$ sobre los datos.
+        Aprender es minimizarlo. El error cuadrático medio para regresión y la entropía cruzada para clasificación son las
+        dos que usa todo el mundo.
+    why:
+      en: |
+        "Make the model good" is not something an algorithm can optimize; "make this differentiable number small" is.
+        The loss converts the goal into a function of the parameters, so calculus — derivatives, gradients, convexity —
+        can take over.
+      es: |
+        «Que el modelo sea bueno» no es algo que un algoritmo pueda optimizar; «que este número derivable sea pequeño», sí.
+        La pérdida convierte el objetivo en una función de los parámetros, para que el cálculo (derivadas, gradientes,
+        convexidad) tome el relevo.
+    intuition:
+      en: |
+        A landscape over parameter space: height = error. Each point is a possible model; training walks downhill. The
+        shape of the loss decides what "wrong" means: squared error punishes large mistakes heavily, absolute error is
+        robust to outliers, cross-entropy punishes confident wrong probabilities without limit.
+      es: |
+        Un paisaje sobre el espacio de parámetros: altura = error. Cada punto es un modelo posible; entrenar es bajar. La
+        forma de la pérdida decide qué significa «equivocarse»: el error cuadrático castiga mucho los errores grandes, el
+        absoluto es robusto a valores atípicos y la entropía cruzada castiga sin límite las probabilidades equivocadas y
+        seguras.
+    formal:
+      en: |
+        Empirical risk over a dataset $\{(x_i, y_i)\}_{i=1}^N$:
+        $$L(\theta) = \frac1N\sum_{i=1}^N \ell\big(f_\theta(x_i), y_i\big),$$
+        an estimate of the expected risk $\E_{(x,y)\sim P}[\ell(f_\theta(x), y)]$.
+      es: |
+        Riesgo empírico sobre un conjunto de datos $\{(x_i, y_i)\}_{i=1}^N$:
+        $$L(\theta) = \frac1N\sum_{i=1}^N \ell\big(f_\theta(x_i), y_i\big),$$
+        una estimación del riesgo esperado $\E_{(x,y)\sim P}[\ell(f_\theta(x), y)]$.
+    formulas:
+      - tex: |-
+          \text{MSE} = \frac1N\sum_i\big(\hat y_i - y_i\big)^2
+      - tex: |-
+          \text{CE} = -\frac1N\sum_i\sum_k y_{ik}\log\hat p_{ik}, \qquad \hat p = \operatorname{softmax}(z)
+      - tex: |-
+          \frac{\partial\,\text{CE}}{\partial z_k} = \hat p_k - y_k
+        label: {en: 'softmax + cross-entropy: the gradient is simply "prediction minus target"', es: 'softmax + entropía cruzada: el gradiente es simplemente «predicción menos objetivo»'}
+    matters:
+      en: |
+        Choosing the loss is choosing what the model will be good at. It must be differentiable (almost everywhere) for
+        gradient training, and numerically stable — which is why frameworks fuse softmax and cross-entropy into one
+        operation.
+      es: |
+        Elegir la pérdida es elegir en qué será bueno el modelo. Tiene que ser derivable (casi en todas partes) para
+        entrenar por gradiente, y numéricamente estable; por eso los frameworks fusionan softmax y entropía cruzada en una
+        sola operación.
+    exercises:
+      - type: ai
+        prompt:
+          en: 'A classifier outputs $\hat p = 0.01$ for the true class. What is its cross-entropy? And with $\hat p = 0.9$?'
+          es: 'Un clasificador da $\hat p = 0{,}01$ a la clase verdadera. ¿Cuál es su entropía cruzada? ¿Y con $\hat p = 0{,}9$?'
+        solution:
+          en: '$-\ln 0.01 \approx 4.6$ vs $-\ln 0.9 \approx 0.105$. Confidently wrong predictions are punished ~44 times more.'
+          es: '$-\ln 0{,}01 \approx 4{,}6$ frente a $-\ln 0{,}9 \approx 0{,}105$. Las predicciones equivocadas y seguras se castigan unas 44 veces más.'
+
+  - id: gradient-descent
+    kind: application
+    level: university
+    core: true
+    demo: gradient-descent
+    prerequisites: [loss-function]
+    title: {en: 'Gradient descent', es: 'Descenso de gradiente'}
+    aliases: {en: [GD, steepest descent, optimizer, training loop, gradient], es: [GD, máximo descenso, optimizador, bucle de entrenamiento, gradiente]}
+    summary:
+      en: |
+        Repeat $\theta \leftarrow \theta - \eta\,\nabla L(\theta)$: take a small step against the gradient. Cauchy proposed
+        it in 1847; today it (and its stochastic, adaptive variants) trains essentially every neural network.
+      es: |
+        Repetir $\theta \leftarrow \theta - \eta\,\nabla L(\theta)$: dar un paso pequeño en contra del gradiente. Cauchy lo
+        propuso en 1847; hoy (con sus variantes estocásticas y adaptativas) entrena prácticamente todas las redes
+        neuronales.
+    why:
+      en: |
+        Setting $\nabla L = 0$ and solving is impossible for a network with millions of parameters and a non-linear loss.
+        But evaluating $\nabla L$ at one point is cheap (backpropagation), and the gradient says which direction decreases
+        the loss fastest. Iterate.
+      es: |
+        Anular $\nabla L$ y despejar es imposible para una red con millones de parámetros y una pérdida no lineal. Pero
+        evaluar $\nabla L$ en un punto es barato (retropropagación), y el gradiente dice en qué dirección baja más deprisa
+        la pérdida. Se itera.
+    intuition:
+      en: |
+        A ball rolling downhill in fog, one step at a time. The learning rate $\eta$ is the step length: too small and
+        it crawls; too large and it overshoots, bouncing between valley walls or flying off. In a narrow valley the
+        gradient points across the valley rather than along it, so the path zigzags — try the elongated bowl in the demo.
+      es: |
+        Una bola que baja una ladera con niebla, paso a paso. El learning rate $\eta$ es la longitud del paso: demasiado
+        pequeño y avanza a paso de tortuga; demasiado grande y se pasa, rebotando entre las paredes del valle o saliendo
+        disparada. En un valle estrecho el gradiente apunta a través del valle y no a lo largo, así que el camino
+        zigzaguea; prueba el cuenco alargado de la demo.
+    formal:
+      en: |
+        $$\theta_{k+1} = \theta_k - \eta\,\nabla L(\theta_k).$$
+        If $\nabla L$ is $L$-Lipschitz and $\eta \le 1/L$, then $L(\theta_{k+1}) \le L(\theta_k) - \frac\eta2\norm{\nabla L(\theta_k)}^2$
+        (descent lemma): the loss decreases at every step and $\min_{j\le k}\norm{\nabla L(\theta_j)}^2 = O(1/k)$. If $L$ is
+        $\mu$-strongly convex, convergence is linear with rate $1 - \mu/L$.
+      es: |
+        $$\theta_{k+1} = \theta_k - \eta\,\nabla L(\theta_k).$$
+        Si $\nabla L$ es $L$-lipschitziano y $\eta \le 1/L$, entonces $L(\theta_{k+1}) \le L(\theta_k) - \frac\eta2\norm{\nabla L(\theta_k)}^2$
+        (lema de descenso): la pérdida baja en cada paso y $\min_{j\le k}\norm{\nabla L(\theta_j)}^2 = O(1/k)$. Si $L$ es
+        $\mu$-fuertemente convexa, la convergencia es lineal con razón $1 - \mu/L$.
+    formulas:
+      - tex: |-
+          \theta_{k+1} = \theta_k - \eta\,\nabla L(\theta_k)
+      - tex: |-
+          L(\theta - \eta g) \approx L(\theta) - \eta\,\norm{g}^2 \quad (g = \nabla L)
+        label: {en: 'why it works: first-order Taylor', es: 'por qué funciona: Taylor de primer orden'}
+    compute:
+      en: |
+        ```
+        θ = initial guess
+        for k in 1..K:
+            g = ∇L(θ)          # backpropagation
+            θ = θ − η · g
+            if ‖g‖ < tol: break
+        ```
+      es: |
+        ```
+        θ = valor inicial
+        para k en 1..K:
+            g = ∇L(θ)          # retropropagación
+            θ = θ − η · g
+            si ‖g‖ < tol: parar
+        ```
+    matters:
+      en: |
+        It is the inner loop of the AI industry: trillions of gradient steps per day. Every optimizer used in practice
+        (SGD, momentum, Adam) is a modification of this one line.
+      es: |
+        Es el bucle interno de la industria de la IA: billones de pasos de gradiente al día. Todos los optimizadores usados
+        en la práctica (SGD, momento, Adam) son modificaciones de esta línea.
+    exercises:
+      - type: ai
+        prompt:
+          en: 'For $L(\theta) = \frac a2\theta^2$, show that GD converges iff $0 < \eta < 2/a$. What happens at $\eta = 1/a$?'
+          es: 'Para $L(\theta) = \frac a2\theta^2$, demuestra que el descenso de gradiente converge si y solo si $0 < \eta < 2/a$. ¿Qué pasa con $\eta = 1/a$?'
+        solution:
+          en: '$\theta_{k+1} = (1 - \eta a)\theta_k$, which tends to 0 iff $|1 - \eta a| < 1$. With $\eta = 1/a$ it jumps to the minimum in one step.'
+          es: '$\theta_{k+1} = (1 - \eta a)\theta_k$, que tiende a 0 si y solo si $|1 - \eta a| < 1$. Con $\eta = 1/a$ salta al mínimo en un paso.'
+
+  - id: learning-rate
+    kind: application
+    level: university
+    prerequisites: [gradient-descent]
+    title: {en: 'Learning rate', es: 'Learning rate (tasa de aprendizaje)'}
+    aliases: {en: [step size, eta, learning rate schedule, warmup, cosine decay], es: [tamaño de paso, eta, calendario del learning rate, calentamiento, decaimiento coseno]}
+    summary:
+      en: |
+        The step size $\eta$ of gradient descent — the most important hyperparameter. Stability requires
+        $\eta < 2/\lambda_{\max}$ (the largest curvature); schedules (warm-up, cosine decay) start careful, go fast, and
+        end small to settle into a minimum.
+      es: |
+        El tamaño de paso $\eta$ del descenso de gradiente, el hiperparámetro más importante. La estabilidad exige
+        $\eta < 2/\lambda_{\max}$ (la mayor curvatura); los calendarios (calentamiento, decaimiento coseno) empiezan con
+        cuidado, van rápido y terminan con pasos pequeños para asentarse en un mínimo.
+    formulas:
+      - tex: |-
+          \eta_t = \eta_{\min} + \tfrac12(\eta_{\max} - \eta_{\min})\big(1 + \cos(\pi t/T)\big)
+        label: {en: 'cosine schedule', es: 'calendario coseno'}
+
+  - id: logistic-regression
+    kind: application
+    level: university
+    prerequisites: [linear-regression, loss-function]
+    title: {en: 'Logistic regression', es: 'Regresión logística'}
+    aliases: {en: [binary classification, sigmoid classifier, logit], es: [clasificación binaria, clasificador sigmoide, logit]}
+    summary:
+      en: |
+        Binary classification with $p(y = 1\mid x) = \sigma(w\cdot x + b)$, trained by maximum likelihood (cross-entropy).
+        Convex, so gradient descent finds the global optimum — a single neuron, and the bridge to neural networks.
+      es: |
+        Clasificación binaria con $p(y = 1\mid x) = \sigma(w\cdot x + b)$, entrenada por máxima verosimilitud (entropía
+        cruzada). Es convexa, así que el descenso de gradiente encuentra el óptimo global: una sola neurona, y el puente
+        hacia las redes neuronales.
+    formulas:
+      - tex: |-
+          \nabla_w L = \frac1N\sum_i\big(\sigma(w\cdot x_i + b) - y_i\big)\,x_i
+    matters:
+      en: 'Fraud scores, click-through prediction and medical risk models are still logistic regressions; its gradient is the simplest instance of backpropagation.'
+      es: 'Las puntuaciones de fraude, la predicción de clics y los modelos de riesgo médico siguen siendo regresiones logísticas; su gradiente es el caso más sencillo de retropropagación.'
+
+  - id: activation-functions
+    kind: application
+    level: university
+    title: {en: 'Activation functions', es: 'Funciones de activación'}
+    aliases: {en: [ReLU, sigmoid, tanh, GELU, softmax, nonlinearity], es: [ReLU, sigmoide, tanh, GELU, softmax, no linealidad]}
+    summary:
+      en: |
+        The non-linear functions applied after each linear layer. Without them a deep network collapses to one linear map.
+        Their derivatives matter as much as their values: sigmoids saturate (vanishing gradients), ReLU passes gradients
+        unchanged where active.
+      es: |
+        Las funciones no lineales que se aplican tras cada capa lineal. Sin ellas una red profunda se reduce a una sola
+        aplicación lineal. Sus derivadas importan tanto como sus valores: las sigmoides se saturan (desvanecimiento del
+        gradiente) y ReLU deja pasar el gradiente sin cambios donde está activa.
+    formulas:
+      - tex: |-
+          \sigma(z) = \frac{1}{1 + e^{-z}}, \quad \tanh z, \quad \operatorname{ReLU}(z) = \max(0, z), \quad \operatorname{GELU}(z) = z\,\Phi(z)
+      - tex: |-
+          \sigma' = \sigma(1-\sigma) \le \tfrac14, \qquad \operatorname{ReLU}'(z) = \mathbf 1[z > 0]
+    matters:
+      en: 'The switch from sigmoid to ReLU (around 2011) was one of the small calculus facts that made deep learning trainable.'
+      es: 'El paso de la sigmoide a ReLU (hacia 2011) fue uno de los pequeños hechos de cálculo que hicieron entrenable el deep learning.'
+
+  - id: neural-networks
+    kind: application
+    level: advanced
+    core: true
+    prerequisites: [activation-functions, logistic-regression]
+    title: {en: 'Neural networks', es: 'Redes neuronales'}
+    aliases: {en: [multilayer perceptron, MLP, feedforward network, layers, universal approximation], es: [perceptrón multicapa, MLP, red prealimentada, capas, aproximación universal]}
+    summary:
+      en: |
+        Compositions of affine maps and non-linearities, $f_\theta = f_L\circ\dots\circ f_1$ with $f_\ell(a) = \sigma(W_\ell a + b_\ell)$.
+        A differentiable function with millions of adjustable parameters, trained by gradient descent.
+      es: |
+        Composiciones de aplicaciones afines y no linealidades, $f_\theta = f_L\circ\dots\circ f_1$ con
+        $f_\ell(a) = \sigma(W_\ell a + b_\ell)$. Una función derivable con millones de parámetros ajustables, entrenada por
+        descenso de gradiente.
+    why:
+      en: |
+        Linear models cannot represent XOR, let alone images or language. Stacking simple differentiable layers gives a
+        family of functions flexible enough to approximate almost anything (universal approximation) while keeping the
+        property that matters most: we can compute the gradient of the loss with respect to every parameter.
+      es: |
+        Los modelos lineales no pueden representar el XOR, y mucho menos imágenes o lenguaje. Apilar capas derivables
+        sencillas da una familia de funciones lo bastante flexible para aproximar casi cualquier cosa (aproximación
+        universal) sin perder la propiedad que más importa: se puede calcular el gradiente de la pérdida respecto de cada
+        parámetro.
+    intuition:
+      en: |
+        Each layer bends and folds the space a little: a linear map rotates and stretches, the activation clips or
+        squashes. After enough folds, classes that were tangled become separable by a plane. A single neuron
+        $\sigma(w\cdot x + b)$ is a soft step across a hyperplane; sums of many such steps can build any bump.
+      es: |
+        Cada capa dobla y pliega un poco el espacio: la aplicación lineal gira y estira, la activación recorta o comprime.
+        Tras suficientes pliegues, clases que estaban enredadas pasan a ser separables por un plano. Una sola neurona
+        $\sigma(w\cdot x + b)$ es un escalón suave a través de un hiperplano; sumas de muchos escalones así construyen
+        cualquier bulto.
+    formal:
+      en: |
+        $$a^{(0)} = x, \qquad z^{(\ell)} = W^{(\ell)}a^{(\ell-1)} + b^{(\ell)}, \qquad a^{(\ell)} = \sigma\big(z^{(\ell)}\big), \qquad \hat y = a^{(L)}.$$
+        **Universal approximation** (Cybenko 1989, Hornik 1991): one hidden layer with enough neurons and a non-polynomial
+        activation approximates any continuous function on a compact set to any accuracy.
+      es: |
+        $$a^{(0)} = x, \qquad z^{(\ell)} = W^{(\ell)}a^{(\ell-1)} + b^{(\ell)}, \qquad a^{(\ell)} = \sigma\big(z^{(\ell)}\big), \qquad \hat y = a^{(L)}.$$
+        **Aproximación universal** (Cybenko 1989, Hornik 1991): una capa oculta con suficientes neuronas y una activación no
+        polinómica aproxima cualquier función continua en un compacto con la precisión que se quiera.
+    formulas:
+      - tex: |-
+          \hat y = \sigma\big(W x + b\big)
+        label: {en: 'one layer', es: 'una capa'}
+      - tex: |-
+          f_\theta(x) = W_3\,\sigma\big(W_2\,\sigma(W_1 x + b_1) + b_2\big) + b_3
+        label: {en: 'a 3-layer perceptron', es: 'un perceptrón de 3 capas'}
+    matters:
+      en: |
+        Vision, speech, translation, protein folding, game playing and language models are neural networks. Mathematically
+        they are "just" compositions of differentiable functions — which is exactly why calculus can train them.
+      es: |
+        La visión, el habla, la traducción, el plegamiento de proteínas, los juegos y los modelos de lenguaje son redes
+        neuronales. Matemáticamente son «solo» composiciones de funciones derivables, y precisamente por eso el cálculo
+        puede entrenarlas.
+    links:
+      - href: 'https://toniferr.github.io/math-of-ai/neural-networks/'
+        label: {en: 'Math of AI · Neural networks (perceptron, XOR, universal approximation)', es: 'Math of AI · Redes neuronales (perceptrón, XOR, aproximación universal)'}
+
+  - id: automatic-differentiation
+    kind: application
+    level: advanced
+    core: true
+    title: {en: 'Automatic differentiation', es: 'Diferenciación automática'}
+    aliases: {en: [autodiff, AD, autograd, forward mode, reverse mode, dual numbers, JAX, PyTorch], es: [autodiff, AD, autograd, modo directo, modo inverso, números duales, JAX, PyTorch]}
+    summary:
+      en: |
+        Computing exact derivatives of programs by applying the chain rule to each elementary operation. Neither symbolic
+        (no expression swell) nor numerical (no truncation error). Reverse mode gives the gradient of a scalar for a small
+        constant times the cost of the program.
+      es: |
+        Calcular derivadas exactas de programas aplicando la regla de la cadena a cada operación elemental. Ni simbólica
+        (sin explosión de expresiones) ni numérica (sin error de truncamiento). El modo inverso da el gradiente de un escalar
+        por una pequeña constante por el coste del programa.
+    formulas:
+      - tex: |-
+          (a + b\varepsilon)(c + d\varepsilon) = ac + (ad + bc)\varepsilon, \quad \varepsilon^2 = 0
+        label: {en: 'forward mode with dual numbers', es: 'modo directo con números duales'}
+      - tex: |-
+          \bar v_i = \sum_{j:\ i \to j} \bar v_j\,\frac{\partial v_j}{\partial v_i}
+        label: {en: 'reverse mode: adjoints propagate backwards', es: 'modo inverso: los adjuntos se propagan hacia atrás'}
+    matters:
+      en: |
+        Every deep learning framework is, at its core, an AD engine (PyTorch autograd, JAX, TensorFlow). AD also powers
+        differentiable rendering, differentiable physics and sensitivity analysis in science.
+      es: |
+        Todo framework de deep learning es, en el fondo, un motor de diferenciación automática (autograd de PyTorch, JAX,
+        TensorFlow). También impulsa el renderizado diferenciable, la física diferenciable y el análisis de sensibilidad en
+        ciencia.
+
+  - id: backpropagation
+    kind: application
+    level: advanced
+    core: true
+    demo: neuron
+    prerequisites: [neural-networks, automatic-differentiation, gradient-descent]
+    title: {en: 'Backpropagation', es: 'Retropropagación (backpropagation)'}
+    aliases: {en: [backprop, backward pass, reverse-mode AD, error backpropagation, delta rule], es: [backprop, pasada hacia atrás, modo inverso, propagación del error, regla delta]}
+    summary:
+      en: |
+        The algorithm that computes $\partial L/\partial W$ and $\partial L/\partial b$ for every layer of a network: one
+        forward pass storing intermediate values, then one backward pass applying the chain rule from the loss down to the
+        inputs. Cost: about twice the forward pass, whatever the number of parameters.
+      es: |
+        El algoritmo que calcula $\partial L/\partial W$ y $\partial L/\partial b$ para cada capa de una red: una pasada hacia
+        delante guardando los valores intermedios y otra hacia atrás aplicando la regla de la cadena desde la pérdida hasta
+        las entradas. Coste: unas dos veces la pasada hacia delante, sea cual sea el número de parámetros.
+    why:
+      en: |
+        Gradient descent needs the gradient with respect to every weight. Computing each partial derivative separately
+        (or by finite differences) costs one full network evaluation per weight: impossible with $10^9$ weights. Backprop
+        shares the work: the derivative of the loss with respect to a layer's output is computed once and reused for all
+        the weights feeding into it.
+      es: |
+        El descenso de gradiente necesita el gradiente respecto de cada peso. Calcular cada derivada parcial por separado
+        (o con diferencias finitas) cuesta una evaluación completa de la red por peso: imposible con $10^9$ pesos. La
+        retropropagación comparte el trabajo: la derivada de la pérdida respecto de la salida de una capa se calcula una vez
+        y se reutiliza para todos los pesos que entran en ella.
+    intuition:
+      en: |
+        Blame assignment. The loss says "the output was too high by this much". Each layer passes the blame back to its
+        inputs in proportion to how much they influenced it (the local derivatives), and each weight receives
+        (blame arriving at its neuron) × (the input it multiplied). That product is $\partial L/\partial w$.
+
+        Where does it come from? Follow the prerequisites: backpropagation ← chain rule ← derivatives; ← partial derivatives
+        ← gradient ← functions of several variables; ← gradient descent ← optimization; ← neural networks.
+      es: |
+        Repartir culpas. La pérdida dice «la salida se ha pasado tanto». Cada capa devuelve la culpa a sus entradas en
+        proporción a cuánto influyeron (las derivadas locales), y cada peso recibe (culpa que llega a su neurona) × (la
+        entrada que multiplicó). Ese producto es $\partial L/\partial w$.
+
+        ¿De dónde sale? Sigue los prerrequisitos: retropropagación ← regla de la cadena ← derivadas; ← derivadas parciales
+        ← gradiente ← funciones de varias variables; ← descenso de gradiente ← optimización; ← redes neuronales.
+    formal:
+      en: |
+        For $\hat y = f(z)$, $z = Wx + b$ and loss $L(\hat y, y)$, with $\delta = \frac{\partial L}{\partial z} = \frac{\partial L}{\partial\hat y}\odot f'(z)$:
+        $$\frac{\partial L}{\partial W} = \delta\,x^{\mathsf T}, \qquad \frac{\partial L}{\partial b} = \delta, \qquad \frac{\partial L}{\partial x} = W^{\mathsf T}\delta.$$
+        For a deep network the last formula hands $\delta$ to the previous layer:
+        $\delta^{(\ell)} = \big(W^{(\ell+1)\mathsf T}\delta^{(\ell+1)}\big)\odot\sigma'(z^{(\ell)})$.
+      es: |
+        Para $\hat y = f(z)$, $z = Wx + b$ y pérdida $L(\hat y, y)$, con $\delta = \frac{\partial L}{\partial z} = \frac{\partial L}{\partial\hat y}\odot f'(z)$:
+        $$\frac{\partial L}{\partial W} = \delta\,x^{\mathsf T}, \qquad \frac{\partial L}{\partial b} = \delta, \qquad \frac{\partial L}{\partial x} = W^{\mathsf T}\delta.$$
+        En una red profunda la última fórmula pasa $\delta$ a la capa anterior:
+        $\delta^{(\ell)} = \big(W^{(\ell+1)\mathsf T}\delta^{(\ell+1)}\big)\odot\sigma'(z^{(\ell)})$.
+    formulas:
+      - tex: |-
+          \frac{\partial L}{\partial W} = \frac{\partial L}{\partial\hat y}\cdot\frac{\partial\hat y}{\partial z}\cdot\frac{\partial z}{\partial W}, \qquad \hat y = f(Wx + b)
+      - tex: |-
+          \frac{\partial L}{\partial W} = \delta\,x^{\mathsf T}, \qquad \frac{\partial L}{\partial b} = \delta
+      - tex: |-
+          \delta^{(\ell)} = \Big(W^{(\ell+1)\mathsf T}\,\delta^{(\ell+1)}\Big)\odot\sigma'\big(z^{(\ell)}\big)
+    compute:
+      en: |
+        ```
+        forward:  a0 = x;  for ℓ = 1..L:  zℓ = Wℓ aℓ₋₁ + bℓ;  aℓ = σ(zℓ)     # keep every zℓ, aℓ
+        loss:     L = ℓ(aL, y);  δ = ∂ℓ/∂aL ⊙ σ'(zL)
+        backward: for ℓ = L..1:
+                      ∂L/∂Wℓ = δ aℓ₋₁ᵀ ;  ∂L/∂bℓ = δ
+                      δ = (Wℓᵀ δ) ⊙ σ'(zℓ₋₁)
+        update:   Wℓ ← Wℓ − η ∂L/∂Wℓ ;  bℓ ← bℓ − η ∂L/∂bℓ
+        ```
+      es: |
+        ```
+        adelante: a0 = x;  para ℓ = 1..L:  zℓ = Wℓ aℓ₋₁ + bℓ;  aℓ = σ(zℓ)    # guardar cada zℓ, aℓ
+        pérdida:  L = ℓ(aL, y);  δ = ∂ℓ/∂aL ⊙ σ'(zL)
+        atrás:    para ℓ = L..1:
+                      ∂L/∂Wℓ = δ aℓ₋₁ᵀ ;  ∂L/∂bℓ = δ
+                      δ = (Wℓᵀ δ) ⊙ σ'(zℓ₋₁)
+        actualizar: Wℓ ← Wℓ − η ∂L/∂Wℓ ;  bℓ ← bℓ − η ∂L/∂bℓ
+        ```
+    example:
+      en: |
+        One neuron, $\hat y = \sigma(wx + b)$, squared loss $L = \frac12(\hat y - y)^2$, with $x = 1.5$, $y = 1$, $w = 0.8$,
+        $b = -0.2$. Forward: $z = 1.0$, $\hat y = \sigma(1) \approx 0.731$, $L \approx 0.036$. Backward:
+        $\partial L/\partial\hat y = -0.269$, $\sigma'(z) = 0.197$, $\delta \approx -0.053$, so $\partial L/\partial w = \delta x \approx -0.080$,
+        $\partial L/\partial b \approx -0.053$. Both negative: increase $w$ and $b$. Reproduce it step by step in the demo.
+      es: |
+        Una neurona, $\hat y = \sigma(wx + b)$, pérdida cuadrática $L = \frac12(\hat y - y)^2$, con $x = 1{,}5$, $y = 1$,
+        $w = 0{,}8$, $b = -0{,}2$. Hacia delante: $z = 1{,}0$, $\hat y = \sigma(1) \approx 0{,}731$, $L \approx 0{,}036$. Hacia
+        atrás: $\partial L/\partial\hat y = -0{,}269$, $\sigma'(z) = 0{,}197$, $\delta \approx -0{,}053$, así que
+        $\partial L/\partial w = \delta x \approx -0{,}080$ y $\partial L/\partial b \approx -0{,}053$. Ambas negativas: hay que
+        aumentar $w$ y $b$. Reprodúcelo paso a paso en la demo.
+    matters:
+      en: |
+        Popularized by Rumelhart, Hinton and Williams (1986), with roots in Linnainmaa's reverse-mode AD (1970) and
+        control theory. It made multilayer networks trainable and, scaled up on GPUs, made deep learning possible. Every
+        `loss.backward()` call runs it.
+      es: |
+        La popularizaron Rumelhart, Hinton y Williams (1986), con raíces en la diferenciación automática en modo inverso de
+        Linnainmaa (1970) y en la teoría de control. Hizo entrenables las redes multicapa y, escalada en GPU, hizo posible el
+        deep learning. Cada llamada a `loss.backward()` la ejecuta.
+    exercises:
+      - type: ai
+        prompt:
+          en: 'For $\hat y = \sigma(wx + b)$ and $L = \frac12(\hat y - y)^2$, derive $\partial L/\partial w$ and $\partial L/\partial b$.'
+          es: 'Para $\hat y = \sigma(wx + b)$ y $L = \frac12(\hat y - y)^2$, deduce $\partial L/\partial w$ y $\partial L/\partial b$.'
+        solution:
+          en: '$\partial L/\partial w = (\hat y - y)\,\hat y(1 - \hat y)\,x$ and $\partial L/\partial b = (\hat y - y)\,\hat y(1 - \hat y)$.'
+          es: '$\partial L/\partial w = (\hat y - y)\,\hat y(1 - \hat y)\,x$ y $\partial L/\partial b = (\hat y - y)\,\hat y(1 - \hat y)$.'
+      - type: computing
+        prompt:
+          en: 'Why does backprop need to store the forward activations, and how does gradient checkpointing trade memory for compute?'
+          es: '¿Por qué la retropropagación necesita guardar las activaciones de la pasada hacia delante, y cómo intercambia el checkpointing memoria por cómputo?'
+        solution:
+          en: |
+            The local derivatives ($\sigma'(z^{(\ell)})$, $a^{(\ell-1)}$) depend on forward values. Checkpointing stores only some
+            layers' activations and recomputes the others during the backward pass: memory drops (to $O(\sqrt L)$ with
+            optimal placement) at the cost of roughly one extra forward pass.
+          es: |
+            Las derivadas locales ($\sigma'(z^{(\ell)})$, $a^{(\ell-1)}$) dependen de valores de la pasada hacia delante. El
+            checkpointing guarda solo las activaciones de algunas capas y recalcula las demás en la pasada hacia atrás: la
+            memoria baja (a $O(\sqrt L)$ con una colocación óptima) a cambio de más o menos una pasada hacia delante extra.
+
+  - id: sgd
+    kind: application
+    level: advanced
+    prerequisites: [gradient-descent, learning-rate]
+    title: {en: 'Stochastic gradient descent (SGD)', es: 'Descenso de gradiente estocástico (SGD)'}
+    aliases: {en: [SGD, mini-batch, stochastic optimization, Robbins-Monro], es: [SGD, mini-lote, optimización estocástica, Robbins-Monro]}
+    summary:
+      en: |
+        Use the gradient of a small random batch instead of the whole dataset: a noisy but unbiased estimate, thousands of
+        times cheaper. The noise even helps escape saddles and sharp minima.
+      es: |
+        Usar el gradiente de un lote pequeño aleatorio en vez del de todo el conjunto de datos: una estimación ruidosa pero
+        insesgada, miles de veces más barata. El ruido incluso ayuda a escapar de sillas y de mínimos estrechos.
+    formulas:
+      - tex: |-
+          \theta_{k+1} = \theta_k - \eta_k\,\frac{1}{|B_k|}\sum_{i\in B_k}\nabla\ell_i(\theta_k)
+      - tex: |-
+          \sum_k\eta_k = \infty, \qquad \sum_k\eta_k^2 < \infty
+        label: {en: 'Robbins–Monro step-size conditions for convergence', es: 'condiciones de Robbins–Monro sobre el paso para converger'}
+
+  - id: adam
+    kind: application
+    level: advanced
+    prerequisites: [sgd]
+    title: {en: 'Momentum and Adam', es: 'Momento y Adam'}
+    aliases: {en: [momentum, Nesterov, RMSProp, AdamW, adaptive optimizer], es: [momento, Nesterov, RMSProp, AdamW, optimizador adaptativo]}
+    summary:
+      en: |
+        Momentum averages past gradients (a heavy ball that keeps rolling through ravines); RMSProp divides by a running
+        RMS of the gradient (per-parameter step sizes). Adam combines both and is the default optimizer of deep learning.
+      es: |
+        El momento promedia gradientes pasados (una bola pesada que sigue rodando por los barrancos); RMSProp divide por la
+        media cuadrática móvil del gradiente (pasos por parámetro). Adam combina ambos y es el optimizador por defecto del
+        deep learning.
+    formulas:
+      - tex: |-
+          m_t = \beta_1 m_{t-1} + (1-\beta_1)g_t, \quad v_t = \beta_2 v_{t-1} + (1-\beta_2)g_t^2, \quad \theta_t = \theta_{t-1} - \eta\,\frac{\hat m_t}{\sqrt{\hat v_t} + \epsilon}
+        label: {en: 'Adam (with bias corrections $\hat m, \hat v$)', es: 'Adam (con correcciones de sesgo $\hat m, \hat v$)'}
+
+  - id: regularization
+    kind: application
+    level: advanced
+    prerequisites: [loss-function]
+    title: {en: 'Regularization', es: 'Regularización'}
+    aliases: {en: [weight decay, L2, L1, LASSO, ridge, dropout, overfitting], es: [decaimiento de pesos, L2, L1, LASSO, ridge, dropout, sobreajuste]}
+    summary:
+      en: |
+        Add a penalty to the loss, $L + \lambda\norm\theta^2$ (weight decay) or $\lambda\norm\theta_1$ (sparsity), to prefer
+        simpler models and reduce overfitting. Its gradient $2\lambda\theta$ shrinks every weight a little each step.
+      es: |
+        Añadir una penalización a la pérdida, $L + \lambda\norm\theta^2$ (decaimiento de pesos) o $\lambda\norm\theta_1$
+        (dispersión), para preferir modelos más sencillos y reducir el sobreajuste. Su gradiente $2\lambda\theta$ encoge un
+        poco cada peso en cada paso.
+    formulas:
+      - tex: |-
+          \nabla\big(L + \lambda\norm\theta^2\big) = \nabla L + 2\lambda\theta
+      - tex: |-
+          w^\ast_{\text{ridge}} = (X^{\mathsf T}X + \lambda I)^{-1}X^{\mathsf T}y
+        label: {en: 'ridge regression also cures ill-conditioning', es: 'la regresión ridge también cura el mal condicionamiento'}
+
+  - id: loss-landscape
+    kind: application
+    level: advanced
+    prerequisites: [neural-networks, gradient-descent]
+    title: {en: 'Loss landscape', es: 'Paisaje de la pérdida (loss landscape)'}
+    aliases: {en: [optimization landscape, saddle points, sharp minima, flat minima, edge of stability], es: [paisaje de optimización, puntos de silla, mínimos agudos, mínimos planos, borde de la estabilidad]}
+    summary:
+      en: |
+        The geometry of $L(\theta)$ over parameter space: valleys, plateaus, saddle points and ravines. Its curvature
+        (Hessian) controls how fast and how stably optimizers move, and flat minima tend to generalize better than sharp ones.
+      es: |
+        La geometría de $L(\theta)$ sobre el espacio de parámetros: valles, mesetas, puntos de silla y barrancos. Su
+        curvatura (hessiano) controla lo deprisa y lo estable que se mueven los optimizadores, y los mínimos planos tienden a
+        generalizar mejor que los agudos.
+    formulas:
+      - tex: |-
+          S(\theta) = \lambda_{\max}\big(\nabla^2 L(\theta)\big)
+        label: {en: 'sharpness', es: 'nitidez (sharpness)'}
+      - tex: |-
+          \eta\,\lambda_{\max} \approx 2
+        label: {en: 'the edge of stability, where full-batch training tends to settle', es: 'el borde de la estabilidad, donde tiende a asentarse el entrenamiento con lote completo'}
+    matters:
+      en: 'Understanding why non-convex training works so well is one of the open questions of deep learning theory.'
+      es: 'Entender por qué funciona tan bien un entrenamiento no convexo es una de las preguntas abiertas de la teoría del deep learning.'
+
+  - id: second-order-optimization
+    kind: application
+    level: specialized
+    prerequisites: [gradient-descent, loss-landscape]
+    title: {en: 'Second-order (Hessian-based) optimization', es: 'Optimización de segundo orden (con hessiano)'}
+    aliases: {en: [Newton method, quasi-Newton, BFGS, L-BFGS, natural gradient, K-FAC, Shampoo], es: [método de Newton, cuasi-Newton, BFGS, L-BFGS, gradiente natural, K-FAC, Shampoo]}
+    summary:
+      en: |
+        Use curvature to choose the step: $\theta \leftarrow \theta - H^{-1}\nabla L$. Quadratic convergence near a minimum and
+        immune to ill-conditioning, but the Hessian of a large model cannot even be stored — so practice uses approximations
+        (L-BFGS, Gauss–Newton, K-FAC, Shampoo).
+      es: |
+        Usar la curvatura para elegir el paso: $\theta \leftarrow \theta - H^{-1}\nabla L$. Convergencia cuadrática cerca de un
+        mínimo e inmune al mal condicionamiento, pero el hessiano de un modelo grande ni siquiera se puede almacenar; por eso
+        en la práctica se usan aproximaciones (L-BFGS, Gauss–Newton, K-FAC, Shampoo).
+    formulas:
+      - tex: |-
+          \theta_{k+1} = \theta_k - \big(\nabla^2 L(\theta_k)\big)^{-1}\nabla L(\theta_k)
+
+  - id: deep-learning
+    kind: application
+    level: advanced
+    core: true
+    prerequisites: [backpropagation, adam, regularization]
+    title: {en: 'Deep learning', es: 'Deep learning (aprendizaje profundo)'}
+    aliases: {en: [deep neural networks, transformers, large language models, LLM, GPU training], es: [redes neuronales profundas, transformers, grandes modelos de lenguaje, LLM, entrenamiento en GPU]}
+    summary:
+      en: |
+        Training very deep networks (CNNs, transformers) with backpropagation and adaptive SGD on huge datasets. The
+        calculus is the same as for one neuron; what changed is scale, architecture (residual connections, normalization,
+        attention) and hardware.
+      es: |
+        Entrenar redes muy profundas (CNN, transformers) con retropropagación y SGD adaptativo sobre conjuntos de datos
+        enormes. El cálculo es el mismo que para una neurona; lo que cambió es la escala, la arquitectura (conexiones
+        residuales, normalización, atención) y el hardware.
+    formulas:
+      - tex: |-
+          x_{\ell+1} = x_\ell + F_\ell(x_\ell) \implies \frac{\partial x_{\ell+1}}{\partial x_\ell} = I + \frac{\partial F_\ell}{\partial x_\ell}
+        label: {en: 'residual connections keep the chain of Jacobians close to the identity', es: 'las conexiones residuales mantienen la cadena de jacobianas cerca de la identidad'}
+    links:
+      - href: 'https://toniferr.github.io/math-of-ai/transformers/'
+        label: {en: 'Math of AI · Transformers', es: 'Math of AI · Transformers'}
+
+  - id: convolutional-networks
+    kind: application
+    level: advanced
+    prerequisites: [deep-learning]
+    title: {en: 'Convolutional networks (CNNs)', es: 'Redes convolucionales (CNN)'}
+    aliases: {en: [CNN, convolutional layer, kernel, feature map, computer vision], es: [CNN, capa convolucional, núcleo, mapa de rasgos, visión por computador]}
+    summary:
+      en: |
+        Networks whose layers convolve the input with small learned kernels: translation-equivariant, with few parameters.
+        The backbone of computer vision since 2012.
+      es: |
+        Redes cuyas capas convolucionan la entrada con núcleos pequeños aprendidos: equivariantes a traslaciones y con pocos
+        parámetros. La columna vertebral de la visión por computador desde 2012.
+    formulas:
+      - tex: |-
+          (K \star I)[i,j] = \sum_{m,n} K[m,n]\,I[i+m,\,j+n]
+
+  - id: support-vector-machines
+    kind: application
+    level: advanced
+    prerequisites: [loss-function]
+    title: {en: 'Support vector machines', es: 'Máquinas de vectores soporte (SVM)'}
+    aliases: {en: [SVM, maximum margin, kernel trick, hinge loss], es: [SVM, margen máximo, truco del núcleo, pérdida hinge]}
+    summary:
+      en: |
+        Find the separating hyperplane with the largest margin: a convex quadratic program whose Lagrangian dual involves
+        the data only through dot products — hence the kernel trick.
+      es: |
+        Encontrar el hiperplano separador de mayor margen: un programa cuadrático convexo cuyo dual lagrangiano solo usa los
+        datos a través de productos escalares; de ahí el truco del núcleo.
+    formulas:
+      - tex: |-
+          \min_{w,b}\ \tfrac12\norm w^2, \qquad y_i(w\cdot x_i + b) \ge 1\ \ \forall i
+      - tex: |-
+          \max_\alpha \sum_i\alpha_i - \tfrac12\sum_{i,j}\alpha_i\alpha_j y_i y_j\,k(x_i, x_j), \quad \alpha_i \ge 0,\ \sum_i\alpha_i y_i = 0
+        label: {en: 'the dual: only kernels $k(x_i, x_j)$ appear', es: 'el dual: solo aparecen núcleos $k(x_i, x_j)$'}
+
+  - id: reinforcement-learning
+    kind: application
+    level: advanced
+    prerequisites: [gradient-descent]
+    title: {en: 'Reinforcement learning', es: 'Aprendizaje por refuerzo'}
+    aliases: {en: [RL, Bellman equation, value iteration, policy gradient, Q-learning, RLHF], es: [RL, ecuación de Bellman, iteración de valores, gradiente de política, Q-learning, RLHF]}
+    summary:
+      en: |
+        An agent learns to act by maximizing expected discounted reward. Value methods iterate the Bellman operator (a
+        contraction); policy-gradient methods do gradient ascent on an expectation. RLHF uses it to fine-tune language models.
+      es: |
+        Un agente aprende a actuar maximizando la recompensa descontada esperada. Los métodos de valor iteran el operador de
+        Bellman (una contracción); los de gradiente de política hacen ascenso de gradiente sobre una esperanza. RLHF lo usa
+        para ajustar modelos de lenguaje.
+    formulas:
+      - tex: |-
+          V(s) = \max_a\Big(r(s,a) + \gamma\sum_{s'}P(s'\mid s,a)\,V(s')\Big)
+        label: {en: 'Bellman optimality equation', es: 'ecuación de optimalidad de Bellman'}
+      - tex: |-
+          \nabla_\theta J = \E_{\pi_\theta}\big[\nabla_\theta\log\pi_\theta(a\mid s)\,G_t\big]
+        label: {en: 'policy gradient theorem', es: 'teorema del gradiente de política'}
+
+  - id: bayesian-inference
+    kind: application
+    level: advanced
+    title: {en: 'Bayesian inference', es: 'Inferencia bayesiana'}
+    aliases: {en: [posterior, prior, evidence, MCMC, variational inference, Bayes], es: [posterior, prior, evidencia, MCMC, inferencia variacional, Bayes]}
+    summary:
+      en: |
+        Treat parameters as random and update a prior density into a posterior with Bayes' rule. The normalizing integral
+        is intractable in general, so practice uses MCMC (sampling) or variational inference (optimization).
+      es: |
+        Tratar los parámetros como aleatorios y actualizar una densidad a priori en una a posteriori con la regla de Bayes.
+        La integral normalizadora es intratable en general, así que en la práctica se usa MCMC (muestreo) o inferencia
+        variacional (optimización).
+    formulas:
+      - tex: |-
+          p(\theta\mid D) = \frac{p(D\mid\theta)\,p(\theta)}{\int p(D\mid\theta')\,p(\theta')\,\dd\theta'}
+      - tex: |-
+          \log p(D) \ge \E_{q}\big[\log p(D,\theta) - \log q(\theta)\big]
+        label: {en: 'evidence lower bound (ELBO)', es: 'cota inferior de la evidencia (ELBO)'}
+
+  - id: generative-models
+    kind: application
+    level: specialized
+    prerequisites: [deep-learning, bayesian-inference]
+    title: {en: 'Generative models', es: 'Modelos generativos'}
+    aliases: {en: [diffusion models, normalizing flows, VAE, GAN, score matching, generative AI], es: [modelos de difusión, normalizing flows, VAE, GAN, score matching, IA generativa]}
+    summary:
+      en: |
+        Models that learn a probability density of data and sample from it. Calculus is everywhere: change of variables and
+        Jacobian determinants (flows), ELBO integrals (VAEs), Lipschitz critics (WGANs), and stochastic/ordinary
+        differential equations integrated backwards in time (diffusion).
+      es: |
+        Modelos que aprenden una densidad de probabilidad de los datos y muestrean de ella. El cálculo está por todas partes:
+        cambio de variables y determinantes jacobianos (flows), integrales ELBO (VAE), críticos lipschitzianos (WGAN) y
+        ecuaciones diferenciales estocásticas u ordinarias integradas hacia atrás en el tiempo (difusión).
+    formulas:
+      - tex: |-
+          \dd x = \big[f(x,t) - g(t)^2\,\nabla_x\log p_t(x)\big]\,\dd t + g(t)\,\dd\bar w
+        label: {en: 'reverse-time SDE of score-based diffusion', es: 'EDE en tiempo inverso de la difusión basada en score'}
+      - tex: |-
+          \log p_X(x) = \log p_Z\big(f^{-1}(x)\big) + \log\big|\det J_{f^{-1}}(x)\big|
+        label: {en: 'normalizing flow likelihood', es: 'verosimilitud de un normalizing flow'}
+
+  - id: neural-odes
+    kind: application
+    level: specialized
+    prerequisites: [deep-learning]
+    title: {en: 'Neural ODEs', es: 'Neural ODE'}
+    aliases: {en: [continuous-depth networks, adjoint method, ResNet as ODE], es: [redes de profundidad continua, método adjunto, ResNet como EDO]}
+    summary:
+      en: |
+        A residual network $x_{\ell+1} = x_\ell + hF(x_\ell)$ is Euler's method; let $h \to 0$ and the network becomes an ODE
+        $\dot x = F_\theta(x, t)$, evaluated by an ODE solver and trained by the adjoint method (reverse-mode AD in continuous
+        time).
+      es: |
+        Una red residual $x_{\ell+1} = x_\ell + hF(x_\ell)$ es el método de Euler; con $h \to 0$ la red se convierte en una EDO
+        $\dot x = F_\theta(x, t)$, que se evalúa con un resolvedor de EDO y se entrena con el método adjunto (el modo inverso
+        de la diferenciación automática en tiempo continuo).
+    formulas:
+      - tex: |-
+          \frac{\dd h}{\dd t} = f_\theta(h, t), \qquad \frac{\dd a}{\dd t} = -a^{\mathsf T}\frac{\partial f_\theta}{\partial h}, \quad a = \frac{\partial L}{\partial h}

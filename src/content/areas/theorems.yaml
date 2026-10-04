@@ -1,0 +1,331 @@
+kind: math
+order: 6
+glyph: '∎'
+title: {en: 'Fundamental theorems', es: 'Teoremas fundamentales'}
+summary:
+  en: |
+    Rolle, the mean value theorem, Cauchy, L'Hôpital and the fundamental theorem of calculus: the results that turn
+    local information (derivatives) into global guarantees — error bounds, limits, areas.
+  es: |
+    Rolle, el teorema del valor medio, Cauchy, L'Hôpital y el teorema fundamental del cálculo: los resultados que
+    convierten información local (derivadas) en garantías globales: cotas de error, límites, áreas.
+topics:
+  - id: rolle-theorem
+    level: university
+    kind: theorem
+    prerequisites: [differentiability, extreme-value-theorem]
+    title: {en: 'Rolle''s theorem', es: 'Teorema de Rolle'}
+    aliases: {en: [Rolle], es: [Rolle]}
+    summary:
+      en: |
+        If a smooth function takes the same value at both ends of an interval, somewhere in between its derivative is
+        zero: a ball thrown up and caught at the same height was momentarily still.
+      es: |
+        Si una función suave toma el mismo valor en los dos extremos de un intervalo, en algún punto intermedio su
+        derivada es cero: una pelota lanzada hacia arriba y recogida a la misma altura estuvo quieta un instante.
+    formal:
+      en: '$f$ continuous on $[a,b]$, differentiable on $(a,b)$, $f(a) = f(b)$ $\implies \exists c \in (a,b):\ f''(c) = 0$.'
+      es: '$f$ continua en $[a,b]$, derivable en $(a,b)$, $f(a) = f(b)$ $\implies \exists c \in (a,b):\ f''(c) = 0$.'
+    proofIdea:
+      en: |
+        By Weierstrass, $f$ has a maximum and a minimum on $[a,b]$. If both are at the endpoints, $f$ is constant and
+        $f' \equiv 0$. Otherwise one of them is at an interior point $c$, and at an interior extremum the derivative
+        vanishes (the difference quotients change sign).
+      es: |
+        Por Weierstrass, $f$ tiene máximo y mínimo en $[a,b]$. Si ambos están en los extremos, $f$ es constante y
+        $f' \equiv 0$. Si no, uno de ellos está en un punto interior $c$, y en un extremo interior la derivada se anula
+        (los cocientes incrementales cambian de signo).
+    applications: []
+
+  - id: mean-value-theorem
+    level: university
+    kind: theorem
+    core: true
+    prerequisites: [rolle-theorem]
+    title: {en: 'Mean value theorem', es: 'Teorema del valor medio'}
+    aliases: {en: [MVT, Lagrange theorem, finite increments], es: [TVM, teorema de Lagrange, incrementos finitos]}
+    summary:
+      en: |
+        Somewhere on $(a, b)$ the instantaneous rate of change equals the average rate:
+        $f'(c) = \frac{f(b) - f(a)}{b - a}$. It is the bridge from derivatives to inequalities — and therefore to every
+        error bound in numerical analysis.
+      es: |
+        En algún punto de $(a, b)$ la tasa de cambio instantánea coincide con la media:
+        $f'(c) = \frac{f(b) - f(a)}{b - a}$. Es el puente de las derivadas a las desigualdades y, por tanto, a todas las
+        cotas de error del análisis numérico.
+    why:
+      en: |
+        Derivatives are local; we often need global statements: "if the derivative is small everywhere, the function
+        barely changes", "if $f' > 0$ the function increases", "this numerical method's error is at most…". The mean
+        value theorem converts one into the other.
+      es: |
+        Las derivadas son locales, y a menudo hacen falta afirmaciones globales: «si la derivada es pequeña en todas
+        partes, la función apenas cambia», «si $f' > 0$ la función crece», «el error de este método numérico es como
+        mucho…». El teorema del valor medio convierte unas en otras.
+    intuition:
+      en: |
+        Draw the secant from $(a, f(a))$ to $(b, f(b))$ and slide it parallel to itself: at the last moment it touches
+        the graph, it is a tangent. Physically: if you drove 120 km in one hour, at some instant your speedometer read
+        exactly 120 km/h — which is how average-speed cameras can fine you.
+      es: |
+        Dibuja la secante de $(a, f(a))$ a $(b, f(b))$ y desplázala paralela a sí misma: en el último momento en que toca
+        la gráfica, es tangente. Físicamente: si recorriste 120 km en una hora, en algún instante el velocímetro marcó
+        exactamente 120 km/h, que es por lo que te puede multar un radar de tramo.
+    formal:
+      en: |
+        If $f$ is continuous on $[a,b]$ and differentiable on $(a,b)$, there is $c \in (a,b)$ with
+        $$f(b) - f(a) = f'(c)\,(b - a).$$
+      es: |
+        Si $f$ es continua en $[a,b]$ y derivable en $(a,b)$, existe $c \in (a,b)$ con
+        $$f(b) - f(a) = f'(c)\,(b - a).$$
+    proofIdea:
+      en: 'Subtract the secant line from $f$: the difference $g$ satisfies $g(a) = g(b)$, so Rolle gives $g''(c) = 0$, i.e. $f''(c)$ equals the slope of the secant.'
+      es: 'Resta a $f$ la recta secante: la diferencia $g$ cumple $g(a) = g(b)$, así que Rolle da $g''(c) = 0$, es decir, $f''(c)$ es igual a la pendiente de la secante.'
+    proof:
+      en: |
+        Let $m = \frac{f(b) - f(a)}{b - a}$ and $g(x) = f(x) - f(a) - m\,(x - a)$. Then $g$ is continuous on $[a,b]$,
+        differentiable on $(a,b)$, and $g(a) = 0 = g(b)$. By Rolle's theorem there is $c \in (a,b)$ with
+        $0 = g'(c) = f'(c) - m$. $\blacksquare$
+
+        **Corollaries.** (1) If $f' = 0$ on an interval, $f$ is constant. (2) If $f' > 0$, $f$ is strictly increasing.
+        (3) If $|f'| \le L$, then $|f(x) - f(y)| \le L|x - y|$: bounded derivative implies Lipschitz.
+      es: |
+        Sea $m = \frac{f(b) - f(a)}{b - a}$ y $g(x) = f(x) - f(a) - m\,(x - a)$. Entonces $g$ es continua en $[a,b]$,
+        derivable en $(a,b)$ y $g(a) = 0 = g(b)$. Por el teorema de Rolle existe $c \in (a,b)$ con
+        $0 = g'(c) = f'(c) - m$. $\blacksquare$
+
+        **Corolarios.** (1) Si $f' = 0$ en un intervalo, $f$ es constante. (2) Si $f' > 0$, $f$ es estrictamente
+        creciente. (3) Si $|f'| \le L$, entonces $|f(x) - f(y)| \le L|x - y|$: derivada acotada implica Lipschitz.
+    formulas:
+      - tex: |-
+          f(b) - f(a) = f'(c)\,(b - a), \qquad c \in (a, b)
+      - tex: |-
+          |f(x) - f(y)| \le \Big(\sup_{t} |f'(t)|\Big)\,|x - y|
+        label: {en: 'the form used for error bounds', es: 'la forma usada para acotar errores'}
+    matters:
+      en: |
+        Whenever a numerical analyst proves that a method's error is at most $C h^p$, a mean value theorem (or its big
+        brother, Taylor's theorem with remainder) is somewhere in the proof. Convergence proofs for gradient descent,
+        Newton's method and ODE solvers all go through it.
+      es: |
+        Siempre que un analista numérico demuestra que el error de un método es como mucho $C h^p$, hay un teorema del
+        valor medio (o su hermano mayor, el teorema de Taylor con resto) en algún lugar de la demostración. Las pruebas
+        de convergencia del descenso de gradiente, del método de Newton y de los resolvedores de EDO pasan todas por él.
+    applications:
+      - to: scientific-computing
+        strength: 4
+        type: frequent
+        note:
+          en: 'Error bounds of numerical methods are derived from the MVT and Taylor''s theorem.'
+          es: 'Las cotas de error de los métodos numéricos se deducen del TVM y del teorema de Taylor.'
+      - to: gradient-descent
+        strength: 3
+        type: advanced
+        note:
+          en: 'Convergence proofs bound the decrease per step with the MVT applied to the gradient.'
+          es: 'Las pruebas de convergencia acotan el descenso por paso aplicando el TVM al gradiente.'
+    exercises:
+      - type: proof
+        prompt:
+          en: 'Use the MVT to prove $|\sin x - \sin y| \le |x - y|$ for all real $x, y$.'
+          es: 'Usa el TVM para demostrar $|\sin x - \sin y| \le |x - y|$ para todos los reales $x, y$.'
+        solution:
+          en: '$\sin x - \sin y = \cos(c)\,(x - y)$ for some $c$, and $|\cos c| \le 1$.'
+          es: '$\sin x - \sin y = \cos(c)\,(x - y)$ para algún $c$, y $|\cos c| \le 1$.'
+      - type: applied
+        prompt:
+          en: 'A car passes two cameras 10 km apart, 5 minutes apart. Prove it exceeded 110 km/h at some moment.'
+          es: 'Un coche pasa por dos cámaras separadas 10 km con 5 minutos de diferencia. Demuestra que superó los 110 km/h en algún momento.'
+        solution:
+          en: 'Average speed $= 10 / (5/60) = 120$ km/h. By the MVT, at some instant $s''(t) = 120 > 110$.'
+          es: 'Velocidad media $= 10 / (5/60) = 120$ km/h. Por el TVM, en algún instante $s''(t) = 120 > 110$.'
+
+  - id: cauchy-mean-value-theorem
+    level: university
+    kind: theorem
+    prerequisites: [mean-value-theorem]
+    title: {en: 'Cauchy''s mean value theorem', es: 'Teorema del valor medio de Cauchy'}
+    aliases: {en: [generalized mean value theorem], es: [teorema del valor medio generalizado]}
+    summary:
+      en: |
+        The mean value theorem for two functions at once — for a parametric curve $(g(t), f(t))$. It is the lemma from
+        which L'Hôpital's rule follows.
+      es: |
+        El teorema del valor medio para dos funciones a la vez, es decir, para una curva paramétrica $(g(t), f(t))$. Es
+        el lema del que se deduce la regla de L'Hôpital.
+    formal:
+      en: '$\exists c \in (a,b):\ \big(f(b) - f(a)\big)\,g''(c) = \big(g(b) - g(a)\big)\,f''(c)$.'
+      es: '$\exists c \in (a,b):\ \big(f(b) - f(a)\big)\,g''(c) = \big(g(b) - g(a)\big)\,f''(c)$.'
+    proofIdea:
+      en: 'Apply Rolle to $h(x) = (f(b) - f(a))\,g(x) - (g(b) - g(a))\,f(x)$, which takes the same value at $a$ and $b$.'
+      es: 'Aplica Rolle a $h(x) = (f(b) - f(a))\,g(x) - (g(b) - g(a))\,f(x)$, que toma el mismo valor en $a$ y en $b$.'
+    applications: []
+
+  - id: lhopital-rule
+    level: university
+    kind: theorem
+    prerequisites: [cauchy-mean-value-theorem, infinitesimals]
+    title: {en: 'L''Hôpital''s rule', es: 'Regla de L''Hôpital'}
+    aliases: {en: [L'Hopital, indeterminate forms, 0/0], es: [L'Hopital, indeterminaciones, 0/0]}
+    summary:
+      en: |
+        For indeterminate forms $0/0$ or $\infty/\infty$, $\lim \frac fg = \lim \frac{f'}{g'}$ when the right-hand limit
+        exists. It settles races between growth rates, such as $\log n$ versus $n^\varepsilon$.
+      es: |
+        En indeterminaciones $0/0$ o $\infty/\infty$, $\lim \frac fg = \lim \frac{f'}{g'}$ cuando el límite de la derecha
+        existe. Decide carreras entre ritmos de crecimiento, como $\log n$ frente a $n^\varepsilon$.
+    formal:
+      en: |
+        If $f(x), g(x) \to 0$ (or both $\to \pm\infty$) as $x \to a$, $g' \ne 0$ near $a$, and
+        $\lim_{x\to a}\frac{f'(x)}{g'(x)} = L$, then $\lim_{x\to a}\frac{f(x)}{g(x)} = L$.
+      es: |
+        Si $f(x), g(x) \to 0$ (o ambas $\to \pm\infty$) cuando $x \to a$, $g' \ne 0$ cerca de $a$ y
+        $\lim_{x\to a}\frac{f'(x)}{g'(x)} = L$, entonces $\lim_{x\to a}\frac{f(x)}{g(x)} = L$.
+    proofIdea:
+      en: 'Extend $f, g$ by $0$ at $a$ and apply Cauchy''s MVT on $[a, x]$: $\frac{f(x)}{g(x)} = \frac{f''(c_x)}{g''(c_x)}$ with $c_x \to a$.'
+      es: 'Extiende $f, g$ con $0$ en $a$ y aplica el TVM de Cauchy en $[a, x]$: $\frac{f(x)}{g(x)} = \frac{f''(c_x)}{g''(c_x)}$ con $c_x \to a$.'
+    formulas:
+      - tex: |-
+          \lim_{n\to\infty}\frac{\ln n}{n^{\varepsilon}} = \lim_{n\to\infty}\frac{1/n}{\varepsilon n^{\varepsilon - 1}} = \lim_{n\to\infty}\frac{1}{\varepsilon n^{\varepsilon}} = 0
+        label: {en: 'logarithms lose against any power', es: 'los logaritmos pierden contra cualquier potencia'}
+    applications:
+      - to: algorithm-complexity
+        strength: 3
+        type: frequent
+        note:
+          en: 'Proves the growth hierarchy used to compare algorithms: $\log n = o(n^\varepsilon)$, $n^k = o(2^n)$.'
+          es: 'Demuestra la jerarquía de crecimiento usada para comparar algoritmos: $\log n = o(n^\varepsilon)$, $n^k = o(2^n)$.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Compute $\lim_{x\to 0}\frac{x - \sin x}{x^3}$.'
+          es: 'Calcula $\lim_{x\to 0}\frac{x - \sin x}{x^3}$.'
+        solution:
+          en: 'Three applications: $\frac{1 - \cos x}{3x^2} \to \frac{\sin x}{6x} \to \frac{\cos x}{6} \to \frac16$.'
+          es: 'Aplicándola tres veces: $\frac{1 - \cos x}{3x^2} \to \frac{\sin x}{6x} \to \frac{\cos x}{6} \to \frac16$.'
+
+  - id: fundamental-theorem-calculus
+    level: fundamental
+    kind: theorem
+    core: true
+    prerequisites: [definite-integral, antiderivative, mean-value-theorem]
+    title: {en: 'Fundamental theorem of calculus', es: 'Teorema fundamental del cálculo'}
+    aliases: {en: [FTC, Barrow rule, Newton-Leibniz], es: [TFC, regla de Barrow, Newton-Leibniz]}
+    summary:
+      en: |
+        Differentiation and integration are inverse operations. Accumulating a rate of change recovers the total
+        change: $\int_a^b f'(x)\,\dd x = f(b) - f(a)$, and the derivative of an accumulated quantity is the rate.
+      es: |
+        Derivar e integrar son operaciones inversas. Acumular una tasa de cambio devuelve el cambio total:
+        $\int_a^b f'(x)\,\dd x = f(b) - f(a)$, y la derivada de una cantidad acumulada es la tasa.
+    why:
+      en: |
+        Areas were computed by exhausting them with thin pieces since Archimedes — slow, one curve at a time. Tangents
+        were a separate problem. Newton and Leibniz (with Barrow before them) discovered they are the same problem run
+        in opposite directions, so a table of derivatives is also a table of areas.
+      es: |
+        Las áreas se calculaban agotándolas con trozos finos desde Arquímedes: lento, curva a curva. Las tangentes eran
+        otro problema. Newton y Leibniz (con Barrow antes) descubrieron que son el mismo problema recorrido en sentidos
+        opuestos, de modo que una tabla de derivadas es también una tabla de áreas.
+    intuition:
+      en: |
+        Let $A(x) = \int_a^x f(t)\,\dd t$ be the area accumulated up to $x$. Move $x$ a little to the right by $h$: the
+        area grows by a thin strip of height about $f(x)$ and width $h$. So $\frac{A(x+h) - A(x)}{h} \approx f(x)$ — the
+        rate at which area accumulates is the height of the curve. If $v(t)$ is a velocity, accumulating it gives
+        distance travelled.
+      es: |
+        Sea $A(x) = \int_a^x f(t)\,\dd t$ el área acumulada hasta $x$. Mueve $x$ un poco a la derecha, $h$: el área crece
+        en una franja fina de altura más o menos $f(x)$ y anchura $h$. Así que $\frac{A(x+h) - A(x)}{h} \approx f(x)$: el
+        ritmo al que se acumula el área es la altura de la curva. Si $v(t)$ es una velocidad, acumularla da la distancia
+        recorrida.
+    formal:
+      en: |
+        **Part 1.** If $f$ is continuous on $[a,b]$, then $A(x) = \int_a^x f(t)\,\dd t$ is differentiable and
+        $A'(x) = f(x)$.
+
+        **Part 2 (Barrow's rule).** If $F$ is an antiderivative of a continuous $f$ on $[a,b]$, then
+        $$\int_a^b f(x)\,\dd x = F(b) - F(a).$$
+      es: |
+        **Parte 1.** Si $f$ es continua en $[a,b]$, entonces $A(x) = \int_a^x f(t)\,\dd t$ es derivable y $A'(x) = f(x)$.
+
+        **Parte 2 (regla de Barrow).** Si $F$ es una primitiva de una $f$ continua en $[a,b]$, entonces
+        $$\int_a^b f(x)\,\dd x = F(b) - F(a).$$
+    proofIdea:
+      en: |
+        Part 1: $\frac{A(x+h) - A(x)}{h} = \frac1h\int_x^{x+h} f$ is an average of $f$ over a tiny interval, which tends
+        to $f(x)$ by continuity. Part 2: $A$ and $F$ have the same derivative, so they differ by a constant (MVT).
+      es: |
+        Parte 1: $\frac{A(x+h) - A(x)}{h} = \frac1h\int_x^{x+h} f$ es una media de $f$ en un intervalo diminuto, que tiende
+        a $f(x)$ por continuidad. Parte 2: $A$ y $F$ tienen la misma derivada, así que difieren en una constante (TVM).
+    proof:
+      en: |
+        **Part 1.** For $h > 0$, by the mean value theorem for integrals there is $c_h \in [x, x+h]$ with
+        $\int_x^{x+h} f = f(c_h)\,h$. Hence $\frac{A(x+h) - A(x)}{h} = f(c_h) \to f(x)$ as $h \to 0^+$, because
+        $c_h \to x$ and $f$ is continuous. The case $h < 0$ is identical.
+
+        **Part 2.** $(A - F)' = f - f = 0$ on $(a,b)$, so by the MVT $A - F$ is constant: $A(x) = F(x) + C$. Since
+        $A(a) = 0$, $C = -F(a)$ and $\int_a^b f = A(b) = F(b) - F(a)$. $\blacksquare$
+      es: |
+        **Parte 1.** Para $h > 0$, por el teorema del valor medio para integrales existe $c_h \in [x, x+h]$ con
+        $\int_x^{x+h} f = f(c_h)\,h$. Por tanto $\frac{A(x+h) - A(x)}{h} = f(c_h) \to f(x)$ cuando $h \to 0^+$, porque
+        $c_h \to x$ y $f$ es continua. El caso $h < 0$ es idéntico.
+
+        **Parte 2.** $(A - F)' = f - f = 0$ en $(a,b)$, así que por el TVM $A - F$ es constante: $A(x) = F(x) + C$. Como
+        $A(a) = 0$, $C = -F(a)$ y $\int_a^b f = A(b) = F(b) - F(a)$. $\blacksquare$
+    formulas:
+      - tex: |-
+          \frac{\dd}{\dd x}\int_a^x f(t)\,\dd t = f(x)
+      - tex: |-
+          \int_a^b f(x)\,\dd x = F(b) - F(a), \qquad F' = f
+      - tex: |-
+          s(T) = s(0) + \int_0^T v(t)\,\dd t
+        label: {en: 'position from velocity', es: 'posición a partir de la velocidad'}
+    example:
+      en: |
+        Area under $\sin x$ on $[0, \pi]$: an antiderivative is $-\cos x$, so the area is $-\cos\pi + \cos 0 = 2$.
+        Compare with the Riemann sums in the [[riemann-sum]] demo, which need hundreds of rectangles to get three digits.
+      es: |
+        Área bajo $\sin x$ en $[0, \pi]$: una primitiva es $-\cos x$, así que el área es $-\cos\pi + \cos 0 = 2$. Compárala
+        con las sumas de Riemann de la demo de [[riemann-sum]], que necesitan cientos de rectángulos para tres cifras.
+    matters:
+      en: |
+        It links the two halves of the subject and explains why physics engines and ODE solvers are "integrators":
+        they turn rates (forces, velocities) into states (positions). In probability it is the link between a density
+        and its cumulative distribution, $F' = f$.
+      es: |
+        Une las dos mitades de la materia y explica por qué los motores físicos y los resolvedores de EDO son
+        «integradores»: convierten tasas (fuerzas, velocidades) en estados (posiciones). En probabilidad es el vínculo
+        entre una densidad y su distribución acumulada, $F' = f$.
+    applications:
+      - to: physics-engine
+        strength: 4
+        type: fundamental
+        note:
+          en: 'Integrating velocity gives position: every simulation step is a tiny application of the FTC.'
+          es: 'Integrar la velocidad da la posición: cada paso de simulación es una aplicación diminuta del TFC.'
+      - to: symbolic-computation
+        strength: 4
+        type: frequent
+        note:
+          en: 'CAS evaluate definite integrals by finding an antiderivative (Risch algorithm) and applying Barrow''s rule.'
+          es: 'Los CAS evalúan integrales definidas buscando una primitiva (algoritmo de Risch) y aplicando la regla de Barrow.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Compute $\frac{\dd}{\dd x}\int_0^{x^2} e^{-t^2}\,\dd t$.'
+          es: 'Calcula $\frac{\dd}{\dd x}\int_0^{x^2} e^{-t^2}\,\dd t$.'
+        solution:
+          en: 'By the FTC and the chain rule: $e^{-x^4}\cdot 2x$.'
+          es: 'Por el TFC y la regla de la cadena: $e^{-x^4}\cdot 2x$.'
+      - type: computing
+        prompt:
+          en: 'A sensor reports velocity every 0.1 s. How do you estimate position, and which theorem justifies it?'
+          es: 'Un sensor da la velocidad cada 0,1 s. ¿Cómo estimas la posición y qué teorema lo justifica?'
+        solution:
+          en: |
+            Position is $s(0) + \int_0^T v$ (FTC). With samples, approximate the integral by a sum, e.g. the trapezoidal
+            rule $\sum \frac{v_k + v_{k+1}}{2}\,0.1$. Errors accumulate (drift), which is why IMUs are fused with GPS.
+          es: |
+            La posición es $s(0) + \int_0^T v$ (TFC). Con muestras, la integral se aproxima con una suma, por ejemplo la
+            regla del trapecio $\sum \frac{v_k + v_{k+1}}{2}\,0{,}1$. Los errores se acumulan (deriva), y por eso las IMU
+            se fusionan con el GPS.

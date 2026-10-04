@@ -1,0 +1,46 @@
+---
+import type { Lang } from '../../lib/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const L = (en: string, es: string) => (lang === 'es' ? es : en);
+---
+
+<figure class="demo" data-demo="newton" data-s-flat={L('f′ = 0: the tangent never meets the axis', 'f′ = 0: la tangente nunca corta el eje')} data-s-digits={L('correct digits', 'cifras correctas')}>
+  <div class="demo-controls">
+    <label
+      >f(x) =
+      <select data-fn>
+        <option value="sqrt2">x² − 2</option>
+        <option value="cosx">cos x − x</option>
+        <option value="exp3">eˣ − 3</option>
+        <option value="cycle">x³ − 2x + 2</option>
+        <option value="atan">arctan x</option>
+        <option value="cbrt">∛x</option>
+      </select>
+    </label>
+    <label>x₀ <input type="range" data-x0 min="0" max="1000" value="800" /><output data-x0-out></output></label>
+    <span class="demo-buttons">
+      <button class="btn small" type="button" data-step>{L('Next step', 'Siguiente paso')}</button>
+      <button class="btn small" type="button" data-run>{L('6 steps', '6 pasos')}</button>
+      <button class="btn small" type="button" data-reset>{L('Reset', 'Reiniciar')}</button>
+    </span>
+  </div>
+  <canvas class="demo-canvas draggable" data-aspect="0.5"></canvas>
+  <div class="demo-table-wrap">
+    <table class="demo-table">
+      <thead><tr><th>k</th><th>x<sub>k</sub></th><th>f(x<sub>k</sub>)</th><th>|x<sub>k</sub> − x*|</th><th>{L('digits', 'cifras')}</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <figcaption>
+    {L('Click the canvas to choose x₀. Near a simple root the number of correct digits roughly doubles each step. Try x³ − 2x + 2 from x₀ = 0 (a 2-cycle), ∛x (the iterates double and flee) or arctan x from |x₀| > 1.4.', 'Pulsa sobre la figura para elegir x₀. Cerca de una raíz simple el número de cifras correctas aproximadamente se duplica en cada paso. Prueba x³ − 2x + 2 desde x₀ = 0 (un ciclo de periodo 2), ∛x (los iterados se duplican y huyen) o arctan x desde |x₀| > 1,4.')}
+  </figcaption>
+</figure>
+
+<script>
+  import { initNewton } from '../../scripts/demos/newton';
+  document.querySelectorAll<HTMLElement>('[data-demo="newton"]').forEach(initNewton);
+</script>

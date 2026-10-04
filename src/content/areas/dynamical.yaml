@@ -1,0 +1,331 @@
+kind: math
+order: 15
+glyph: 'φ'
+title: {en: 'Dynamical systems and chaos', es: 'Sistemas dinámicos y caos'}
+summary:
+  en: |
+    The long-term behaviour of systems that evolve: equilibria, stability, attractors, bifurcations and chaos — and
+    the limits they impose on prediction.
+  es: |
+    El comportamiento a largo plazo de los sistemas que evolucionan: equilibrios, estabilidad, atractores, bifurcaciones
+    y caos, y los límites que imponen a la predicción.
+topics:
+  - id: dynamical-systems
+    level: advanced
+    prerequisites: [ode-systems, sequences]
+    title: {en: 'Dynamical systems', es: 'Sistemas dinámicos'}
+    aliases: {en: [flow, map, iteration, state evolution, discrete dynamics], es: [flujo, aplicación, iteración, evolución del estado, dinámica discreta]}
+    summary:
+      en: |
+        A state and a rule that moves it forward: continuous ($\dot x = f(x)$) or discrete ($x_{k+1} = g(x_k)$). The
+        questions change from "find the formula" to "what happens in the long run?" — and every iterative algorithm, from
+        gradient descent to a recurrent network, is a discrete dynamical system.
+      es: |
+        Un estado y una regla que lo hace avanzar: continua ($\dot x = f(x)$) o discreta ($x_{k+1} = g(x_k)$). Las
+        preguntas pasan de «encontrar la fórmula» a «¿qué pasa a largo plazo?», y todo algoritmo iterativo, del descenso de
+        gradiente a una red recurrente, es un sistema dinámico discreto.
+    formulas:
+      - tex: |-
+          \dot x = f(x), \qquad x_{k+1} = g(x_k)
+    applications:
+      - to: control-theory
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Control is the art of shaping the dynamics of a system by feedback.'
+          es: 'El control es el arte de dar forma a la dinámica de un sistema mediante realimentación.'
+      - to: weather-climate
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The atmosphere is a huge dynamical system; forecasting is integrating it forward.'
+          es: 'La atmósfera es un sistema dinámico enorme; predecir el tiempo es integrarlo hacia delante.'
+      - to: neural-networks
+        strength: 3
+        type: advanced
+        note:
+          en: 'Recurrent networks are discrete dynamical systems $h_{t+1} = \sigma(Wh_t + Ux_t)$; exploding and vanishing gradients are questions of stability.'
+          es: 'Las redes recurrentes son sistemas dinámicos discretos $h_{t+1} = \sigma(Wh_t + Ux_t)$; la explosión y el desvanecimiento del gradiente son cuestiones de estabilidad.'
+
+  - id: phase-space
+    level: advanced
+    prerequisites: [dynamical-systems]
+    title: {en: 'Phase space', es: 'Espacio de fases'}
+    aliases: {en: [phase portrait, state space, trajectories, orbit], es: [retrato de fases, espacio de estados, trayectorias, órbita]}
+    summary:
+      en: |
+        The space of all possible states (for a pendulum: angle and angular velocity). Each initial state traces a
+        trajectory; drawing them all — the phase portrait — shows the whole behaviour at a glance.
+      es: |
+        El espacio de todos los estados posibles (para un péndulo: ángulo y velocidad angular). Cada estado inicial
+        traza una trayectoria; dibujarlas todas, el retrato de fases, muestra todo el comportamiento de un vistazo.
+    formulas:
+      - tex: |-
+          \dot\theta = \omega, \qquad \dot\omega = -\frac gL\sin\theta
+        label: {en: 'pendulum in phase space $(\theta, \omega)$', es: 'péndulo en el espacio de fases $(\theta, \omega)$'}
+    applications:
+      - to: n-body-simulation
+        strength: 3
+        type: advanced
+        note:
+          en: 'Symplectic integrators preserve phase-space volume (Liouville), which keeps long simulations physically plausible.'
+          es: 'Los integradores simplécticos conservan el volumen en el espacio de fases (Liouville), lo que mantiene físicamente plausibles las simulaciones largas.'
+
+  - id: equilibrium-stability
+    level: advanced
+    core: true
+    prerequisites: [dynamical-systems, jacobian]
+    title: {en: 'Equilibria and stability', es: 'Puntos de equilibrio y estabilidad'}
+    aliases: {en: [fixed point, equilibrium, linear stability, Lyapunov, eigenvalues], es: [punto fijo, equilibrio, estabilidad lineal, Liapunov, valores propios]}
+    summary:
+      en: |
+        An equilibrium $f(x^\ast) = 0$ is stable if nearby states stay nearby (and asymptotically stable if they return).
+        Linearize: if every eigenvalue of the Jacobian $J_f(x^\ast)$ has negative real part, it is asymptotically stable.
+      es: |
+        Un equilibrio $f(x^\ast) = 0$ es estable si los estados cercanos siguen cerca (y asintóticamente estable si
+        vuelven). Se linealiza: si todos los valores propios de la jacobiana $J_f(x^\ast)$ tienen parte real negativa, es
+        asintóticamente estable.
+    why:
+      en: |
+        Real systems are always perturbed: a gust of wind, a rounding error, a noisy sensor. An equilibrium is only useful
+        — an upright robot, a converged training run, a steady chemical reaction — if small perturbations die out.
+      es: |
+        Los sistemas reales siempre están perturbados: una ráfaga de viento, un error de redondeo, un sensor con ruido. Un
+        equilibrio solo sirve (un robot erguido, un entrenamiento convergido, una reacción química estable) si las
+        perturbaciones pequeñas se extinguen.
+    intuition:
+      en: |
+        A ball at the bottom of a bowl (stable), on top of a dome (unstable), on a saddle (stable in one direction,
+        unstable in another). Near the equilibrium, the system behaves like its linearization $\dot e = Je$: each
+        eigenvalue $\lambda$ is a mode that evolves like $e^{\lambda t}$, decaying if $\operatorname{Re}\lambda < 0$.
+      es: |
+        Una bola en el fondo de un cuenco (estable), en lo alto de una cúpula (inestable), en una silla de montar (estable
+        en una dirección, inestable en otra). Cerca del equilibrio el sistema se comporta como su linealización
+        $\dot e = Je$: cada valor propio $\lambda$ es un modo que evoluciona como $e^{\lambda t}$, y decae si
+        $\operatorname{Re}\lambda < 0$.
+    formal:
+      en: |
+        For $\dot x = f(x)$ with $f(x^\ast) = 0$ and $f \in C^1$: if $\operatorname{Re}\lambda < 0$ for every eigenvalue of
+        $J_f(x^\ast)$, then $x^\ast$ is locally asymptotically stable; if some $\operatorname{Re}\lambda > 0$, it is
+        unstable. For maps $x_{k+1} = g(x_k)$ the condition is $|\lambda| < 1$.
+      es: |
+        Para $\dot x = f(x)$ con $f(x^\ast) = 0$ y $f \in C^1$: si $\operatorname{Re}\lambda < 0$ para todo valor propio de
+        $J_f(x^\ast)$, entonces $x^\ast$ es localmente asintóticamente estable; si algún $\operatorname{Re}\lambda > 0$, es
+        inestable. Para aplicaciones $x_{k+1} = g(x_k)$ la condición es $|\lambda| < 1$.
+    formulas:
+      - tex: |-
+          \dot e = J_f(x^\ast)\,e, \qquad \operatorname{Re}\lambda_i < 0\ \ \forall i \implies e(t) \to 0
+      - tex: |-
+          V(x) > 0,\ \ \dot V(x) = \nabla V\cdot f(x) < 0 \ \ (x \ne x^\ast)
+        label: {en: 'Lyapunov''s direct method: such a $V$ proves asymptotic stability', es: 'método directo de Liapunov: una tal $V$ demuestra la estabilidad asintótica'}
+    matters:
+      en: |
+        Control engineers design feedback to put the eigenvalues where they want (pole placement). Optimization theory
+        reads minima of a loss as stable equilibria of the gradient flow. GAN training is notoriously hard partly because
+        the game between generator and discriminator has rotational, not stable, dynamics.
+      es: |
+        Los ingenieros de control diseñan la realimentación para colocar los valores propios donde quieren (asignación de
+        polos). La teoría de la optimización lee los mínimos de una pérdida como equilibrios estables del flujo de
+        gradiente. Entrenar GAN es notoriamente difícil en parte porque el juego entre generador y discriminador tiene una
+        dinámica rotacional, no estable.
+    applications:
+      - to: control-theory
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Stability analysis (eigenvalues, Lyapunov functions) is the core of control design.'
+          es: 'El análisis de estabilidad (valores propios, funciones de Liapunov) es el núcleo del diseño de control.'
+      - to: gradient-descent
+        strength: 4
+        type: advanced
+        note:
+          en: 'Strict minima are stable fixed points of GD exactly when $\eta < 2/\lambda_{\max}(H)$.'
+          es: 'Los mínimos estrictos son puntos fijos estables del descenso de gradiente exactamente cuando $\eta < 2/\lambda_{\max}(H)$.'
+      - to: generative-models
+        strength: 3
+        type: advanced
+        note:
+          en: 'GAN training dynamics can cycle around equilibria instead of converging; stabilization tricks target this.'
+          es: 'La dinámica de entrenamiento de las GAN puede girar alrededor de los equilibrios en vez de converger; los trucos de estabilización apuntan a eso.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Find the equilibria of $\dot x = x(1 - x)$ and classify them.'
+          es: 'Halla los equilibrios de $\dot x = x(1 - x)$ y clasifícalos.'
+        solution:
+          en: '$x = 0$ and $x = 1$. $f''(x) = 1 - 2x$: $f''(0) = 1 > 0$ unstable, $f''(1) = -1 < 0$ stable. Every positive population tends to the carrying capacity.'
+          es: '$x = 0$ y $x = 1$. $f''(x) = 1 - 2x$: $f''(0) = 1 > 0$ inestable, $f''(1) = -1 < 0$ estable. Toda población positiva tiende a la capacidad de carga.'
+
+  - id: attractors
+    level: advanced
+    prerequisites: [phase-space, equilibrium-stability]
+    title: {en: 'Attractors', es: 'Atractores'}
+    aliases: {en: [limit cycle, strange attractor, basin of attraction, Lorenz attractor, Hopfield], es: [ciclo límite, atractor extraño, cuenca de atracción, atractor de Lorenz, Hopfield]}
+    summary:
+      en: |
+        Sets that nearby trajectories approach and stay in: a point, a closed orbit (limit cycle) or a fractal "strange
+        attractor" like Lorenz's butterfly. The set of initial states that end up there is its basin.
+      es: |
+        Conjuntos a los que se acercan y en los que se quedan las trayectorias cercanas: un punto, una órbita cerrada
+        (ciclo límite) o un «atractor extraño» fractal como la mariposa de Lorenz. El conjunto de estados iniciales que
+        acaban ahí es su cuenca.
+    formulas:
+      - tex: |-
+          \dot x = \sigma(y - x), \quad \dot y = x(\rho - z) - y, \quad \dot z = xy - \beta z
+        label: {en: 'Lorenz system ($\sigma = 10$, $\rho = 28$, $\beta = 8/3$)', es: 'sistema de Lorenz ($\sigma = 10$, $\rho = 28$, $\beta = 8/3$)'}
+    applications:
+      - to: weather-climate
+        strength: 4
+        type: frequent
+        note:
+          en: 'Lorenz found his attractor in a toy convection model; climate can be seen as the statistics of the attractor, weather as a point on it.'
+          es: 'Lorenz encontró su atractor en un modelo de convección de juguete; el clima se puede ver como la estadística del atractor y el tiempo como un punto sobre él.'
+      - to: neural-networks
+        strength: 4
+        type: historical
+        note:
+          en: 'Hopfield networks store memories as point attractors of an energy-descending dynamics (Nobel Prize in Physics 2024).'
+          es: 'Las redes de Hopfield almacenan recuerdos como atractores puntuales de una dinámica que baja la energía (Nobel de Física 2024).'
+
+  - id: bifurcations
+    level: specialized
+    prerequisites: [equilibrium-stability]
+    title: {en: 'Bifurcations', es: 'Bifurcaciones'}
+    aliases: {en: [period doubling, Hopf bifurcation, tipping point, parameter change], es: [duplicación de periodo, bifurcación de Hopf, punto de inflexión, cambio de parámetro]}
+    summary:
+      en: |
+        Qualitative changes in behaviour as a parameter crosses a critical value: an equilibrium loses stability, a cycle
+        is born, periods double on the road to chaos. Tipping points in climate and ecology are bifurcations.
+      es: |
+        Cambios cualitativos de comportamiento cuando un parámetro cruza un valor crítico: un equilibrio pierde la
+        estabilidad, nace un ciclo, los periodos se duplican camino del caos. Los puntos de no retorno en clima y ecología
+        son bifurcaciones.
+    formulas:
+      - tex: |-
+          x_{k+1} = r\,x_k(1 - x_k), \qquad r_1 = 3,\ r_2 = 1 + \sqrt6,\ \dots,\ r_\infty \approx 3.5699
+        label: {en: 'logistic map: period doubling cascade', es: 'aplicación logística: cascada de duplicación de periodo'}
+    applications:
+      - to: population-models
+        strength: 3
+        type: frequent
+        note:
+          en: 'Discrete population models show period doubling and chaos as the growth rate increases (May, 1976).'
+          es: 'Los modelos discretos de población muestran duplicación de periodo y caos al aumentar la tasa de crecimiento (May, 1976).'
+      - to: control-theory
+        strength: 3
+        type: advanced
+        note:
+          en: 'Hopf bifurcations explain how increasing a gain turns a stable loop into an oscillating one.'
+          es: 'Las bifurcaciones de Hopf explican cómo al aumentar una ganancia un lazo estable empieza a oscilar.'
+
+  - id: chaos
+    level: specialized
+    core: true
+    prerequisites: [attractors]
+    title: {en: 'Chaos and sensitivity to initial conditions', es: 'Caos y sensibilidad a condiciones iniciales'}
+    aliases: {en: [butterfly effect, Lyapunov exponent, deterministic chaos, predictability], es: [efecto mariposa, exponente de Liapunov, caos determinista, predictibilidad]}
+    summary:
+      en: |
+        Deterministic systems whose nearby trajectories separate exponentially, $|\delta(t)| \approx |\delta_0|e^{\lambda t}$
+        with $\lambda > 0$. Prediction is possible only up to a horizon of about $\frac1\lambda\ln\frac{\text{tolerance}}{|\delta_0|}$:
+        better measurements buy time only logarithmically.
+      es: |
+        Sistemas deterministas cuyas trayectorias cercanas se separan exponencialmente, $|\delta(t)| \approx |\delta_0|e^{\lambda t}$
+        con $\lambda > 0$. Solo se puede predecir hasta un horizonte de unos $\frac1\lambda\ln\frac{\text{tolerancia}}{|\delta_0|}$:
+        medir mejor solo compra tiempo de forma logarítmica.
+    why:
+      en: |
+        Laplace imagined that knowing the present exactly would reveal the future. Poincaré (three bodies) and Lorenz
+        (weather, 1963) showed that even simple deterministic equations amplify any uncertainty so fast that long-term
+        prediction is impossible in practice.
+      es: |
+        Laplace imaginó que conocer el presente con exactitud revelaría el futuro. Poincaré (tres cuerpos) y Lorenz
+        (meteorología, 1963) mostraron que incluso ecuaciones deterministas sencillas amplifican cualquier incertidumbre
+        tan deprisa que la predicción a largo plazo es imposible en la práctica.
+    intuition:
+      en: |
+        Lorenz restarted a simulation from a printout rounded to 3 decimals instead of 6; after a few simulated weeks the
+        two forecasts had nothing in common. Stretching and folding — like kneading dough — makes neighbouring points
+        separate exponentially while staying in a bounded region.
+      es: |
+        Lorenz reinició una simulación a partir de una impresión redondeada a 3 decimales en vez de 6; tras unas semanas
+        simuladas, las dos predicciones no tenían nada que ver. Estirar y plegar (como al amasar) hace que puntos vecinos
+        se separen exponencialmente sin salir de una región acotada.
+    formulas:
+      - tex: |-
+          \lambda = \lim_{t\to\infty}\frac1t\ln\frac{|\delta(t)|}{|\delta_0|}
+        label: {en: 'largest Lyapunov exponent', es: 'mayor exponente de Liapunov'}
+      - tex: |-
+          T_{\text{pred}} \approx \frac{1}{\lambda}\ln\frac{\Delta}{|\delta_0|}
+        label: {en: 'predictability horizon', es: 'horizonte de predictibilidad'}
+    matters:
+      en: |
+        Weather services run *ensembles* (dozens of forecasts from perturbed initial states) and report probabilities
+        instead of a single answer. Chaotic simulations are not reproducible bit-for-bit across compilers or GPUs: a
+        different rounding order is a tiny perturbation that grows. And chaos sets hard limits on what any model — learned
+        or physical — can predict.
+      es: |
+        Los servicios meteorológicos ejecutan *conjuntos* (decenas de predicciones desde estados iniciales perturbados) y
+        dan probabilidades en vez de una única respuesta. Las simulaciones caóticas no son reproducibles bit a bit entre
+        compiladores o GPU: un orden de redondeo distinto es una perturbación diminuta que crece. Y el caos pone límites
+        duros a lo que puede predecir cualquier modelo, aprendido o físico.
+    applications:
+      - to: weather-climate
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Chaos limits deterministic forecasts to about two weeks; ensemble forecasting is the response.'
+          es: 'El caos limita las predicciones deterministas a unas dos semanas; la predicción por conjuntos es la respuesta.'
+      - to: floating-point
+        strength: 3
+        type: frequent
+        note:
+          en: 'Rounding differences (operation order, FMA, GPU) are amplified exponentially in chaotic simulations.'
+          es: 'Las diferencias de redondeo (orden de las operaciones, FMA, GPU) se amplifican exponencialmente en las simulaciones caóticas.'
+      - to: n-body-simulation
+        strength: 3
+        type: frequent
+        note:
+          en: 'Three or more gravitating bodies are generically chaotic; long-term planetary predictions have finite horizons.'
+          es: 'Tres o más cuerpos que se atraen son en general caóticos; las predicciones planetarias a largo plazo tienen horizontes finitos.'
+    exercises:
+      - type: computing
+        prompt:
+          en: 'A system has $\lambda = 0.5$ per day and initial error $10^{-6}$. When does the error reach 1? And if the initial error is $10^{-12}$?'
+          es: 'Un sistema tiene $\lambda = 0{,}5$ por día y error inicial $10^{-6}$. ¿Cuándo llega el error a 1? ¿Y si el error inicial es $10^{-12}$?'
+        solution:
+          en: '$t = \ln(10^6)/0.5 \approx 27.6$ days. With $10^{-12}$: $55.3$ days. A million times better data only doubles the horizon.'
+          es: '$t = \ln(10^6)/0{,}5 \approx 27{,}6$ días. Con $10^{-12}$: $55{,}3$ días. Datos un millón de veces mejores solo duplican el horizonte.'
+
+  - id: fractals
+    level: specialized
+    prerequisites: [chaos, complex-numbers]
+    title: {en: 'Fractals', es: 'Fractales'}
+    aliases: {en: [Mandelbrot set, Julia set, self-similarity, fractal dimension], es: [conjunto de Mandelbrot, conjunto de Julia, autosemejanza, dimensión fractal]}
+    summary:
+      en: |
+        Sets with detail at every scale and non-integer dimension. The Mandelbrot set — the $c$ for which $z \mapsto z^2 + c$
+        stays bounded from $z_0 = 0$ — is the most famous; strange attractors are fractal too.
+      es: |
+        Conjuntos con detalle a todas las escalas y dimensión no entera. El conjunto de Mandelbrot (los $c$ para los que
+        $z \mapsto z^2 + c$ se mantiene acotado partiendo de $z_0 = 0$) es el más famoso; los atractores extraños también
+        son fractales.
+    formulas:
+      - tex: |-
+          z_{k+1} = z_k^2 + c, \quad z_0 = 0, \qquad M = \{c \in \C : \sup_k |z_k| < \infty\}
+      - tex: |-
+          D = \lim_{\varepsilon\to0}\frac{\log N(\varepsilon)}{\log(1/\varepsilon)}
+        label: {en: 'box-counting dimension', es: 'dimensión de conteo de cajas'}
+    applications:
+      - to: procedural-generation
+        strength: 4
+        type: frequent
+        note:
+          en: 'Fractal noise (fBm: octaves of Perlin noise) generates terrain, clouds and textures in games and films.'
+          es: 'El ruido fractal (fBm: octavas de ruido de Perlin) genera terrenos, nubes y texturas en videojuegos y cine.'
+      - to: compression
+        strength: 1
+        type: historical
+        note:
+          en: 'Fractal image compression (1990s) encoded images as self-similar maps; it was abandoned for transform coding.'
+          es: 'La compresión fractal de imágenes (años 90) codificaba imágenes como aplicaciones autosemejantes; se abandonó en favor de la codificación por transformada.'

@@ -1,0 +1,73 @@
+kind: computing
+order: 27
+glyph: '⊕'
+title: {en: 'Cryptography and security', es: 'Criptografía y seguridad'}
+summary:
+  en: |
+    An honest note: classical cryptography rests on algebra, number theory and discrete structures, not on calculus. The
+    connections that do exist are real but indirect.
+  es: |
+    Una nota honesta: la criptografía clásica se apoya en el álgebra, la teoría de números y las estructuras discretas, no
+    en el cálculo. Las conexiones que existen son reales pero indirectas.
+intro:
+  en: |
+    **Calculus → cryptography: ★☆☆☆☆ indirect.** Encryption works in finite sets — integers modulo $n$, finite fields,
+    lattices — where there are no limits, no derivatives and no integrals. This portal does not pretend otherwise. What
+    *is* true:
+
+    - **Elliptic curves** were born in real and complex analysis; the chord-and-tangent formulas for adding points come from
+      geometry and implicit differentiation over $\R$, and are then reused verbatim over finite fields.
+    - **Side-channel attacks** treat power consumption or electromagnetic emissions as signals: correlation, filtering and
+      Fourier analysis recover secret keys from physical measurements.
+    - **Analysis of algorithms** (asymptotics, probability estimates such as the birthday bound $\approx\sqrt{\pi N/2}$) is
+      used to size keys and hashes, and it borrows tools from calculus.
+  es: |
+    **Cálculo → criptografía: ★☆☆☆☆ indirecta.** El cifrado trabaja en conjuntos finitos (enteros módulo $n$, cuerpos
+    finitos, retículos) donde no hay límites, ni derivadas, ni integrales. Este portal no finge lo contrario. Lo que *sí*
+    es cierto:
+
+    - Las **curvas elípticas** nacieron en el análisis real y complejo; las fórmulas de la cuerda y la tangente para sumar
+      puntos vienen de la geometría y de la derivación implícita sobre $\R$, y luego se reutilizan tal cual sobre cuerpos
+      finitos.
+    - Los **ataques de canal lateral** tratan el consumo eléctrico o las emisiones electromagnéticas como señales: la
+      correlación, el filtrado y el análisis de Fourier recuperan claves secretas a partir de medidas físicas.
+    - El **análisis de algoritmos** (asintótica, estimaciones de probabilidad como la cota del cumpleaños
+      $\approx\sqrt{\pi N/2}$) se usa para dimensionar claves y hashes, y toma herramientas del cálculo.
+topics:
+  - id: elliptic-curve-cryptography
+    kind: application
+    level: advanced
+    title: {en: 'Elliptic curve cryptography', es: 'Criptografía de curva elíptica'}
+    aliases: {en: [ECC, ECDSA, Curve25519, point addition, elliptic curves], es: [ECC, ECDSA, Curve25519, suma de puntos, curvas elípticas]}
+    summary:
+      en: |
+        Public-key cryptography on the group of points of $y^2 = x^3 + ax + b$ over a finite field. The group law was derived
+        geometrically over the reals (the tangent slope by implicit differentiation); security rests on the discrete
+        logarithm problem, which has nothing to do with calculus.
+      es: |
+        Criptografía de clave pública sobre el grupo de puntos de $y^2 = x^3 + ax + b$ sobre un cuerpo finito. La ley de grupo
+        se dedujo geométricamente sobre los reales (la pendiente de la tangente por derivación implícita); la seguridad se
+        apoya en el problema del logaritmo discreto, que no tiene nada que ver con el cálculo.
+    formulas:
+      - tex: |-
+          \lambda = \frac{3x_1^2 + a}{2y_1}, \quad x_3 = \lambda^2 - 2x_1, \quad y_3 = \lambda(x_1 - x_3) - y_1
+        label: {en: 'point doubling $P + P$ (computed mod $p$ in practice)', es: 'duplicación de un punto $P + P$ (en la práctica, módulo $p$)'}
+
+  - id: side-channel-analysis
+    kind: application
+    level: advanced
+    prerequisites: [signal-processing]
+    title: {en: 'Side-channel analysis', es: 'Análisis de canal lateral'}
+    aliases: {en: [power analysis, DPA, timing attack, electromagnetic analysis, physical attacks], es: [análisis de consumo, DPA, ataque de temporización, análisis electromagnético, ataques físicos]}
+    summary:
+      en: |
+        Recovering keys from physical leakage — power traces, EM emissions, timing — by treating it as a noisy signal.
+        Correlation power analysis, filtering and spectral methods are signal-processing mathematics applied to security.
+      es: |
+        Recuperar claves a partir de fugas físicas (trazas de consumo, emisiones electromagnéticas, tiempos) tratándolas como
+        una señal con ruido. El análisis de correlación de consumo, el filtrado y los métodos espectrales son matemáticas
+        del procesamiento de señales aplicadas a la seguridad.
+    formulas:
+      - tex: |-
+          \rho_k = \operatorname{corr}\big(\text{HW}(f(x, k)),\ T(t)\big)
+        label: {en: 'CPA: the key guess $k$ whose predicted leakage best correlates with the trace $T$ wins', es: 'CPA: gana la hipótesis de clave $k$ cuya fuga predicha mejor se correla con la traza $T$'}

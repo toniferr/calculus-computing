@@ -1,0 +1,57 @@
+---
+import type { Lang } from '../../lib/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const L = (en: string, es: string) => (lang === 'es' ? es : en);
+---
+
+<figure
+  class="demo"
+  data-demo="gradient-descent"
+  data-s-iter={L('iteration', 'iteración')}
+  data-s-diverged={L('diverged — lower the learning rate', 'diverge: baja el learning rate')}
+  data-s-converged={L('converged', 'convergido')}
+  data-s-play={L('Play', 'Reproducir')}
+  data-s-pause={L('Pause', 'Pausa')}
+>
+  <div class="demo-controls">
+    <label
+      >f(x, y)
+      <select data-fn>
+        <option value="bowl">{L('round bowl', 'cuenco redondo')}: x² + y²</option>
+        <option value="ravine" selected>{L('narrow valley', 'valle estrecho')}: x²/2 + 5y²</option>
+        <option value="rosen">Rosenbrock</option>
+        <option value="twomin">{L('two minima', 'dos mínimos')}</option>
+        <option value="saddle">{L('saddle', 'silla')}: x² − y² + y⁴/4</option>
+        <option value="himmel">Himmelblau</option>
+      </select>
+    </label>
+    <label
+      >{L('optimizer', 'optimizador')}
+      <select data-opt>
+        <option value="gd">{L('gradient descent', 'descenso de gradiente')}</option>
+        <option value="mom">{L('momentum (β = 0.9)', 'momento (β = 0,9)')}</option>
+        <option value="adam">Adam</option>
+      </select>
+    </label>
+    <label>η <input type="range" data-lr min="0" max="100" value="60" /><output data-lr-out></output></label>
+    <span class="demo-buttons">
+      <button class="btn small" type="button" data-play>{L('Play', 'Reproducir')}</button>
+      <button class="btn small" type="button" data-step>{L('Step', 'Paso')}</button>
+      <button class="btn small" type="button" data-reset>{L('Reset', 'Reiniciar')}</button>
+    </span>
+  </div>
+  <canvas class="demo-canvas draggable" data-aspect="0.62"></canvas>
+  <div class="demo-readout" aria-live="polite"></div>
+  <figcaption>
+    {L('Click anywhere to drop the ball there. Colour is height (log scale), lines are level curves; the gradient is perpendicular to them. Try the narrow valley with plain gradient descent, then with momentum.', 'Pulsa en cualquier punto para soltar la bola ahí. El color es la altura (escala logarítmica) y las líneas son curvas de nivel; el gradiente es perpendicular a ellas. Prueba el valle estrecho con descenso de gradiente simple y después con momento.')}
+  </figcaption>
+</figure>
+
+<script>
+  import { initGradientDescent } from '../../scripts/demos/gradient-descent';
+  document.querySelectorAll<HTMLElement>('[data-demo="gradient-descent"]').forEach(initGradientDescent);
+</script>

@@ -1,0 +1,40 @@
+---
+import type { Lang } from '../../lib/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const L = (en: string, es: string) => (lang === 'es' ? es : en);
+---
+
+<figure class="demo" data-demo="tangent" data-s-slope={L('slope', 'pendiente')} data-s-secant={L('secant', 'secante')}>
+  <div class="demo-controls">
+    <label
+      >f(x) =
+      <select data-fn>
+        <option value="sq">x²</option>
+        <option value="cubic" selected>x³ − 3x</option>
+        <option value="sin">sin x</option>
+        <option value="exp">eˣ</option>
+        <option value="log">ln x</option>
+      </select>
+    </label>
+    <label>a <input type="range" data-a min="0" max="1000" value="620" /><output data-a-out></output></label>
+    <label>h <input type="range" data-h min="0" max="100" value="70" /><output data-h-out></output></label>
+    <label><input type="checkbox" data-deriv /> {L('draw f′', 'dibujar f′')}</label>
+  </div>
+  <canvas class="demo-canvas draggable" data-aspect="0.58"></canvas>
+  <div class="demo-readout" aria-live="polite"></div>
+  <figcaption>
+    <span class="demo-key key-math">f</span>&nbsp;
+    <span class="demo-key key-accent">{L('tangent, slope f′(a)', 'tangente, pendiente f′(a)')}</span>&nbsp;
+    <span class="demo-key key-comp dashed">{L('secant through a and a + h', 'secante por a y a + h')}</span>
+    — {L('Drag the point. As h → 0 the secant becomes the tangent: that limit is the derivative.', 'Arrastra el punto. Cuando h → 0 la secante se convierte en la tangente: ese límite es la derivada.')}
+  </figcaption>
+</figure>
+
+<script>
+  import { initTangent } from '../../scripts/demos/tangent';
+  document.querySelectorAll<HTMLElement>('[data-demo="tangent"]').forEach(initTangent);
+</script>

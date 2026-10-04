@@ -1,0 +1,94 @@
+---
+import { t, type Lang } from '../lib/i18n';
+import { md } from '../lib/md';
+
+interface Props {
+  lang: Lang;
+  ex: {
+    type: 'computation' | 'proof' | 'graphical' | 'applied' | 'computing' | 'ai';
+    prompt: { en: string; es: string };
+    hint?: { en: string; es: string } | undefined;
+    solution: { en: string; es: string };
+  };
+  n: number;
+  where: string;
+  /** shown above the prompt on the exercises index */
+  source?: { title: string; href: string } | undefined;
+}
+const { lang, ex, n, where, source } = Astro.props;
+---
+
+<div class="exercise" data-type={ex.type}>
+  <div class="ex-head">
+    <span class="ex-n mono">{n}</span>
+    <span class="conn">{t(lang, `ex.${ex.type}`)}</span>
+    {
+      source && (
+        <span class="muted small">
+          {t(lang, 'exs.from')} <a href={source.href}>{source.title}</a>
+        </span>
+      )
+    }
+  </div>
+  <div class="prose" set:html={md(ex.prompt[lang], lang, `${where}.prompt`)} />
+  {
+    ex.hint && (
+      <details class="ex-fold">
+        <summary>{t(lang, 'ex.hint')}</summary>
+        <div class="prose" set:html={md(ex.hint[lang], lang, `${where}.hint`)} />
+      </details>
+    )
+  }
+  <details class="ex-fold">
+    <summary>{t(lang, 'ex.solution')}</summary>
+    <div class="prose" set:html={md(ex.solution[lang], lang, `${where}.solution`)} />
+  </details>
+</div>
+
+<style is:global>
+  .exercise {
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--surface);
+    padding: 1rem 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .exercise .prose {
+    font-size: 1.02rem;
+  }
+
+  .ex-head {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .ex-n {
+    display: inline-grid;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background: var(--surface-3);
+    font-size: 0.8rem;
+  }
+
+  .ex-fold {
+    border-top: 1px solid var(--line);
+    margin-top: 0.7rem;
+    padding-top: 0.6rem;
+  }
+
+  .ex-fold summary {
+    color: var(--accent);
+    font-size: 0.9rem;
+    font-weight: 550;
+  }
+
+  .ex-fold[open] summary {
+    margin-bottom: 0.5rem;
+  }
+</style>

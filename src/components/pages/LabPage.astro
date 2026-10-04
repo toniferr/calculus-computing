@@ -1,0 +1,83 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getGraph } from '../../lib/graph';
+import { href, t, type Lang } from '../../lib/i18n';
+import { mdInline, unlink } from '../../lib/md';
+import DemoHost from '../demos/DemoHost.astro';
+import Level from '../Level.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const g = await getGraph();
+---
+
+<Base lang={lang} title={t(lang, 'lab.title')}>
+  <header class="page-head">
+    <div class="wrap">
+      <p class="eyebrow">{t(lang, 'nav.lab')}</p>
+      <h1>{t(lang, 'lab.title')}</h1>
+      <p class="lead">{t(lang, 'lab.lead')}</p>
+      <ul class="lab-toc">
+        {
+          g.demoTopics.map((tp) => (
+            <li>
+              <a href={`#lab-${tp.id}`}>{tp.title[lang]}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </header>
+  <div class="wrap">
+    {
+      g.demoTopics.map((tp) => (
+        <section class="section lab-item" id={`lab-${tp.id}`}>
+          <div class="section-head">
+            <h2>{tp.title[lang]}</h2>
+            <span class="meta">
+              <Level lang={lang} level={tp.level} />
+              <a class="btn small" href={href(lang, `topic/${tp.id}/`)}>
+                {t(lang, 'lab.open')} →
+              </a>
+            </span>
+          </div>
+          <p class="muted lab-sum" set:html={unlink(mdInline(tp.summary[lang], lang, `${tp.id}.summary`))} />
+          <DemoHost id={tp.demo!} lang={lang} />
+        </section>
+      ))
+    }
+  </div>
+</Base>
+
+<style is:global>
+  .lab-toc {
+    list-style: none;
+    padding: 0;
+    margin: 1.2rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .lab-toc a {
+    display: inline-block;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.25rem 0.8rem;
+    font-size: 0.88rem;
+    background: var(--surface);
+    color: var(--fg-2);
+  }
+
+  .lab-item .meta {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+  }
+
+  .lab-sum {
+    max-width: 52rem;
+  }
+</style>

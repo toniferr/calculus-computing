@@ -1,0 +1,480 @@
+---
+import { forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY } from 'd3-force';
+import Base from '../../layouts/Base.astro';
+import { LEVELS } from '../../content.config';
+import { getGraph } from '../../lib/graph';
+import { href, t, type Lang } from '../../lib/i18n';
+import { plain } from '../../lib/md';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const g = await getGraph();
+
+// ---- deterministic force layout, computed at build time --------------------------------------------------------
+const math = g.areas.filter((a) => a.kind === 'math');
+const comp = g.areas.filter((a) => a.kind === 'computing');
+const anchor = new Map<string, { x: number; y: number }>();
+math.forEach((a, i) => anchor.set(a.id, { x: -1450 + (i % 4) * 400, y: -760 + Math.floor(i / 4) * 340 }));
+comp.forEach((a, i) => anchor.set(a.id, { x: 450 + (i % 3) * 380, y: -480 + Math.floor(i / 3) * 420 }));
+
+type SimNode = { id: string; i: number; x: number; y: number; r: number; area: string };
+const degree = new Map<string, number>();
+for (const e of g.edges) {
+  degree.set(e.from, (degree.get(e.from) ?? 0) + 1);
+  degree.set(e.to, (degree.get(e.to) ?? 0) + 1);
+}
+let seed = 42;
+const rand = () => ((seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296);
+const nodes: SimNode[] = g.topics.map((tp, i) => {
+  const a = anchor.get(tp.area)!;
+  const r = 4 + Math.sqrt(degree.get(tp.id) ?? 0) * 1.7 + (tp.core ? 2 : 0);
+  return { id: tp.id, i, x: a.x + (rand() - 0.5) * 80, y: a.y + (rand() - 0.5) * 80, r, area: tp.area };
+});
+const index = new Map(nodes.map((n) => [n.id, n]));
+const links = g.edges.map((e) => ({
+  source: index.get(e.from)!,
+  target: index.get(e.to)!,
+  same: g.topic(e.from).area === g.topic(e.to).area,
+}));
+forceSimulation(nodes)
+  .randomSource(rand)
+  .force('link', forceLink(links).distance((l) => (l.same ? 50 : 200)).strength((l) => (l.same ? 0.35 : 0.004)))
+  .force('charge', forceManyBody().strength(-55).distanceMax(220))
+  .force('collide', forceCollide<SimNode>((n) => n.r + 16))
+  .force('x', forceX<SimNode>((n) => anchor.get(n.area)!.x).strength(0.3))
+  .force('y', forceY<SimNode>((n) => anchor.get(n.area)!.y).strength(0.3))
+  .stop()
+  .tick(400);
+
+// ---- payload for the client ----------------------------------------------------------------------------------------
+const areaIndex = new Map(g.areas.map((a, i) => [a.id, i]));
+const data = {
+  areas: g.areas.map((a) => ({ id: a.id, t: a.title[lang], g: a.glyph, k: a.kind, n: a.kind === 'math' ? math.indexOf(a) : comp.indexOf(a) })),
+  nodes: g.topics.map((tp, i) => ({
+    id: tp.id,
+    t: tp.title[lang],
+    a: areaIndex.get(tp.area),
+    lv: tp.level,
+    c: tp.core ? 1 : 0,
+    x: Math.round(nodes[i]!.x),
+    y: Math.round(nodes[i]!.y),
+    r: Math.round(nodes[i]!.r * 10) / 10,
+    o: g.order(tp.id),
+    s: plain(tp.summary[lang], lang).slice(0, 200),
+  })),
+  // [from, to, kind (0 prerequisite, 1 application), strength, weak (indirect/historical)]
+  edges: g.edges.map((e) => [
+    index.get(e.from)!.i,
+    index.get(e.to)!.i,
+    e.kind === 'application' ? 1 : 0,
+    e.strength ?? 0,
+    e.type === 'indirect' || e.type === 'historical' ? 1 : 0,
+  ]),
+  urls: { topic: href(lang, 'topic/') },
+  ui: {
+    upstream: t(lang, 'map.upstream'),
+    downstream: t(lang, 'map.downstream'),
+    open: t(lang, 'map.open'),
+    clear: t(lang, 'map.clear'),
+    levels: Object.fromEntries(LEVELS.map((lv) => [lv, t(lang, `level.${lv}`)])),
+  },
+};
+---
+
+<Base lang={lang} title={t(lang, 'map.title')} bodyClass="map-body">
+  <div class="map-page">
+    <div class="map-toolbar wrap">
+      <div class="map-title">
+        <h1>{t(lang, 'map.title')}</h1>
+        <p class="muted">{t(lang, 'map.lead')}</p>
+      </div>
+      <div class="map-controls">
+        <div class="map-find">
+          <input type="search" placeholder={t(lang, 'map.find')} aria-label={t(lang, 'map.find')} autocomplete="off" />
+          <ul class="map-find-results" role="listbox" hidden></ul>
+        </div>
+        <div class="filters" role="group">
+          <button class="btn small" type="button" data-scope="all" aria-pressed="true">{t(lang, 'map.all')}</button>
+          <button class="btn small" type="button" data-scope="core" aria-pressed="false">{t(lang, 'map.core')}</button>
+          <button class="btn small" type="button" data-kind="math" aria-pressed="true">{t(lang, 'area.math')}</button>
+          <button class="btn small" type="button" data-kind="computing" aria-pressed="true">{t(lang, 'area.computing')}</button>
+          <button class="btn small" type="button" data-reset>{t(lang, 'map.reset')}</button>
+        </div>
+        <div class="filters" role="group" aria-label={t(lang, 'map.levels')}>
+          {
+            LEVELS.map((lv) => (
+              <button class="btn small" type="button" data-lv={lv} aria-pressed="true">
+                <span class:list={['level', lv]}>{t(lang, `level.${lv}`)}</span>
+              </button>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="map-stage">
+      <svg class="map-svg" role="img" aria-label={t(lang, 'map.title')}>
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 1L10 5L0 9z" class="arr"></path>
+          </marker>
+        </defs>
+        <g class="viewport">
+          <g class="areas"></g>
+          <g class="edges"></g>
+          <g class="nodes"></g>
+        </g>
+      </svg>
+      <aside class="map-panel" hidden aria-live="polite"></aside>
+      <ul class="map-legend">
+        <li><span class="lg-line"></span>{t(lang, 'map.legend.prereq')}</li>
+        <li><span class="lg-line app"></span>{t(lang, 'map.legend.app')}</li>
+        <li><span class="lg-line weak"></span>{t(lang, 'map.legend.weak')}</li>
+        <li><span class="lg-dot math"></span>{t(lang, 'area.math')}</li>
+        <li><span class="lg-dot computing"></span>{t(lang, 'area.computing')}</li>
+      </ul>
+      <noscript><p class="map-noscript">{t(lang, 'map.noscript')} <a href={href(lang, 'topics/')}>{t(lang, 'nav.syllabus')}</a></p></noscript>
+    </div>
+  </div>
+  <script is:inline type="application/json" id="map-data" set:html={JSON.stringify(data).replace(/</g, '\\u003c')} />
+</Base>
+
+<script>
+  import '../../scripts/map';
+</script>
+
+<style is:global>
+  .map-body .site-footer {
+    margin-top: 0;
+  }
+
+  .map-page {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - var(--header-h));
+    min-height: 560px;
+  }
+
+  .map-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.8rem 2rem;
+    padding-top: 1rem;
+    padding-bottom: 0.8rem;
+    max-width: none;
+  }
+
+  .map-title h1 {
+    font-size: 1.5rem;
+    margin: 0 0 0.2rem;
+  }
+
+  .map-title p {
+    margin: 0;
+    font-size: 0.85rem;
+    max-width: 46rem;
+  }
+
+  .map-controls {
+    display: grid;
+    gap: 0.4rem;
+    justify-items: end;
+  }
+
+  .map-find {
+    position: relative;
+    width: min(22rem, 100%);
+  }
+
+  .map-find input {
+    width: 100%;
+  }
+
+  .map-find-results {
+    position: absolute;
+    z-index: 10;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0.3rem;
+    background: var(--surface);
+    border: 1px solid var(--line-2);
+    border-radius: var(--r-sm);
+    box-shadow: var(--shadow);
+    max-height: 18rem;
+    overflow-y: auto;
+  }
+
+  .map-find-results button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.35rem 0.5rem;
+    border: 0;
+    background: none;
+    color: var(--fg);
+    font: inherit;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .map-find-results button:hover,
+  .map-find-results button:focus {
+    background: var(--surface-3);
+  }
+
+  .map-stage {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    border-top: 1px solid var(--line);
+    background:
+      radial-gradient(circle at 30% 40%, color-mix(in srgb, var(--math) 6%, transparent), transparent 55%),
+      radial-gradient(circle at 75% 50%, color-mix(in srgb, var(--comp) 6%, transparent), transparent 55%),
+      var(--bg-2);
+    overflow: hidden;
+  }
+
+  .map-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+
+  .map-svg.dragging {
+    cursor: grabbing;
+  }
+
+  .map-svg .arr {
+    fill: var(--line-2);
+  }
+
+  .map-svg .edge {
+    fill: none;
+    stroke: var(--line-2);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    opacity: 0.5;
+  }
+
+  .map-svg .edge.app {
+    stroke: var(--comp);
+    opacity: 0.13;
+  }
+
+  .map-svg.near .edge.app {
+    opacity: 0.3;
+  }
+
+  .map-svg .edge.weak {
+    stroke-dasharray: 4 4;
+  }
+
+  .map-svg .node circle {
+    stroke: var(--bg-2);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+    cursor: pointer;
+  }
+
+  .map-svg .node.core circle {
+    stroke: var(--fg);
+    stroke-width: 1.5;
+  }
+
+  .map-svg .node text {
+    font-family: var(--font-ui);
+    font-size: calc(11px / var(--k, 1));
+    fill: var(--fg-2);
+    paint-order: stroke;
+    stroke: var(--bg-2);
+    stroke-width: calc(3px / var(--k, 1));
+    pointer-events: none;
+    display: none;
+  }
+
+  .map-svg.mid .node.core text,
+  .map-svg.near .node text,
+  .map-svg .node.on text,
+  .map-svg .node.sel text {
+    display: block;
+  }
+
+  .map-svg .node.core text {
+    font-weight: 650;
+    fill: var(--fg);
+  }
+
+  .map-svg .area-label {
+    font-family: var(--font-mono);
+    font-size: calc(11px / var(--k, 1));
+    letter-spacing: 0.02em;
+    fill: var(--faint);
+    text-anchor: middle;
+    pointer-events: none;
+  }
+
+  .map-svg.mid .area-label {
+    opacity: 0.5;
+  }
+
+  .map-svg.near .area-label {
+    opacity: 0.25;
+  }
+
+  /* focus modes */
+  .map-svg.focus .node,
+  .map-svg.focus .edge {
+    opacity: 0.08;
+  }
+
+  .map-svg.focus .node.on,
+  .map-svg.focus .node.sel {
+    opacity: 1;
+  }
+
+  .map-svg.focus .edge.on {
+    opacity: 0.95;
+    stroke-width: 1.6;
+  }
+
+  .map-svg .node.sel circle {
+    stroke: var(--accent);
+    stroke-width: 3;
+  }
+
+  .map-svg .hidden {
+    display: none;
+  }
+
+  .map-panel {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: min(22rem, calc(100% - 2rem));
+    max-height: calc(100% - 2rem);
+    overflow-y: auto;
+    background: var(--surface);
+    border: 1px solid var(--line-2);
+    border-radius: var(--r);
+    box-shadow: var(--shadow);
+    padding: 1rem 1.1rem;
+    font-size: 0.92rem;
+  }
+
+  .map-panel h2 {
+    font-size: 1.15rem;
+    margin: 0.3rem 0 0.4rem;
+  }
+
+  .map-panel p {
+    color: var(--fg-2);
+    margin: 0 0 0.8rem;
+  }
+
+  .map-panel .panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .map-panel .panel-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+
+  .map-panel .panel-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .map-panel .panel-list {
+    margin: 0.8rem 0 0;
+    padding-left: 2rem;
+    font-size: 0.85rem;
+    max-height: 14rem;
+    overflow-y: auto;
+  }
+
+  .map-legend {
+    position: absolute;
+    left: 1rem;
+    bottom: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem 0.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 1rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    max-width: calc(100% - 2rem);
+  }
+
+  .map-legend li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .lg-line {
+    width: 1.4rem;
+    border-top: 1.5px solid var(--line-2);
+  }
+
+  .lg-line.app {
+    border-top: 2.5px solid var(--comp);
+  }
+
+  .lg-line.weak {
+    border-top: 1.5px dashed var(--comp);
+  }
+
+  .lg-dot {
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+  }
+
+  .lg-dot.math {
+    background: var(--math);
+  }
+
+  .lg-dot.computing {
+    background: var(--comp);
+  }
+
+  .map-noscript {
+    padding: 2rem;
+  }
+
+  @media (max-width: 760px) {
+    .map-controls {
+      justify-items: start;
+    }
+
+    .map-legend {
+      display: none;
+    }
+
+    .map-page {
+      height: calc(100svh - var(--header-h));
+    }
+  }
+</style>

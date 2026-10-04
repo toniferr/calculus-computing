@@ -1,0 +1,12 @@
+---
+import type { Level } from '../lib/graph';
+import { t, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang: Lang;
+  level: Level;
+}
+const { lang, level } = Astro.props;
+---
+
+<span class:list={['level', level]}>{t(lang, `level.${level}`)}</span>

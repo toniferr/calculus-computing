@@ -1,0 +1,157 @@
+kind: computing
+order: 20
+glyph: 'λ'
+title: {en: 'Scientific computing and algorithms', es: 'Computación científica y algoritmos'}
+summary:
+  en: |
+    How computers represent numbers, how fast algorithms grow, how they manipulate formulas and how they estimate what
+    cannot be computed exactly.
+  es: |
+    Cómo representan los ordenadores los números, cuánto crecen los algoritmos, cómo manipulan fórmulas y cómo estiman lo
+    que no se puede calcular exactamente.
+topics:
+  - id: floating-point
+    kind: application
+    level: fundamental
+    core: true
+    title: {en: 'Floating point (IEEE 754)', es: 'Coma flotante (IEEE 754)'}
+    aliases: {en: [IEEE 754, double precision, float, machine epsilon, NaN, rounding], es: [IEEE 754, doble precisión, float, épsilon de máquina, NaN, redondeo]}
+    summary:
+      en: |
+        The finite approximation of the real numbers used by every computer: $\pm m \times 2^e$ with a 53-bit mantissa in
+        double precision. About 16 significant digits, relative rounding error at most $2^{-53}$, and a zoo of pitfalls:
+        cancellation, overflow, non-associativity.
+      es: |
+        La aproximación finita de los números reales que usan todos los ordenadores: $\pm m \times 2^e$ con una mantisa de 53
+        bits en doble precisión. Unas 16 cifras significativas, error relativo de redondeo como mucho $2^{-53}$, y un zoo
+        de trampas: cancelación, desbordamiento, no asociatividad.
+    why:
+      en: |
+        Calculus lives in $\R$, where limits exist and $h$ can tend to 0. A computer has finitely many numbers, spaced
+        further apart as they grow. IEEE 754 (1985, Kahan) defines that set and guarantees each operation is correctly
+        rounded, which is what makes numerical analysis — and reproducible science — possible.
+      es: |
+        El cálculo vive en $\R$, donde existen los límites y $h$ puede tender a 0. Un ordenador tiene una cantidad finita de
+        números, más separados cuanto más grandes. IEEE 754 (1985, Kahan) define ese conjunto y garantiza que cada operación
+        se redondea correctamente, lo que hace posible el análisis numérico y la ciencia reproducible.
+    formulas:
+      - tex: |-
+          x = (-1)^s \times 1.f \times 2^{e - 1023}, \qquad \varepsilon_{\text{mach}} = 2^{-52} \approx 2.2\times10^{-16}
+      - tex: |-
+          (10^{17} + 1) - 10^{17} = 0 \ne 1 = (10^{17} - 10^{17}) + 1
+        label: {en: 'floating-point addition is not associative', es: 'la suma en coma flotante no es asociativa'}
+    matters:
+      en: |
+        Every numerical topic in this portal meets floating point eventually: derivatives by finite differences lose digits,
+        long sums drift, chaotic simulations diverge between machines, and machine learning trains in 16-bit and even 8-bit
+        formats where these issues are front and centre.
+      es: |
+        Todos los temas numéricos de este portal acaban encontrándose con la coma flotante: las derivadas por diferencias
+        finitas pierden cifras, las sumas largas derivan, las simulaciones caóticas divergen entre máquinas, y el
+        aprendizaje automático entrena en formatos de 16 e incluso 8 bits donde estos problemas pasan a primer plano.
+    exercises:
+      - type: computing
+        prompt:
+          en: 'Why does evaluating $f''(1)$ for $f = e^x$ with $(f(1+h) - f(1))/h$ get worse when $h$ goes below about $10^{-8}$?'
+          es: '¿Por qué evaluar $f''(1)$ para $f = e^x$ con $(f(1+h) - f(1))/h$ empeora cuando $h$ baja de unos $10^{-8}$?'
+        solution:
+          en: 'The truncation error is $\approx \frac{h}{2}f''''$ but the rounding error of the numerator is $\approx \varepsilon f/h$. Their sum is minimized at $h \approx \sqrt\varepsilon \approx 10^{-8}$; smaller $h$ amplifies rounding.'
+          es: 'El error de truncamiento es $\approx \frac{h}{2}f''''$ pero el de redondeo del numerador es $\approx \varepsilon f/h$. Su suma es mínima en $h \approx \sqrt\varepsilon \approx 10^{-8}$; con $h$ menor domina el redondeo.'
+
+  - id: algorithm-complexity
+    kind: application
+    level: university
+    core: true
+    title: {en: 'Algorithm analysis and complexity', es: 'Análisis de algoritmos y complejidad'}
+    aliases: {en: [time complexity, Big O, running time, recurrences, master theorem, amortized], es: [complejidad temporal, O grande, tiempo de ejecución, recurrencias, teorema maestro, amortizado]}
+    summary:
+      en: |
+        Predicting how the resources of an algorithm grow with the input size. Its tools are pure calculus of sequences:
+        asymptotic notation, limits, sums and integrals, logarithms and exponentials, recurrences.
+      es: |
+        Predecir cómo crecen los recursos de un algoritmo con el tamaño de la entrada. Sus herramientas son cálculo de
+        sucesiones puro: notación asintótica, límites, sumas e integrales, logaritmos y exponenciales, recurrencias.
+    formulas:
+      - tex: |-
+          T(n) = aT(n/b) + \Theta(n^c) \implies T(n) = \begin{cases}\Theta(n^c) & c > \log_b a\\ \Theta(n^c\log n) & c = \log_b a\\ \Theta(n^{\log_b a}) & c < \log_b a\end{cases}
+        label: {en: 'master theorem', es: 'teorema maestro'}
+    matters:
+      en: 'The difference between an $O(n^2)$ and an $O(n\log n)$ algorithm is the difference between hours and seconds at scale — no hardware upgrade closes it.'
+      es: 'La diferencia entre un algoritmo $O(n^2)$ y uno $O(n\log n)$ es, a gran escala, la diferencia entre horas y segundos, y ninguna mejora de hardware la cierra.'
+
+  - id: symbolic-computation
+    kind: application
+    level: university
+    title: {en: 'Symbolic computation (CAS)', es: 'Computación simbólica (CAS)'}
+    aliases: {en: [computer algebra, SymPy, Mathematica, Maxima, Risch algorithm, symbolic differentiation], es: [álgebra computacional, SymPy, Mathematica, Maxima, algoritmo de Risch, derivación simbólica]}
+    summary:
+      en: |
+        Programs that manipulate formulas exactly: simplify, differentiate, integrate, expand in series, solve. Calculus as
+        term rewriting on expression trees.
+      es: |
+        Programas que manipulan fórmulas de forma exacta: simplificar, derivar, integrar, desarrollar en serie, resolver. El
+        cálculo como reescritura de términos sobre árboles de expresiones.
+    formulas:
+      - tex: |-
+          \frac{\dd}{\dd x}(u\cdot v) \;\rightsquigarrow\; u'\cdot v + u\cdot v'
+    matters:
+      en: 'CAS check proofs, derive formulas for numerical codes and generate the derivative code that AD now often replaces.'
+      es: 'Los CAS comprueban demostraciones, deducen fórmulas para códigos numéricos y generan el código de derivadas que hoy a menudo sustituye la diferenciación automática.'
+
+  - id: scientific-computing
+    kind: application
+    level: university
+    prerequisites: [floating-point]
+    title: {en: 'Scientific computing', es: 'Cálculo científico'}
+    aliases: {en: [numerical analysis, numerical software, SciPy, solvers, HPC], es: [análisis numérico, software numérico, SciPy, resolvedores, HPC]}
+    summary:
+      en: |
+        The discipline of turning mathematical models into reliable numbers: discretize, solve, estimate the error, repeat.
+        Root-finding, quadrature, ODE/PDE solvers and their error analysis are its everyday tools.
+      es: |
+        La disciplina de convertir modelos matemáticos en números fiables: discretizar, resolver, estimar el error, repetir.
+        La búsqueda de raíces, la cuadratura, los resolvedores de EDO/EDP y su análisis de error son sus herramientas de
+        diario.
+    formulas:
+      - tex:
+          en: |-
+            \text{error} = \underbrace{O(h^p)}_{\text{truncation}} + \underbrace{O(\varepsilon_{\text{mach}}/h^q)}_{\text{rounding}}
+          es: |-
+            \text{error} = \underbrace{O(h^p)}_{\text{truncamiento}} + \underbrace{O(\varepsilon_{\text{mach}}/h^q)}_{\text{redondeo}}
+    matters:
+      en: 'Weather forecasts, aircraft design, drug discovery and climate projections are scientific computing.'
+      es: 'Las predicciones meteorológicas, el diseño de aviones, el descubrimiento de fármacos y las proyecciones climáticas son cálculo científico.'
+
+  - id: monte-carlo
+    kind: application
+    level: university
+    core: true
+    title: {en: 'Monte Carlo methods', es: 'Métodos de Monte Carlo'}
+    aliases: {en: [random sampling, Monte Carlo integration, importance sampling, MCMC, stochastic simulation], es: [muestreo aleatorio, integración de Monte Carlo, muestreo por importancia, MCMC, simulación estocástica]}
+    summary:
+      en: |
+        Estimate an integral (an expectation) by averaging a function at random points. The error is
+        $\sigma/\sqrt N$ *whatever the dimension*, which makes it the only practical method for high-dimensional integrals:
+        rendering, Bayesian statistics, physics, finance.
+      es: |
+        Estimar una integral (una esperanza) promediando una función en puntos aleatorios. El error es $\sigma/\sqrt N$ *sea
+        cual sea la dimensión*, lo que lo convierte en el único método práctico para integrales de dimensión alta:
+        renderizado, estadística bayesiana, física, finanzas.
+    why:
+      en: |
+        Grid quadrature with $n$ points per axis needs $n^d$ evaluations in $d$ dimensions — hopeless for the 10-dimensional
+        light paths of a renderer or the million-dimensional posteriors of statistics. Random points do not care about
+        dimension (Ulam and von Neumann, Los Alamos, 1946).
+      es: |
+        La cuadratura en rejilla con $n$ puntos por eje necesita $n^d$ evaluaciones en $d$ dimensiones: imposible para los
+        caminos de luz de 10 dimensiones de un renderizador o las posteriores de un millón de dimensiones de la estadística.
+        A los puntos aleatorios no les importa la dimensión (Ulam y von Neumann, Los Álamos, 1946).
+    formulas:
+      - tex: |-
+          \int_\Omega f(x)\,\dd x \approx \frac{|\Omega|}{N}\sum_{i=1}^N f(x_i), \qquad \varepsilon_N \approx \frac{\sigma}{\sqrt N}
+      - tex: |-
+          \int f(x)\,\dd x = \E_{x\sim q}\Big[\frac{f(x)}{q(x)}\Big]
+        label: {en: 'importance sampling', es: 'muestreo por importancia'}
+    matters:
+      en: 'Path tracing in films, risk models in finance, particle transport in reactors and MCMC in Bayesian AI are all Monte Carlo.'
+      es: 'El path tracing del cine, los modelos de riesgo financiero, el transporte de partículas en reactores y el MCMC de la IA bayesiana son Monte Carlo.'

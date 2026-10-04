@@ -1,0 +1,160 @@
+---
+import Base from '../../layouts/Base.astro';
+import { LEVELS } from '../../content.config';
+import { getGraph } from '../../lib/graph';
+import { href, t, type Lang } from '../../lib/i18n';
+import { mdInline, unlink } from '../../lib/md';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const g = await getGraph();
+const blocks = [
+  { key: 'syl.mathBlock' as const, areas: g.areas.filter((a) => a.kind === 'math') },
+  { key: 'syl.compBlock' as const, areas: g.areas.filter((a) => a.kind === 'computing') },
+];
+---
+
+<Base lang={lang} title={t(lang, 'syl.title')}>
+  <header class="page-head">
+    <div class="wrap">
+      <p class="eyebrow">{t(lang, 'nav.syllabus')}</p>
+      <h1>{t(lang, 'syl.title')}</h1>
+      <p class="lead">{t(lang, 'syl.lead')}</p>
+      <div class="filters" role="group" aria-label={t(lang, 'syl.filter')} data-level-filter>
+        <span class="label">{t(lang, 'syl.filter')}</span>
+        <button class="btn small" type="button" data-level="all" aria-pressed="true">{t(lang, 'syl.all')}</button>
+        {
+          LEVELS.map((lv) => (
+            <button class="btn small" type="button" data-level={lv} aria-pressed="false">
+              <span class:list={['level', lv]}>{t(lang, `level.${lv}`)}</span>
+            </button>
+          ))
+        }
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    {
+      blocks.map((b) => (
+        <section class="section">
+          <h2 class="block-title">{t(lang, b.key)}</h2>
+          <div class="syllabus">
+            {b.areas.map((a) => (
+              <section class:list={['syl-area', a.kind]} id={a.id}>
+                <h3>
+                  <a href={href(lang, `area/${a.id}/`)}>
+                    <span class:list={['glyph', a.kind]}>{a.glyph}</span>
+                    <span>{a.title[lang]}</span>
+                  </a>
+                </h3>
+                <p class="syl-sum" set:html={unlink(mdInline(a.summary[lang], lang, `${a.id}.summary`))} />
+                <ol class="syl-list">
+                  {g.topicsOf(a.id).map((tp) => (
+                    <li data-level={tp.level}>
+                      <a href={href(lang, `topic/${tp.id}/`)} class:list={[`lv-${tp.level}`]}>
+                        <span class="dot" aria-hidden="true" />
+                        {tp.title[lang]}
+                        {tp.demo && <span class="demo-mark" title={t(lang, 'sec.demo')}>◐</span>}
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+  </div>
+</Base>
+
+<script>
+  import '../../scripts/level-filter';
+</script>
+
+<style is:global>
+  .syllabus {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+    align-items: start;
+  }
+
+  .syl-area {
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--surface);
+    padding: 1rem 1.15rem 1.1rem;
+    scroll-margin-top: calc(var(--header-h) + 1rem);
+  }
+
+  .syl-area h3 {
+    margin: 0 0 0.3rem;
+    font-size: 1.05rem;
+  }
+
+  .syl-area h3 a {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--fg);
+  }
+
+  .syl-area .glyph {
+    font-size: 1.15rem;
+    min-width: 2rem;
+  }
+
+  .syl-sum {
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.45;
+    margin: 0 0 0.7rem;
+  }
+
+  .syl-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.1rem;
+    counter-reset: syl;
+  }
+
+  .syl-list li[hidden] {
+    display: none;
+  }
+
+  .syl-list a {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--fg-2);
+    font-size: 0.92rem;
+    padding: 0.18rem 0.3rem;
+    border-radius: 4px;
+  }
+
+  .syl-list a:hover {
+    background: var(--surface-2);
+    color: var(--fg);
+    text-decoration: none;
+  }
+
+  .syl-list .dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--lv);
+    flex: none;
+  }
+
+  .demo-mark {
+    margin-left: auto;
+    color: var(--accent);
+    font-size: 0.8rem;
+  }
+</style>

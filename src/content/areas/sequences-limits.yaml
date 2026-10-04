@@ -1,0 +1,532 @@
+kind: math
+order: 3
+glyph: 'lim'
+title: {en: 'Sequences and limits', es: 'Sucesiones y límites'}
+summary:
+  en: |
+    What it means to approach a value — the idea everything else in calculus is built on — and its computing twin,
+    asymptotic analysis.
+  es: |
+    Qué significa acercarse a un valor, la idea sobre la que se construye todo lo demás en el cálculo, y su gemelo
+    informático: el análisis asintótico.
+topics:
+  - id: sequences
+    level: fundamental
+    prerequisites: [functions]
+    title: {en: 'Sequences', es: 'Sucesiones'}
+    aliases: {en: [sequence, recurrence, iterate], es: [sucesión, recurrencia, iterado]}
+    summary:
+      en: |
+        An infinite list $a_1, a_2, a_3, \dots$ — a function $\N \to \R$. Every iterative algorithm produces one: the
+        successive guesses of Newton's method, the losses of a training run, the cost $T(n)$ of an algorithm on inputs
+        of size $n$.
+      es: |
+        Una lista infinita $a_1, a_2, a_3, \dots$: una función $\N \to \R$. Todo algoritmo iterativo produce una: las
+        aproximaciones sucesivas del método de Newton, las pérdidas de un entrenamiento, el coste $T(n)$ de un algoritmo
+        con entradas de tamaño $n$.
+    formulas:
+      - tex: |-
+          a_n = \frac{1}{n}, \qquad a_{n+1} = \frac12\left(a_n + \frac{2}{a_n}\right)
+        label: {en: 'explicit and recursive (the second converges to $\sqrt 2$)', es: 'explícita y recursiva (la segunda converge a $\sqrt 2$)'}
+    applications:
+      - to: algorithm-complexity
+        strength: 3
+        type: frequent
+        note:
+          en: 'The running time $T(n)$ is a sequence, often defined by a recurrence such as $T(n) = 2T(n/2) + n$.'
+          es: 'El tiempo de ejecución $T(n)$ es una sucesión, a menudo definida por una recurrencia como $T(n) = 2T(n/2) + n$.'
+      - to: scientific-computing
+        strength: 4
+        type: frequent
+        note:
+          en: 'Iterative solvers produce a sequence of approximations $x_k$ that should converge to the answer.'
+          es: 'Los métodos iterativos producen una sucesión de aproximaciones $x_k$ que debería converger a la solución.'
+
+  - id: sequence-convergence
+    level: fundamental
+    core: true
+    prerequisites: [sequences, inequalities]
+    title: {en: 'Convergence of sequences', es: 'Convergencia de sucesiones'}
+    aliases: {en: [convergence, divergence, epsilon N, Cauchy sequence], es: [convergencia, divergencia, épsilon N, sucesión de Cauchy]}
+    summary:
+      en: |
+        $a_n \to L$ means: however small a tolerance $\varepsilon$ you pick, from some index on every term is within
+        $\varepsilon$ of $L$. A sequence that does not converge diverges — to infinity, or by oscillating forever.
+      es: |
+        $a_n \to L$ significa: por pequeña que sea la tolerancia $\varepsilon$ que elijas, a partir de cierto índice todos
+        los términos están a menos de $\varepsilon$ de $L$. Una sucesión que no converge diverge: hacia infinito, o
+        oscilando para siempre.
+    why:
+      en: |
+        "Getting closer and closer" is not enough ($1/n$ gets closer and closer to $-1$ too). We need a definition that
+        a computer could check in principle: give me any tolerance, I give you an index after which the error stays
+        below it. That definition is also exactly what a stopping criterion in numerical software tries to certify.
+      es: |
+        «Acercarse cada vez más» no basta ($1/n$ también se acerca cada vez más a $-1$). Hace falta una definición que
+        en principio pudiera comprobar un ordenador: dame cualquier tolerancia y te doy un índice a partir del cual el
+        error se queda por debajo. Esa definición es además exactamente lo que intenta certificar un criterio de parada
+        en el software numérico.
+    intuition:
+      en: |
+        Draw a horizontal band of half-width $\varepsilon$ around $L$. Convergence says that, whatever the width of the
+        band, the dots $(n, a_n)$ eventually enter it and never leave. Narrow the band and you may have to wait longer —
+        that waiting time $N(\varepsilon)$ is what numerical analysts call the rate of convergence.
+      es: |
+        Dibuja una banda horizontal de semianchura $\varepsilon$ alrededor de $L$. Converger significa que, sea cual sea
+        la anchura de la banda, los puntos $(n, a_n)$ acaban entrando en ella y no vuelven a salir. Si estrechas la
+        banda puede que haya que esperar más: ese tiempo de espera $N(\varepsilon)$ es lo que el análisis numérico
+        llama velocidad de convergencia.
+    formal:
+      en: |
+        $$\lim_{n\to\infty} a_n = L \iff \forall \varepsilon > 0\ \exists N \in \N\ \forall n \ge N:\ |a_n - L| < \varepsilon.$$
+        A sequence is **Cauchy** if $\forall \varepsilon > 0\ \exists N\ \forall m, n \ge N: |a_m - a_n| < \varepsilon$.
+        In $\R$ (and only because $\R$ is complete) Cauchy sequences are exactly the convergent ones.
+      es: |
+        $$\lim_{n\to\infty} a_n = L \iff \forall \varepsilon > 0\ \exists N \in \N\ \forall n \ge N:\ |a_n - L| < \varepsilon.$$
+        Una sucesión es **de Cauchy** si $\forall \varepsilon > 0\ \exists N\ \forall m, n \ge N: |a_m - a_n| < \varepsilon$.
+        En $\R$ (y solo porque $\R$ es completo) las sucesiones de Cauchy son exactamente las convergentes.
+    formulas:
+      - tex: |-
+          \frac1n \to 0, \qquad r^n \to 0 \ (|r| < 1), \qquad \left(1 + \tfrac{x}{n}\right)^n \to e^x
+    example:
+      en: |
+        $a_n = \frac{n}{n+1} \to 1$: given $\varepsilon$, $|a_n - 1| = \frac{1}{n+1} < \varepsilon$ as soon as
+        $n > \frac1\varepsilon - 1$. For $\varepsilon = 10^{-6}$ you need $N = 10^6$ — slow, "sublinear" convergence.
+        Compare with Newton's iteration for $\sqrt 2$, which reaches $10^{-15}$ in five steps.
+      es: |
+        $a_n = \frac{n}{n+1} \to 1$: dado $\varepsilon$, $|a_n - 1| = \frac{1}{n+1} < \varepsilon$ en cuanto
+        $n > \frac1\varepsilon - 1$. Para $\varepsilon = 10^{-6}$ hace falta $N = 10^6$: convergencia lenta,
+        «sublineal». Compárala con la iteración de Newton para $\sqrt 2$, que llega a $10^{-15}$ en cinco pasos.
+    matters:
+      en: |
+        Every iterative algorithm — training a model, solving a linear system, computing PageRank — is a sequence that
+        we hope converges. Proving that it does, and how fast, is how we know it is worth running; and in practice the
+        Cauchy criterion ("stop when consecutive iterates barely change") is the most common stopping rule.
+      es: |
+        Todo algoritmo iterativo (entrenar un modelo, resolver un sistema lineal, calcular el PageRank) es una sucesión
+        que esperamos que converja. Demostrar que lo hace, y a qué velocidad, es como sabemos que merece la pena
+        ejecutarlo; y en la práctica el criterio de Cauchy («para cuando dos iterados seguidos apenas cambien») es la
+        regla de parada más común.
+    applications:
+      - to: gradient-descent
+        strength: 4
+        type: frequent
+        note:
+          en: 'Convergence theorems guarantee $f(x_k) \to f^\ast$ under conditions on the step size.'
+          es: 'Los teoremas de convergencia garantizan $f(x_k) \to f^\ast$ bajo condiciones sobre el tamaño de paso.'
+      - to: scientific-computing
+        strength: 4
+        type: frequent
+        note:
+          en: 'Stopping criteria such as $|x_{k+1} - x_k| < \text{tol}$ are a finite check of the Cauchy condition.'
+          es: 'Criterios de parada como $|x_{k+1} - x_k| < \text{tol}$ son una comprobación finita de la condición de Cauchy.'
+    exercises:
+      - type: proof
+        prompt:
+          en: 'Prove from the definition that $\frac{3n + 1}{n} \to 3$.'
+          es: 'Demuestra con la definición que $\frac{3n + 1}{n} \to 3$.'
+        solution:
+          en: '$|\frac{3n+1}{n} - 3| = \frac1n < \varepsilon$ whenever $n > 1/\varepsilon$; take $N = \lfloor 1/\varepsilon \rfloor + 1$.'
+          es: '$|\frac{3n+1}{n} - 3| = \frac1n < \varepsilon$ siempre que $n > 1/\varepsilon$; toma $N = \lfloor 1/\varepsilon \rfloor + 1$.'
+      - type: ai
+        prompt:
+          en: |
+            A training loss goes $2.0, 1.0, 0.5, 0.25, \dots$ (halving each epoch). After how many epochs is it below
+            $10^{-3}$? What kind of convergence is this?
+          es: |
+            Una pérdida de entrenamiento va $2{,}0;\ 1{,}0;\ 0{,}5;\ 0{,}25;\dots$ (se divide por dos cada época). ¿Tras
+            cuántas épocas baja de $10^{-3}$? ¿Qué tipo de convergencia es?
+        solution:
+          en: '$2 \cdot 2^{-k} < 10^{-3} \iff k > \log_2 2000 \approx 10.97$, so 11 epochs. The error shrinks by a constant factor: linear (geometric) convergence.'
+          es: '$2 \cdot 2^{-k} < 10^{-3} \iff k > \log_2 2000 \approx 10{,}97$, luego 11 épocas. El error se reduce en un factor constante: convergencia lineal (geométrica).'
+
+  - id: monotone-sequences
+    level: university
+    kind: theorem
+    prerequisites: [sequence-convergence]
+    title: {en: 'Monotone and bounded sequences', es: 'Sucesiones monótonas y acotadas'}
+    aliases: {en: [monotone convergence theorem, bounded, increasing, decreasing], es: [teorema de la convergencia monótona, acotada, creciente, decreciente]}
+    summary:
+      en: |
+        A monotone sequence converges if and only if it is bounded. It is the cleanest way to prove convergence without
+        knowing the limit in advance.
+      es: |
+        Una sucesión monótona converge si y solo si está acotada. Es la forma más limpia de demostrar convergencia sin
+        conocer el límite de antemano.
+    formal:
+      en: 'If $a_1 \le a_2 \le \dots$ and $a_n \le M$ for all $n$, then $a_n \to \sup_n a_n$.'
+      es: 'Si $a_1 \le a_2 \le \dots$ y $a_n \le M$ para todo $n$, entonces $a_n \to \sup_n a_n$.'
+    proofIdea:
+      en: 'Let $s = \sup a_n$ (it exists by completeness). Some $a_N > s - \varepsilon$, and monotonicity keeps every later term in $(s - \varepsilon, s]$.'
+      es: 'Sea $s = \sup a_n$ (existe por la completitud). Algún $a_N > s - \varepsilon$, y la monotonía mantiene todos los términos posteriores en $(s - \varepsilon, s]$.'
+    applications:
+      - to: gradient-descent
+        strength: 3
+        type: frequent
+        note:
+          en: 'With a small enough step the loss decreases monotonically and is bounded below, so the loss values converge.'
+          es: 'Con un paso suficientemente pequeño la pérdida decrece de forma monótona y está acotada inferiormente, así que sus valores convergen.'
+
+  - id: subsequences
+    level: university
+    prerequisites: [sequence-convergence]
+    title: {en: 'Subsequences', es: 'Subsucesiones'}
+    aliases: {en: [Bolzano-Weierstrass, accumulation point, compactness], es: [Bolzano-Weierstrass, punto de acumulación, compacidad]}
+    summary:
+      en: |
+        Keeping infinitely many terms of a sequence, in order. **Bolzano–Weierstrass**: every bounded sequence of real
+        numbers has a convergent subsequence — the key fact behind the existence of maxima and minima.
+      es: |
+        Quedarse con infinitos términos de una sucesión, en orden. **Bolzano–Weierstrass**: toda sucesión acotada de
+        números reales tiene una subsucesión convergente, el hecho clave detrás de la existencia de máximos y mínimos.
+    formulas:
+      - tex: |-
+          (a_{n_k})_{k\ge1}, \quad n_1 < n_2 < \cdots
+    applications: []
+
+  - id: limit
+    level: fundamental
+    core: true
+    prerequisites: [functions, inequalities]
+    related: [sequence-convergence, continuity]
+    title: {en: 'Limit of a function', es: 'Límite de una función'}
+    aliases: {en: [limit, epsilon delta, approaches], es: [límite, épsilon delta, tiende a]}
+    summary:
+      en: |
+        $\lim_{x\to a} f(x) = L$: the values $f(x)$ can be made as close to $L$ as we like by taking $x$ close enough
+        to $a$ (but not equal). Derivatives, integrals and continuity are all defined as limits.
+      es: |
+        $\lim_{x\to a} f(x) = L$: los valores $f(x)$ se pueden acercar a $L$ tanto como queramos tomando $x$ lo bastante
+        cerca de $a$ (pero distinto). Las derivadas, las integrales y la continuidad se definen todas como límites.
+    why:
+      en: |
+        Some of the most important quantities are of the form $0/0$: the slope $\frac{f(a+h) - f(a)}{h}$ at $h = 0$, the
+        average speed over a zero-length interval. We cannot plug in the value, but we can ask what the expression
+        approaches. The limit is the tool that makes "instantaneous" and "infinitely thin" rigorous.
+      es: |
+        Algunas de las magnitudes más importantes son de la forma $0/0$: la pendiente $\frac{f(a+h) - f(a)}{h}$ en
+        $h = 0$, la velocidad media en un intervalo de longitud cero. No se puede sustituir el valor, pero sí preguntar
+        a qué se acerca la expresión. El límite es la herramienta que vuelve rigurosos lo «instantáneo» y lo
+        «infinitamente fino».
+    intuition:
+      en: |
+        A game between two players. The skeptic names a tolerance $\varepsilon$ around $L$ (a horizontal band); you must
+        answer with a $\delta$ (a vertical band around $a$) such that the graph, over the vertical band minus the point
+        $a$ itself, stays inside the horizontal band. If you can always answer, the limit is $L$. What happens exactly
+        at $a$ is irrelevant — $f$ need not even be defined there.
+      es: |
+        Un juego entre dos jugadores. El escéptico fija una tolerancia $\varepsilon$ alrededor de $L$ (una banda
+        horizontal); tú tienes que responder con un $\delta$ (una banda vertical alrededor de $a$) de modo que la
+        gráfica, sobre la banda vertical sin el propio punto $a$, se quede dentro de la banda horizontal. Si siempre
+        puedes responder, el límite es $L$. Lo que pase exactamente en $a$ da igual: $f$ ni siquiera tiene que estar
+        definida ahí.
+    formal:
+      en: |
+        $$\lim_{x\to a} f(x) = L \iff \forall \varepsilon > 0\ \exists \delta > 0:\ 0 < |x - a| < \delta \Rightarrow |f(x) - L| < \varepsilon.$$
+        Equivalently (Heine): for every sequence $x_n \to a$ with $x_n \ne a$, $f(x_n) \to L$.
+      es: |
+        $$\lim_{x\to a} f(x) = L \iff \forall \varepsilon > 0\ \exists \delta > 0:\ 0 < |x - a| < \delta \Rightarrow |f(x) - L| < \varepsilon.$$
+        Equivalentemente (Heine): para toda sucesión $x_n \to a$ con $x_n \ne a$, $f(x_n) \to L$.
+    formulas:
+      - tex: |-
+          \lim_{x\to 0}\frac{\sin x}{x} = 1, \qquad \lim_{x\to 0}\frac{e^x - 1}{x} = 1, \qquad \lim_{x\to\infty}\left(1+\frac1x\right)^x = e
+      - tex: |-
+          \lim (f + g) = \lim f + \lim g, \qquad \lim (f g) = \lim f \cdot \lim g
+        label: {en: 'limit laws (when both limits exist)', es: 'álgebra de límites (cuando ambos existen)'}
+    compute:
+      en: |
+        1. Try substitution: if $f$ is continuous at $a$, the limit is $f(a)$.
+        2. If you get $0/0$, simplify: factor, rationalize, or use known limits and equivalences.
+        3. Still stuck: L'Hôpital's rule or a Taylor expansion.
+        4. To show a limit does *not* exist, find two sequences $x_n \to a$ with different limits of $f(x_n)$.
+      es: |
+        1. Prueba a sustituir: si $f$ es continua en $a$, el límite es $f(a)$.
+        2. Si sale $0/0$, simplifica: factoriza, racionaliza o usa límites conocidos y equivalencias.
+        3. Si sigue sin salir: regla de L'Hôpital o desarrollo de Taylor.
+        4. Para ver que un límite *no* existe, busca dos sucesiones $x_n \to a$ con límites distintos de $f(x_n)$.
+    example:
+      en: |
+        $\lim_{x\to 2}\frac{x^2 - 4}{x - 2}$ is $0/0$, but $\frac{x^2-4}{x-2} = x + 2$ for $x \ne 2$, so the limit is
+        $4$. Numerically, evaluating at $x = 2 + 10^{-12}$ in floating point gives a value off by about $10^{-4}$:
+        the subtraction $x^2 - 4$ cancels almost all significant digits.
+      es: |
+        $\lim_{x\to 2}\frac{x^2 - 4}{x - 2}$ es $0/0$, pero $\frac{x^2-4}{x-2} = x + 2$ para $x \ne 2$, así que el límite
+        es $4$. Numéricamente, evaluar en $x = 2 + 10^{-12}$ en coma flotante da un valor que se desvía unas $10^{-4}$:
+        la resta $x^2 - 4$ cancela casi todas las cifras significativas.
+    matters:
+      en: |
+        Every concept from here on — continuity, derivative, integral, series, convergence of algorithms — is a limit.
+        And the example above shows the computational twist: a limit is a statement about *exact* arithmetic, and a
+        computer that tries to approach it literally (tiny $h$) runs into rounding error.
+      es: |
+        Todos los conceptos a partir de aquí (continuidad, derivada, integral, series, convergencia de algoritmos) son
+        límites. Y el ejemplo de arriba muestra el giro computacional: un límite es una afirmación sobre aritmética
+        *exacta*, y un ordenador que intenta acercarse a él literalmente ($h$ diminuto) choca con el error de redondeo.
+    applications:
+      - to: algorithm-complexity
+        strength: 4
+        type: frequent
+        note:
+          en: 'Asymptotic comparisons of running times are limits as $n \to \infty$.'
+          es: 'Las comparaciones asintóticas de tiempos de ejecución son límites cuando $n \to \infty$.'
+      - to: floating-point
+        strength: 3
+        type: frequent
+        note:
+          en: 'Approaching a limit with tiny steps in floating point triggers catastrophic cancellation.'
+          es: 'Acercarse a un límite con pasos diminutos en coma flotante provoca cancelación catastrófica.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Compute $\lim_{x\to 0}\frac{\sqrt{1 + x} - 1}{x}$.'
+          es: 'Calcula $\lim_{x\to 0}\frac{\sqrt{1 + x} - 1}{x}$.'
+        hint:
+          en: 'Multiply and divide by $\sqrt{1+x} + 1$.'
+          es: 'Multiplica y divide por $\sqrt{1+x} + 1$.'
+        solution:
+          en: '$\frac{(1+x) - 1}{x(\sqrt{1+x} + 1)} = \frac{1}{\sqrt{1+x}+1} \to \frac12$.'
+          es: '$\frac{(1+x) - 1}{x(\sqrt{1+x} + 1)} = \frac{1}{\sqrt{1+x}+1} \to \frac12$.'
+      - type: graphical
+        prompt:
+          en: 'Why does $\lim_{x\to 0}\sin(1/x)$ not exist? Describe the graph.'
+          es: '¿Por qué no existe $\lim_{x\to 0}\sin(1/x)$? Describe la gráfica.'
+        solution:
+          en: |
+            The graph oscillates between $-1$ and $1$ infinitely often near 0. Along $x_n = \frac{1}{2\pi n}$ the values
+            are $0$; along $x_n = \frac{1}{2\pi n + \pi/2}$ they are $1$. Two sequences, two different limits.
+          es: |
+            La gráfica oscila entre $-1$ y $1$ infinitas veces cerca de 0. Por $x_n = \frac{1}{2\pi n}$ los valores son
+            $0$; por $x_n = \frac{1}{2\pi n + \pi/2}$ son $1$. Dos sucesiones, dos límites distintos.
+
+  - id: one-sided-limits
+    level: fundamental
+    prerequisites: [limit]
+    title: {en: 'One-sided limits', es: 'Límites laterales'}
+    aliases: {en: [left limit, right limit, jump], es: [límite por la izquierda, límite por la derecha, salto]}
+    summary:
+      en: |
+        Approaching $a$ only from the left ($x \to a^-$) or only from the right ($x \to a^+$). The limit exists exactly
+        when both one-sided limits exist and agree.
+      es: |
+        Acercarse a $a$ solo por la izquierda ($x \to a^-$) o solo por la derecha ($x \to a^+$). El límite existe
+        exactamente cuando los dos laterales existen y coinciden.
+    formulas:
+      - tex: |-
+          \lim_{x\to a} f(x) = L \iff \lim_{x\to a^-} f(x) = L = \lim_{x\to a^+} f(x)
+      - tex: |-
+          \lim_{x\to 0^-}\frac{|x|}{x} = -1, \qquad \lim_{x\to 0^+}\frac{|x|}{x} = 1
+    applications: []
+
+  - id: infinite-limits
+    level: fundamental
+    prerequisites: [limit]
+    title: {en: 'Infinite limits', es: 'Límites infinitos'}
+    aliases: {en: [vertical asymptote, blow up, overflow], es: [asíntota vertical, explosión, desbordamiento]}
+    summary:
+      en: |
+        $f(x) \to \pm\infty$ as $x \to a$: the function grows without bound near a point, as $1/x$ near 0. The graph
+        has a vertical asymptote there.
+      es: |
+        $f(x) \to \pm\infty$ cuando $x \to a$: la función crece sin límite cerca de un punto, como $1/x$ cerca de 0. La
+        gráfica tiene ahí una asíntota vertical.
+    formulas:
+      - tex: |-
+          \lim_{x\to a} f(x) = +\infty \iff \forall M\ \exists\delta > 0:\ 0 < |x - a| < \delta \Rightarrow f(x) > M
+    applications:
+      - to: floating-point
+        strength: 2
+        type: frequent
+        note:
+          en: 'IEEE 754 has $\pm\infty$: `1.0/0.0` is `inf`, a finite stand-in for an infinite limit.'
+          es: 'IEEE 754 tiene $\pm\infty$: `1.0/0.0` es `inf`, un sustituto finito de un límite infinito.'
+
+  - id: limits-at-infinity
+    level: fundamental
+    prerequisites: [limit]
+    title: {en: 'Limits at infinity', es: 'Límites en el infinito'}
+    aliases: {en: [horizontal asymptote, long-run behaviour, saturation], es: [asíntota horizontal, comportamiento a largo plazo, saturación]}
+    summary:
+      en: |
+        What $f(x)$ approaches as $x \to \pm\infty$: the long-run behaviour of a function, and of an algorithm's cost as
+        inputs grow.
+      es: |
+        A qué se acerca $f(x)$ cuando $x \to \pm\infty$: el comportamiento a largo plazo de una función, y del coste de
+        un algoritmo cuando crecen las entradas.
+    formulas:
+      - tex: |-
+          \lim_{x\to\infty}\frac{1}{1 + e^{-x}} = 1, \qquad \lim_{x\to\infty}\frac{3x^2 + x}{x^2 - 5} = 3
+    applications:
+      - to: algorithm-complexity
+        strength: 5
+        type: fundamental
+        note:
+          en: '$f = \Theta(g)$ when $f(n)/g(n)$ stays between positive constants as $n \to \infty$.'
+          es: '$f = \Theta(g)$ cuando $f(n)/g(n)$ se mantiene entre constantes positivas cuando $n \to \infty$.'
+      - to: activation-functions
+        strength: 3
+        type: frequent
+        note:
+          en: 'The sigmoid saturates: as $|x| \to \infty$ its slope tends to 0, the root of vanishing gradients.'
+          es: 'La sigmoide se satura: cuando $|x| \to \infty$ su pendiente tiende a 0, la raíz del desvanecimiento del gradiente.'
+
+  - id: infinitesimals
+    level: university
+    prerequisites: [limit]
+    title: {en: 'Infinitesimals and equivalences', es: 'Infinitésimos y equivalencias'}
+    aliases: {en: [equivalent infinitesimals, small angle approximation, sin x ~ x, expm1, log1p], es: [infinitésimos equivalentes, aproximación de ángulo pequeño, sen x ~ x, expm1, log1p]}
+    summary:
+      en: |
+        A quantity that tends to 0. Two infinitesimals are **equivalent** ($f \sim g$) if $f/g \to 1$: near 0,
+        $\sin x \sim x$, $e^x - 1 \sim x$, $\ln(1 + x) \sim x$. Replacing one by the other simplifies limits — and,
+        in floating point, avoids catastrophic cancellation.
+      es: |
+        Una magnitud que tiende a 0. Dos infinitésimos son **equivalentes** ($f \sim g$) si $f/g \to 1$: cerca de 0,
+        $\sin x \sim x$, $e^x - 1 \sim x$, $\ln(1 + x) \sim x$. Sustituir uno por otro simplifica los límites y, en coma
+        flotante, evita la cancelación catastrófica.
+    formulas:
+      - tex: |-
+          f \sim g \ (x \to a) \iff \lim_{x\to a}\frac{f(x)}{g(x)} = 1
+      - tex: |-
+          \sin x \sim x, \quad 1 - \cos x \sim \tfrac{x^2}{2}, \quad e^x - 1 \sim x, \quad \ln(1+x) \sim x
+    applications:
+      - to: floating-point
+        strength: 3
+        type: frequent
+        note:
+          en: '`expm1(x)` and `log1p(x)` exist because computing $e^x - 1$ or $\ln(1 + x)$ directly loses all precision for tiny $x$.'
+          es: '`expm1(x)` y `log1p(x)` existen porque calcular $e^x - 1$ o $\ln(1 + x)$ directamente pierde toda la precisión para $x$ diminuto.'
+
+  - id: orders-of-magnitude
+    level: university
+    prerequisites: [limits-at-infinity, logarithmic-functions, exponential-functions]
+    title: {en: 'Orders of growth', es: 'Órdenes de magnitud'}
+    aliases: {en: [hierarchy of infinities, growth rates, dominance], es: [jerarquía de infinitos, órdenes de crecimiento, dominancia]}
+    summary:
+      en: |
+        The hierarchy of how fast functions grow: logarithms ≪ powers ≪ exponentials ≪ factorials. It is the language
+        in which we compare algorithms.
+      es: |
+        La jerarquía de lo deprisa que crecen las funciones: logaritmos ≪ potencias ≪ exponenciales ≪ factoriales. Es el
+        idioma en el que se comparan los algoritmos.
+    formulas:
+      - tex: |-
+          \log n \ll n^{\varepsilon} \ll n^k \ll a^n \ll n! \ll n^n \qquad (\varepsilon > 0,\ a > 1)
+      - tex: |-
+          n! \sim \sqrt{2\pi n}\,\left(\frac{n}{e}\right)^n
+        label: {en: 'Stirling''s formula', es: 'fórmula de Stirling'}
+    applications:
+      - to: algorithm-complexity
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Choosing between an $O(n^2)$ and an $O(n \log n)$ algorithm is a comparison of orders of growth.'
+          es: 'Elegir entre un algoritmo $O(n^2)$ y otro $O(n \log n)$ es comparar órdenes de crecimiento.'
+
+  - id: asymptotic-notation
+    level: university
+    core: true
+    prerequisites: [orders-of-magnitude]
+    title: {en: 'Asymptotic notation (O, o, Ω, Θ)', es: 'Notación asintótica (O, o, Ω, Θ)'}
+    aliases: {en: [big O, little o, big Omega, big Theta, Landau notation], es: [O grande, o pequeña, Omega, Theta, notación de Landau]}
+    summary:
+      en: |
+        Landau's symbols compare functions up to constant factors: $f = O(g)$ (grows no faster), $f = \Omega(g)$ (no
+        slower), $f = \Theta(g)$ (same rate), $f = o(g)$ (strictly slower). Born in number theory, adopted by computer
+        science to classify algorithms, and by numerical analysis to measure errors.
+      es: |
+        Los símbolos de Landau comparan funciones salvo factores constantes: $f = O(g)$ (no crece más deprisa),
+        $f = \Omega(g)$ (no más despacio), $f = \Theta(g)$ (al mismo ritmo), $f = o(g)$ (estrictamente más despacio).
+        Nacieron en teoría de números, la informática los adoptó para clasificar algoritmos y el análisis numérico para
+        medir errores.
+    why:
+      en: |
+        Exact running times depend on the machine, the compiler and the input. What survives every change of hardware
+        is the *shape* of the growth: doubling the input quadruples the time of an $O(n^2)$ algorithm on any computer.
+        Asymptotic notation captures exactly that and throws the rest away.
+      es: |
+        Los tiempos exactos dependen de la máquina, el compilador y la entrada. Lo que sobrevive a cualquier cambio de
+        hardware es la *forma* del crecimiento: duplicar la entrada cuadruplica el tiempo de un algoritmo $O(n^2)$ en
+        cualquier ordenador. La notación asintótica captura justo eso y tira el resto.
+    intuition:
+      en: |
+        $f = O(g)$: beyond some point, the graph of $f$ stays under a stretched copy $C\,g$. Big-O is an upper bound,
+        Ω a lower bound, Θ a sandwich. Little-o says the ratio $f/g$ goes to zero — in numerical analysis, $e(h) = o(h)$
+        means "the error vanishes faster than the step".
+      es: |
+        $f = O(g)$: a partir de cierto punto, la gráfica de $f$ se queda por debajo de una copia estirada $C\,g$. O es una
+        cota superior, Ω una cota inferior y Θ un sándwich. La o pequeña dice que el cociente $f/g$ tiende a cero: en
+        análisis numérico, $e(h) = o(h)$ significa «el error se anula más deprisa que el paso».
+    formal:
+      en: |
+        For $n \to \infty$ (or $x \to a$):
+        - $f = O(g) \iff \exists C, n_0:\ |f(n)| \le C\,|g(n)|$ for $n \ge n_0$
+        - $f = \Omega(g) \iff g = O(f)$
+        - $f = \Theta(g) \iff f = O(g)$ and $f = \Omega(g)$
+        - $f = o(g) \iff \lim f(n)/g(n) = 0$
+      es: |
+        Cuando $n \to \infty$ (o $x \to a$):
+        - $f = O(g) \iff \exists C, n_0:\ |f(n)| \le C\,|g(n)|$ para $n \ge n_0$
+        - $f = \Omega(g) \iff g = O(f)$
+        - $f = \Theta(g) \iff f = O(g)$ y $f = \Omega(g)$
+        - $f = o(g) \iff \lim f(n)/g(n) = 0$
+    formulas:
+      - tex: |-
+          3n^2 + 10 n \log n + 7 = \Theta(n^2)
+      - tex: |-
+          T(n) = 2T(n/2) + \Theta(n) \implies T(n) = \Theta(n \log n)
+        label: {en: 'merge sort, via the master theorem', es: 'merge sort, por el teorema maestro'}
+      - tex: |-
+          \sin x = x + O(x^3) \quad (x \to 0)
+        label: {en: 'the same symbol for small quantities', es: 'el mismo símbolo para magnitudes pequeñas'}
+    example:
+      en: |
+        Is $n \log n = O(n^{1.1})$? Yes: $\frac{n\log n}{n^{1.1}} = \frac{\log n}{n^{0.1}} \to 0$, so it is even
+        $o(n^{1.1})$. But the crossover is huge: $\log n = n^{0.1}$ near $n \approx 10^{15}$. Asymptotics tell you who
+        wins eventually, not when.
+      es: |
+        ¿Es $n \log n = O(n^{1{,}1})$? Sí: $\frac{n\log n}{n^{1{,}1}} = \frac{\log n}{n^{0{,}1}} \to 0$, así que incluso
+        es $o(n^{1{,}1})$. Pero el punto de cruce es enorme: $\log n = n^{0{,}1}$ hacia $n \approx 10^{15}$. La asintótica
+        dice quién gana al final, no cuándo.
+    matters:
+      en: |
+        It is the vocabulary of algorithm design ("this is $O(n \log n)$"), of numerical methods ("Runge–Kutta 4 has
+        error $O(h^4)$"), of Monte Carlo ("error $O(N^{-1/2})$") and of machine learning theory (generalization bounds).
+        One notation, three communities.
+      es: |
+        Es el vocabulario del diseño de algoritmos («esto es $O(n \log n)$»), de los métodos numéricos («Runge–Kutta 4
+        tiene error $O(h^4)$»), de Monte Carlo («error $O(N^{-1/2})$») y de la teoría del aprendizaje (cotas de
+        generalización). Una notación, tres comunidades.
+    applications:
+      - to: algorithm-complexity
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The standard language for running time and memory: $O(n)$, $\Theta(n\log n)$, $\Omega(n)$ lower bounds.'
+          es: 'El lenguaje estándar de tiempo y memoria: $O(n)$, $\Theta(n\log n)$, cotas inferiores $\Omega(n)$.'
+      - to: scientific-computing
+        strength: 4
+        type: frequent
+        note:
+          en: 'Discretization errors are stated as $O(h^p)$: halve the step, divide the error by $2^p$.'
+          es: 'Los errores de discretización se expresan como $O(h^p)$: dividir el paso por dos divide el error por $2^p$.'
+      - to: monte-carlo
+        strength: 4
+        type: frequent
+        note:
+          en: 'Monte Carlo error is $O(N^{-1/2})$ in any dimension — 100 times more samples for one more digit.'
+          es: 'El error de Monte Carlo es $O(N^{-1/2})$ en cualquier dimensión: 100 veces más muestras por cada cifra más.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Order by growth: $n^{3/2}$, $2^{\sqrt n}$, $n \log^2 n$, $(\log n)^{10}$, $n^{\log n}$.'
+          es: 'Ordena por crecimiento: $n^{3/2}$, $2^{\sqrt n}$, $n \log^2 n$, $(\log n)^{10}$, $n^{\log n}$.'
+        solution:
+          en: '$(\log n)^{10} \ll n\log^2 n \ll n^{3/2} \ll n^{\log n} \ll 2^{\sqrt n}$ (compare logarithms: $10\log\log n$, $\log n$, $1.5\log n$, $\log^2 n$, $\sqrt n$).'
+          es: '$(\log n)^{10} \ll n\log^2 n \ll n^{3/2} \ll n^{\log n} \ll 2^{\sqrt n}$ (compara logaritmos: $10\log\log n$, $\log n$, $1{,}5\log n$, $\log^2 n$, $\sqrt n$).'
+      - type: computing
+        prompt:
+          en: 'An algorithm takes 1 s for $n = 1000$. Estimate the time for $n = 10^6$ if it is $\Theta(n^2)$, and if it is $\Theta(n\log n)$.'
+          es: 'Un algoritmo tarda 1 s con $n = 1000$. Estima el tiempo para $n = 10^6$ si es $\Theta(n^2)$ y si es $\Theta(n\log n)$.'
+        solution:
+          en: '$\Theta(n^2)$: factor $10^6$ → about 11.6 days. $\Theta(n\log n)$: factor $1000 \cdot \frac{\log 10^6}{\log 10^3} = 2000$ → about 33 minutes.'
+          es: '$\Theta(n^2)$: factor $10^6$ → unos 11,6 días. $\Theta(n\log n)$: factor $1000 \cdot \frac{\log 10^6}{\log 10^3} = 2000$ → unos 33 minutos.'

@@ -1,0 +1,26 @@
+---
+import type { Graph, Topic } from '../lib/graph';
+import { href, t, type Lang } from '../lib/i18n';
+import { mdInline, unlink } from '../lib/md';
+import Level from './Level.astro';
+
+interface Props {
+  lang: Lang;
+  topic: Topic;
+  graph: Graph;
+  showArea?: boolean;
+}
+const { lang, topic, graph, showArea = false } = Astro.props;
+const area = graph.area(topic.area);
+---
+
+<a class:list={['card', 'topic-card', topic.areaKind]} href={href(lang, `topic/${topic.id}/`)} data-level={topic.level}>
+  <h3>{topic.title[lang]}</h3>
+  <p set:html={unlink(mdInline(topic.summary[lang], lang, `${topic.id}.summary`))} />
+  <span class="meta">
+    <Level lang={lang} level={topic.level} />
+    {topic.kind !== 'concept' && <span>{t(lang, `kind.${topic.kind}`)}</span>}
+    {showArea && <span class:list={['chip', area.kind]}>{area.title[lang]}</span>}
+    {topic.demo && <span title={t(lang, 'sec.demo')}>◐ demo</span>}
+  </span>
+</a>

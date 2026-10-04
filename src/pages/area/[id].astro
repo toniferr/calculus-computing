@@ -1,0 +1,11 @@
+---
+import AreaPage from '../../components/pages/AreaPage.astro';
+import { getGraph } from '../../lib/graph';
+
+export async function getStaticPaths() {
+  const g = await getGraph();
+  return g.areas.map((a) => ({ params: { id: a.id } }));
+}
+---
+
+<AreaPage lang="en" id={Astro.params.id!} />

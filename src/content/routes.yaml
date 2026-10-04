@@ -1,0 +1,52 @@
+# Learning routes: ordered topic ids. Every id must exist (checked when the graph is built).
+- id: university-calculus
+  order: 1
+  glyph: '∫'
+  title: {en: 'Recover university calculus', es: 'Recuperar el cálculo universitario'}
+  summary:
+    en: 'The classic first-year sequence, from functions to several variables, for anyone who wants the foundations back.'
+    es: 'La secuencia clásica de primer curso, de las funciones a varias variables, para quien quiera recuperar los fundamentos.'
+  steps: [functions, limit, continuity, derivative, chain-rule, mean-value-theorem, taylor-polynomial, antiderivative,
+          definite-integral, fundamental-theorem-calculus, series, taylor-series, multivariable-functions,
+          partial-derivatives, gradient]
+
+- id: math-for-ai
+  order: 2
+  glyph: '∇'
+  title: {en: 'Mathematics for AI', es: 'Matemáticas para IA'}
+  summary:
+    en: 'The shortest honest path from derivatives to deep learning: gradients, optimization, likelihood and backpropagation.'
+    es: 'El camino honesto más corto de las derivadas al deep learning: gradientes, optimización, verosimilitud y retropropagación.'
+  steps: [functions, derivative, chain-rule, partial-derivatives, gradient, multivariable-chain-rule, convexity,
+          gradient-descent, probability-density, maximum-likelihood, loss-function, neural-networks, backpropagation,
+          deep-learning]
+
+- id: computer-graphics
+  order: 3
+  glyph: '3D'
+  title: {en: 'Computer graphics', es: 'Gráficos por computador'}
+  summary:
+    en: 'From derivatives to rendering: vectors, normals, surfaces, lighting and the integral that gives each pixel its colour.'
+    es: 'De las derivadas al renderizado: vectores, normales, superficies, iluminación y la integral que da su color a cada píxel.'
+  steps: [functions, derivative, vectors, dot-product, partial-derivatives, gradient, surfaces, surface-normals, shading,
+          bezier-curves, vector-fields, multiple-integrals, ray-tracing, rendering-equation]
+
+- id: simulation
+  order: 4
+  glyph: 'ẏ'
+  title: {en: 'Simulation', es: 'Simulación'}
+  summary:
+    en: 'How a computer predicts motion: differential equations, numerical integrators, stability and chaos.'
+    es: 'Cómo predice un ordenador el movimiento: ecuaciones diferenciales, integradores numéricos, estabilidad y caos.'
+  steps: [derivative, definite-integral, ode, euler-method, runge-kutta, ode-systems, dynamical-systems,
+          equilibrium-stability, stiff-equations, chaos, physics-engine]
+
+- id: computational-physics
+  order: 5
+  glyph: '⚛'
+  title: {en: 'Computational physics', es: 'Física computacional'}
+  summary:
+    en: 'Fields and waves: vector calculus, Fourier analysis and partial differential equations, up to fluids.'
+    es: 'Campos y ondas: cálculo vectorial, análisis de Fourier y ecuaciones en derivadas parciales, hasta los fluidos.'
+  steps: [derivative, ode, second-order-odes, gradient, divergence, curl, laplacian, divergence-theorem, fourier-series,
+          fourier-transform, pde, heat-equation, wave-equation, fluid-dynamics]

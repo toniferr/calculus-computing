@@ -1,0 +1,150 @@
+---
+import { asset, href, t, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+---
+
+<dialog
+  class="search-dialog"
+  aria-label={t(lang, 'nav.search')}
+  data-index={asset(`search/${lang}.json`)}
+  data-topic-base={href(lang, 'topic/')}
+  data-empty={t(lang, 'search.empty')}
+  data-related={t(lang, 'search.related')}
+>
+  <div class="search-box">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"
+      ><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg
+    >
+    <input type="search" placeholder={t(lang, 'search.placeholder')} aria-label={t(lang, 'nav.search')} autocomplete="off" spellcheck="false" />
+    <button type="button" class="icon-btn" data-search-close aria-label={t(lang, 'search.close')}>Esc</button>
+  </div>
+  <div class="search-results" role="listbox" aria-label={t(lang, 'nav.search')}></div>
+  <div class="search-foot"><kbd>↑</kbd> <kbd>↓</kbd> {t(lang, 'search.hint')} · <kbd>↵</kbd> · <kbd>Esc</kbd></div>
+</dialog>
+
+<script>
+  import '../scripts/search';
+</script>
+
+<style is:global>
+  .search-dialog {
+    width: min(680px, calc(100vw - 24px));
+    max-height: min(640px, calc(100vh - 80px));
+    margin: 8vh auto auto;
+    padding: 0;
+    border: 1px solid var(--line-2);
+    border-radius: 14px;
+    background: var(--surface);
+    color: var(--fg);
+    box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.7);
+    overflow: hidden;
+  }
+
+  .search-dialog[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .search-dialog::backdrop {
+    background: rgba(5, 8, 12, 0.6);
+    backdrop-filter: blur(3px);
+  }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .search-box > svg {
+    width: 20px;
+    height: 20px;
+    color: var(--muted);
+    flex: none;
+  }
+
+  .search-box input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    font-size: 1.05rem;
+    padding: 0.3rem 0;
+    outline: none;
+  }
+
+  .search-box .icon-btn {
+    font-size: 0.72rem;
+    height: 28px;
+  }
+
+  .search-results {
+    overflow-y: auto;
+    padding: 0.4rem;
+  }
+
+  .search-results .group {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    padding: 0.8rem 0.7rem 0.3rem;
+  }
+
+  .search-results a {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.1rem 0.8rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 8px;
+    color: var(--fg);
+  }
+
+  .search-results a:hover,
+  .search-results a[aria-selected='true'] {
+    background: var(--surface-3);
+    text-decoration: none;
+  }
+
+  .search-results .r-title {
+    font-weight: 600;
+  }
+
+  .search-results .r-sum {
+    grid-column: 1 / -1;
+    color: var(--fg-2);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .search-results .r-meta {
+    font-size: 0.75rem;
+    color: var(--muted);
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .search-results .empty {
+    padding: 1.2rem;
+  }
+
+  .search-foot {
+    border-top: 1px solid var(--line);
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+</style>

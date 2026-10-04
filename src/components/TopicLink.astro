@@ -1,0 +1,12 @@
+---
+import type { Topic } from '../lib/graph';
+import { href, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang: Lang;
+  topic: Topic;
+}
+const { lang, topic } = Astro.props;
+---
+
+<a class:list={['tlink', `lv-${topic.level}`, topic.areaKind]} href={href(lang, `topic/${topic.id}/`)}>{topic.title[lang]}</a>

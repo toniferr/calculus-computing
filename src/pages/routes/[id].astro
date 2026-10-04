@@ -1,0 +1,11 @@
+---
+import RoutePage from '../../components/pages/RoutePage.astro';
+import { getGraph } from '../../lib/graph';
+
+export async function getStaticPaths() {
+  const g = await getGraph();
+  return g.routes.map((r) => ({ params: { id: r.id } }));
+}
+---
+
+<RoutePage lang="en" id={Astro.params.id!} />

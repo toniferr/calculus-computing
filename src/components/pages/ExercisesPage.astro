@@ -1,0 +1,87 @@
+---
+import Base from '../../layouts/Base.astro';
+import { EXERCISE_TYPES, LEVELS } from '../../content.config';
+import { getGraph } from '../../lib/graph';
+import { href, t, type Lang } from '../../lib/i18n';
+import Exercise from '../Exercise.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const g = await getGraph();
+const withEx = g.topics.filter((tp) => tp.exercises.length).sort((a, b) => g.order(a.id) - g.order(b.id));
+const total = withEx.reduce((n, tp) => n + tp.exercises.length, 0);
+---
+
+<Base lang={lang} title={t(lang, 'exs.title')}>
+  <header class="page-head">
+    <div class="wrap">
+      <p class="eyebrow">{t(lang, 'nav.exercises')} · {total}</p>
+      <h1>{t(lang, 'exs.title')}</h1>
+      <p class="lead">{t(lang, 'exs.lead')}</p>
+      <div class="filters" role="group" aria-label={t(lang, 'exs.type')} data-type-filter>
+        <span class="label">{t(lang, 'exs.type')}</span>
+        <button class="btn small" type="button" data-type="all" aria-pressed="true">{t(lang, 'syl.all')}</button>
+        {
+          EXERCISE_TYPES.map((ty) => (
+            <button class="btn small" type="button" data-type={ty} aria-pressed="false">
+              {t(lang, `ex.${ty}`)}
+            </button>
+          ))
+        }
+      </div>
+      <div class="filters" role="group" aria-label={t(lang, 'syl.filter')} data-level-filter>
+        <span class="label">{t(lang, 'syl.filter')}</span>
+        <button class="btn small" type="button" data-level="all" aria-pressed="true">{t(lang, 'syl.all')}</button>
+        {
+          LEVELS.map((lv) => (
+            <button class="btn small" type="button" data-level={lv} aria-pressed="false">
+              <span class:list={['level', lv]}>{t(lang, `level.${lv}`)}</span>
+            </button>
+          ))
+        }
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap section exercise-list">
+    {
+      withEx.map((tp) =>
+        tp.exercises.map((ex, i) => (
+          <div data-filterable data-level={tp.level} data-type={ex.type}>
+            <Exercise
+              lang={lang}
+              ex={ex}
+              n={i + 1}
+              where={`${tp.area}/${tp.id}.exercises[${i}]`}
+              source={{ title: tp.title[lang], href: href(lang, `topic/${tp.id}/#exercises`) }}
+            />
+          </div>
+        )),
+      )
+    }
+  </div>
+</Base>
+
+<script>
+  import '../../scripts/level-filter';
+</script>
+
+<style is:global>
+  .exercise-list {
+    max-width: 52rem;
+  }
+
+  .page-head .filters + .filters {
+    margin-top: 0.5rem;
+  }
+
+  .page-head .filters {
+    margin-top: 1.2rem;
+  }
+
+  [data-filterable][hidden] {
+    display: none;
+  }
+</style>

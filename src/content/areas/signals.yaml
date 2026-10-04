@@ -1,0 +1,171 @@
+kind: computing
+order: 25
+glyph: '∿'
+title: {en: 'Signals, media and vision', es: 'Señales, multimedia y visión'}
+summary:
+  en: |
+    Audio, images, video and radio as functions to be sampled, transformed, filtered and compressed — Fourier analysis
+    and derivatives at industrial scale.
+  es: |
+    Audio, imagen, vídeo y radio como funciones que se muestrean, transforman, filtran y comprimen: análisis de Fourier
+    y derivadas a escala industrial.
+topics:
+  - id: signal-processing
+    kind: application
+    level: university
+    core: true
+    title: {en: 'Signal processing', es: 'Procesamiento de señales'}
+    aliases: {en: [DSP, audio processing, filtering, spectrum, LTI systems], es: [DSP, procesado de audio, filtrado, espectro, sistemas LTI]}
+    summary:
+      en: |
+        Analysing and transforming signals — sound, radio, sensor data — mostly through linear time-invariant systems,
+        convolution and the Fourier transform. The mathematics inside every phone, headset and modem.
+      es: |
+        Analizar y transformar señales (sonido, radio, datos de sensores), sobre todo mediante sistemas lineales
+        invariantes en el tiempo, la convolución y la transformada de Fourier. Las matemáticas que hay dentro de todo
+        teléfono, auricular y módem.
+    formulas:
+      - tex: |-
+          y(t) = (h * x)(t) \quad\Longleftrightarrow\quad Y(f) = H(f)\,X(f)
+        label: {en: 'an LTI system in time and in frequency', es: 'un sistema LTI en el tiempo y en la frecuencia'}
+    matters:
+      en: 'Noise cancellation, voice codecs, equalizers, radar, ECG analysis and seismic exploration are signal processing.'
+      es: 'La cancelación de ruido, los códecs de voz, los ecualizadores, el radar, el análisis de electrocardiogramas y la exploración sísmica son procesamiento de señales.'
+
+  - id: sampling-theorem
+    kind: application
+    level: advanced
+    prerequisites: [signal-processing]
+    title: {en: 'Sampling theorem (Nyquist–Shannon)', es: 'Teorema de muestreo (Nyquist–Shannon)'}
+    aliases: {en: [Nyquist, aliasing, sample rate, 44.1 kHz, sinc interpolation], es: [Nyquist, aliasing, frecuencia de muestreo, '44,1 kHz', interpolación sinc]}
+    summary:
+      en: |
+        A signal with no frequencies above $B$ is completely determined by samples taken at more than $2B$ per second, and
+        can be rebuilt exactly with sinc interpolation. Sample slower and high frequencies masquerade as low ones (aliasing).
+        That is why CDs use 44.1 kHz for 20 kHz hearing.
+      es: |
+        Una señal sin frecuencias por encima de $B$ queda completamente determinada por muestras tomadas a más de $2B$ por
+        segundo, y se reconstruye exactamente con interpolación sinc. Si se muestrea más despacio, las frecuencias altas se
+        disfrazan de bajas (aliasing). Por eso los CD usan 44,1 kHz para un oído que llega a 20 kHz.
+    formulas:
+      - tex: |-
+          f_s > 2B, \qquad x(t) = \sum_{n} x(nT)\,\operatorname{sinc}\Big(\frac{t - nT}{T}\Big), \quad T = \frac{1}{f_s}
+
+  - id: fft
+    kind: application
+    level: advanced
+    core: true
+    prerequisites: [signal-processing]
+    title: {en: 'Fast Fourier transform (FFT)', es: 'Transformada rápida de Fourier (FFT)'}
+    aliases: {en: [FFT, Cooley-Tukey, DFT, butterfly, spectrogram], es: [FFT, Cooley-Tukey, DFT, mariposa, espectrograma]}
+    summary:
+      en: |
+        Computes the $N$-point DFT in $O(N\log N)$ instead of $O(N^2)$ by splitting it recursively into even and odd
+        samples (Cooley–Tukey, 1965, anticipated by Gauss). One of the most important algorithms of the 20th century.
+      es: |
+        Calcula la DFT de $N$ puntos en $O(N\log N)$ en vez de $O(N^2)$ partiéndola recursivamente en muestras pares e
+        impares (Cooley–Tukey, 1965, anticipado por Gauss). Uno de los algoritmos más importantes del siglo XX.
+    formulas:
+      - tex: |-
+          X_k = E_k + e^{-2\pi i k/N}\,O_k, \qquad X_{k + N/2} = E_k - e^{-2\pi i k/N}\,O_k
+        label: {en: 'the butterfly: two half-size DFTs give the full one', es: 'la mariposa: dos DFT de la mitad de tamaño dan la completa'}
+      - tex: |-
+          T(N) = 2T(N/2) + O(N) = O(N\log N)
+    matters:
+      en: 'Spectrograms, audio effects, OFDM radios, fast convolution, polynomial and big-integer multiplication, MRI — all run on FFTs.'
+      es: 'Los espectrogramas, los efectos de audio, las radios OFDM, la convolución rápida, la multiplicación de polinomios y de enteros grandes y la resonancia magnética funcionan con FFT.'
+
+  - id: digital-filters
+    kind: application
+    level: advanced
+    prerequisites: [signal-processing]
+    title: {en: 'Digital filters', es: 'Filtros digitales'}
+    aliases: {en: [FIR, IIR, low-pass, high-pass, equalizer, biquad], es: [FIR, IIR, paso bajo, paso alto, ecualizador, biquad]}
+    summary:
+      en: |
+        Difference equations that keep some frequencies and remove others. FIR filters are convolutions; IIR filters feed
+        back previous outputs and are analysed with the Z-transform (stable iff poles inside the unit circle).
+      es: |
+        Ecuaciones en diferencias que conservan unas frecuencias y eliminan otras. Los filtros FIR son convoluciones; los IIR
+        realimentan salidas anteriores y se analizan con la transformada Z (estables si y solo si los polos están dentro de la
+        circunferencia unidad).
+    formulas:
+      - tex: |-
+          y[n] = \sum_{k=0}^{M}b_k\,x[n-k] - \sum_{k=1}^{N}a_k\,y[n-k] \quad\Longleftrightarrow\quad H(z) = \frac{\sum_k b_k z^{-k}}{1 + \sum_k a_k z^{-k}}
+
+  - id: compression
+    kind: application
+    level: advanced
+    prerequisites: [signal-processing, image-processing]
+    title: {en: 'Media compression (JPEG, MP3, video)', es: 'Compresión multimedia (JPEG, MP3, vídeo)'}
+    aliases: {en: [JPEG, MP3, AAC, H.264, DCT, MDCT, lossy compression], es: [JPEG, MP3, AAC, H.264, DCT, MDCT, compresión con pérdidas]}
+    summary:
+      en: |
+        Transform the signal into a basis where most coefficients are tiny (cosine transforms, wavelets), quantize them
+        coarsely where the eye or ear will not notice, and entropy-code the rest. Video adds motion compensation between
+        frames.
+      es: |
+        Transformar la señal a una base en la que la mayoría de coeficientes son diminutos (transformadas del coseno,
+        wavelets), cuantizarlos con brusquedad donde el ojo o el oído no lo notarán y codificar el resto por entropía. El
+        vídeo añade compensación de movimiento entre fotogramas.
+    formulas:
+      - tex: |-
+          X_k = \sum_{n=0}^{N-1}x_n\cos\Big[\frac{\pi}{N}\Big(n + \frac12\Big)k\Big]
+        label: {en: 'DCT-II, the transform of JPEG (on 8×8 blocks)', es: 'DCT-II, la transformada de JPEG (en bloques de 8×8)'}
+
+  - id: image-processing
+    kind: application
+    level: university
+    core: true
+    title: {en: 'Image processing and computer vision', es: 'Procesamiento de imagen y visión artificial'}
+    aliases: {en: [computer vision, edge detection, Sobel, Canny, blur, optical flow, image gradient], es: [visión por computador, detección de bordes, Sobel, Canny, desenfoque, flujo óptico, gradiente de imagen]}
+    summary:
+      en: |
+        An image is a function $I(x, y)$. Blurring is convolution, edges are large gradients $\norm{\nabla I}$, corners come
+        from second derivatives, motion between frames from the optical-flow equation. Classical vision is applied calculus;
+        modern vision learns the filters (CNNs).
+      es: |
+        Una imagen es una función $I(x, y)$. Desenfocar es convolucionar, los bordes son gradientes grandes $\norm{\nabla I}$,
+        las esquinas salen de segundas derivadas y el movimiento entre fotogramas, de la ecuación del flujo óptico. La visión
+        clásica es cálculo aplicado; la moderna aprende los filtros (CNN).
+    formulas:
+      - tex: |-
+          G_x = \begin{pmatrix}-1 & 0 & 1\\ -2 & 0 & 2\\ -1 & 0 & 1\end{pmatrix} * I, \qquad \norm{\nabla I} \approx \sqrt{G_x^2 + G_y^2}
+        label: {en: 'Sobel edge detector', es: 'detector de bordes de Sobel'}
+      - tex: |-
+          I_x\,u + I_y\,v + I_t = 0
+        label: {en: 'optical flow constraint (brightness constancy + chain rule)', es: 'restricción del flujo óptico (brillo constante + regla de la cadena)'}
+    exercises:
+      - type: computing
+        prompt:
+          en: 'Why do edge detectors blur the image (e.g. with a Gaussian) before differentiating?'
+          es: '¿Por qué los detectores de bordes desenfocan la imagen (por ejemplo con una gaussiana) antes de derivar?'
+        solution:
+          en: |
+            Differentiation amplifies high-frequency noise (in Fourier terms it multiplies by $2\pi i\xi$). Smoothing first
+            suppresses those frequencies; since derivative and convolution commute, $\nabla(G * I) = (\nabla G) * I$, so one
+            convolution with the derivative of a Gaussian does both.
+          es: |
+            Derivar amplifica el ruido de alta frecuencia (en términos de Fourier, multiplica por $2\pi i\xi$). Suavizar antes
+            elimina esas frecuencias; como derivada y convolución conmutan, $\nabla(G * I) = (\nabla G) * I$, así que una sola
+            convolución con la derivada de una gaussiana hace las dos cosas.
+
+  - id: communications
+    kind: application
+    level: advanced
+    prerequisites: [sampling-theorem]
+    title: {en: 'Telecommunications (modulation, OFDM)', es: 'Telecomunicaciones (modulación, OFDM)'}
+    aliases: {en: [modulation, OFDM, Wi-Fi, 5G, QAM, carrier], es: [modulación, OFDM, wifi, 5G, QAM, portadora]}
+    summary:
+      en: |
+        Sending bits over the air by modulating sinusoidal carriers in amplitude and phase (complex numbers). OFDM splits the
+        band into many orthogonal subcarriers using an inverse FFT at the transmitter and an FFT at the receiver — Wi-Fi,
+        4G/5G and DSL.
+      es: |
+        Enviar bits por el aire modulando portadoras sinusoidales en amplitud y fase (números complejos). OFDM divide la
+        banda en muchas subportadoras ortogonales usando una FFT inversa en el emisor y una FFT en el receptor: wifi, 4G/5G y
+        ADSL.
+    formulas:
+      - tex: |-
+          s(t) = \operatorname{Re}\big\{(I + iQ)\,e^{2\pi i f_c t}\big\}
+        label: {en: 'QAM: one complex number per symbol', es: 'QAM: un número complejo por símbolo'}

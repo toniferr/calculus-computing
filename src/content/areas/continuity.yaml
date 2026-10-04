@@ -1,0 +1,276 @@
+kind: math
+order: 4
+glyph: 'ε'
+title: {en: 'Continuity', es: 'Continuidad'}
+summary:
+  en: |
+    Functions without jumps, and the theorems that guarantee roots, maxima and minima — the existence results behind
+    bisection, optimization and interpolation.
+  es: |
+    Funciones sin saltos y los teoremas que garantizan raíces, máximos y mínimos: los resultados de existencia que
+    sostienen la bisección, la optimización y la interpolación.
+topics:
+  - id: continuity
+    level: fundamental
+    core: true
+    prerequisites: [limit]
+    title: {en: 'Continuity', es: 'Continuidad'}
+    aliases: {en: [continuous function, pointwise continuity], es: [función continua, continuidad puntual]}
+    summary:
+      en: |
+        $f$ is continuous at $a$ if $\lim_{x\to a} f(x) = f(a)$: small changes in the input produce small changes in the
+        output. Continuous on an interval means you can draw the graph without lifting the pen.
+      es: |
+        $f$ es continua en $a$ si $\lim_{x\to a} f(x) = f(a)$: cambios pequeños en la entrada producen cambios pequeños en
+        la salida. Continua en un intervalo significa que se puede dibujar la gráfica sin levantar el lápiz.
+    why:
+      en: |
+        Measurements are never exact. If a model is continuous, a slightly wrong input gives a slightly wrong output, and
+        computing with approximations makes sense. Continuity is also the hypothesis that unlocks the existence theorems
+        (Bolzano, Weierstrass) on which root-finding and optimization rely.
+      es: |
+        Las medidas nunca son exactas. Si un modelo es continuo, una entrada un poco equivocada da una salida un poco
+        equivocada, y calcular con aproximaciones tiene sentido. La continuidad es además la hipótesis que desbloquea los
+        teoremas de existencia (Bolzano, Weierstrass) en los que se apoyan la búsqueda de raíces y la optimización.
+    intuition:
+      en: |
+        Three things must hold at $a$: $f(a)$ is defined, the limit exists, and they agree. Each failure is a kind of
+        discontinuity: a hole, a jump, or a wild oscillation. Geometrically, zooming in on a continuous graph never
+        reveals a gap.
+      es: |
+        En $a$ deben cumplirse tres cosas: $f(a)$ está definida, el límite existe y ambos coinciden. Cada fallo es un tipo
+        de discontinuidad: un agujero, un salto o una oscilación salvaje. Geométricamente, al hacer zoom sobre una gráfica
+        continua nunca aparece un hueco.
+    formal:
+      en: |
+        $$f \text{ continuous at } a \iff \forall\varepsilon > 0\ \exists\delta > 0:\ |x - a| < \delta \Rightarrow |f(x) - f(a)| < \varepsilon.$$
+        Sums, products, quotients (where the denominator is non-zero) and compositions of continuous functions are
+        continuous; so are polynomials, $e^x$, $\sin$, $\cos$, and $\ln$ on $(0, \infty)$.
+      es: |
+        $$f \text{ continua en } a \iff \forall\varepsilon > 0\ \exists\delta > 0:\ |x - a| < \delta \Rightarrow |f(x) - f(a)| < \varepsilon.$$
+        Las sumas, productos, cocientes (donde el denominador no se anula) y composiciones de funciones continuas son
+        continuas; también lo son los polinomios, $e^x$, $\sin$, $\cos$ y $\ln$ en $(0, \infty)$.
+    formulas:
+      - tex: |-
+          \lim_{x\to a} f(x) = f(a)
+      - tex: |-
+          \operatorname{ReLU}(x) = \max(0, x)
+        label: {en: 'continuous everywhere, differentiable except at 0', es: 'continua en todo punto, derivable salvo en 0'}
+    example:
+      en: |
+        The step function $H(x) = 1$ for $x \ge 0$ and $0$ otherwise is discontinuous at 0. The perceptron used it as
+        its activation, and that is precisely why gradient methods could not train multilayer perceptrons until the
+        step was replaced by the continuous (and differentiable) sigmoid.
+      es: |
+        La función escalón $H(x) = 1$ si $x \ge 0$ y $0$ en otro caso es discontinua en 0. El perceptrón la usaba como
+        activación, y esa es justo la razón de que los métodos de gradiente no pudieran entrenar perceptrones multicapa
+        hasta que el escalón se sustituyó por la sigmoide, continua (y derivable).
+    matters:
+      en: |
+        Continuity is the minimal promise that a numerical method can work: rounding the input should not change the
+        answer much. Where models are discontinuous (decision boundaries, collisions in a physics engine, edges in an
+        image) software needs special handling.
+      es: |
+        La continuidad es la promesa mínima de que un método numérico puede funcionar: redondear la entrada no debería
+        cambiar mucho la respuesta. Donde los modelos son discontinuos (fronteras de decisión, colisiones en un motor
+        físico, bordes en una imagen) el software necesita un tratamiento especial.
+    applications:
+      - to: activation-functions
+        strength: 4
+        type: fundamental
+        note:
+          en: 'Activations must be continuous (and almost everywhere differentiable) for gradient training to work.'
+          es: 'Las activaciones deben ser continuas (y derivables casi en todas partes) para que funcione el entrenamiento por gradiente.'
+      - to: bezier-curves
+        strength: 4
+        type: frequent
+        note:
+          en: 'Joining spline pieces with $C^0$, $C^1$ or $C^2$ continuity decides how smooth the curve looks.'
+          es: 'Unir trozos de spline con continuidad $C^0$, $C^1$ o $C^2$ decide lo suave que se ve la curva.'
+      - to: physics-engine
+        strength: 3
+        type: frequent
+        note:
+          en: 'Simulation assumes motion is continuous between frames; collisions break that and are handled separately.'
+          es: 'La simulación supone que el movimiento es continuo entre fotogramas; las colisiones lo rompen y se tratan aparte.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'For which $k$ is $f(x) = kx + 1$ for $x < 1$, $f(x) = x^2 + 3$ for $x \ge 1$ continuous?'
+          es: '¿Para qué $k$ es continua $f(x) = kx + 1$ si $x < 1$, $f(x) = x^2 + 3$ si $x \ge 1$?'
+        solution:
+          en: 'Left limit $k + 1$, value $f(1) = 4$. Continuity requires $k + 1 = 4$, so $k = 3$.'
+          es: 'Límite por la izquierda $k + 1$, valor $f(1) = 4$. La continuidad exige $k + 1 = 4$, luego $k = 3$.'
+      - type: ai
+        prompt:
+          en: 'Why can''t you train a network whose activation is the step function $H$ with gradient descent?'
+          es: '¿Por qué no se puede entrenar con descenso de gradiente una red cuya activación es el escalón $H$?'
+        solution:
+          en: |
+            $H$ is constant except at 0, so its derivative is 0 almost everywhere (and undefined at 0). Every gradient
+            flowing through it is zero: the weights never move.
+          es: |
+            $H$ es constante salvo en 0, así que su derivada es 0 casi en todas partes (y no existe en 0). Todo gradiente
+            que pase por ella es cero: los pesos no se mueven nunca.
+
+  - id: discontinuities
+    level: fundamental
+    prerequisites: [continuity, one-sided-limits]
+    title: {en: 'Discontinuities', es: 'Discontinuidades'}
+    aliases: {en: [jump, removable discontinuity, essential discontinuity, edge], es: [salto, discontinuidad evitable, discontinuidad esencial, borde]}
+    summary:
+      en: |
+        Points where continuity fails: **removable** (the limit exists but disagrees with the value), **jump** (different
+        one-sided limits) and **essential** (a one-sided limit does not exist).
+      es: |
+        Puntos donde falla la continuidad: **evitable** (el límite existe pero no coincide con el valor), **de salto**
+        (límites laterales distintos) y **esencial** (algún límite lateral no existe).
+    formulas:
+      - tex: |-
+          \lim_{x\to a^-} f(x) \ne \lim_{x\to a^+} f(x) \quad \text{(jump)}
+    applications:
+      - to: image-processing
+        strength: 4
+        type: frequent
+        note:
+          en: 'Edges in an image are (approximate) jump discontinuities of intensity; edge detectors look for them.'
+          es: 'Los bordes de una imagen son discontinuidades de salto (aproximadas) de la intensidad; los detectores de bordes las buscan.'
+      - to: activation-functions
+        strength: 4
+        type: historical
+        note:
+          en: 'The perceptron''s step activation is discontinuous; replacing it by the sigmoid made backpropagation possible.'
+          es: 'La activación escalón del perceptrón es discontinua; sustituirla por la sigmoide hizo posible la retropropagación.'
+
+  - id: uniform-continuity
+    level: university
+    prerequisites: [continuity]
+    title: {en: 'Uniform continuity', es: 'Continuidad uniforme'}
+    aliases: {en: [Heine-Cantor theorem], es: [teorema de Heine-Cantor]}
+    summary:
+      en: |
+        Continuity where one $\delta$ works for every point at once. On a closed bounded interval every continuous
+        function is uniformly continuous (Heine–Cantor), which makes approximation results such as Weierstrass's theorem
+        possible.
+      es: |
+        Continuidad en la que un mismo $\delta$ sirve para todos los puntos a la vez. En un intervalo cerrado y acotado
+        toda función continua es uniformemente continua (Heine–Cantor), lo que hace posibles resultados de aproximación
+        como el teorema de Weierstrass.
+    formulas:
+      - tex: |-
+          \forall\varepsilon > 0\ \exists\delta > 0\ \forall x, y:\ |x - y| < \delta \Rightarrow |f(x) - f(y)| < \varepsilon
+    applications:
+      - to: neural-networks
+        strength: 2
+        type: advanced
+        note:
+          en: 'Proofs of the universal approximation theorem use uniform continuity on compact sets.'
+          es: 'Las demostraciones del teorema de aproximación universal usan la continuidad uniforme en compactos.'
+
+  - id: lipschitz-continuity
+    level: advanced
+    prerequisites: [uniform-continuity, mean-value-theorem]
+    title: {en: 'Lipschitz continuity', es: 'Continuidad de Lipschitz'}
+    aliases: {en: [Lipschitz constant, L-smooth, smoothness], es: [constante de Lipschitz, L-suave, suavidad]}
+    summary:
+      en: |
+        $|f(x) - f(y)| \le L\,|x - y|$: the function never changes faster than rate $L$. When the *gradient* is
+        $L$-Lipschitz, gradient descent with step $\eta < 2/L$ is guaranteed to decrease the loss.
+      es: |
+        $|f(x) - f(y)| \le L\,|x - y|$: la función nunca cambia más deprisa que a ritmo $L$. Cuando el *gradiente* es
+        $L$-lipschitziano, el descenso de gradiente con paso $\eta < 2/L$ tiene garantizado bajar la pérdida.
+    formulas:
+      - tex: |-
+          |f(x) - f(y)| \le L\,|x - y|
+      - tex: |-
+          \norm{\nabla f(x) - \nabla f(y)} \le L\norm{x - y} \implies f(y) \le f(x) + \nabla f(x)\cdot(y - x) + \tfrac L2\norm{y - x}^2
+        label: {en: 'descent lemma', es: 'lema de descenso'}
+    applications:
+      - to: gradient-descent
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The safe learning rate is set by the Lipschitz constant of the gradient: $\eta < 2/L$.'
+          es: 'El learning rate seguro lo fija la constante de Lipschitz del gradiente: $\eta < 2/L$.'
+      - to: generative-models
+        strength: 3
+        type: advanced
+        note:
+          en: 'Wasserstein GANs require a 1-Lipschitz critic, enforced by weight clipping, gradient penalties or spectral normalization.'
+          es: 'Las Wasserstein GAN necesitan un crítico 1-lipschitziano, impuesto con recorte de pesos, penalización de gradiente o normalización espectral.'
+
+  - id: bolzano-theorem
+    level: fundamental
+    kind: theorem
+    prerequisites: [continuity, intervals]
+    title: {en: 'Bolzano''s theorem', es: 'Teorema de Bolzano'}
+    aliases: {en: [sign change, root existence], es: [cambio de signo, existencia de raíces]}
+    summary:
+      en: |
+        If $f$ is continuous on $[a, b]$ and $f(a)$, $f(b)$ have opposite signs, then $f$ has a root in $(a, b)$. It is
+        the guarantee behind the bisection method.
+      es: |
+        Si $f$ es continua en $[a, b]$ y $f(a)$, $f(b)$ tienen signos opuestos, entonces $f$ tiene una raíz en $(a, b)$.
+        Es la garantía que hay detrás del método de bisección.
+    formal:
+      en: '$f \in C[a,b]$, $f(a)\,f(b) < 0 \implies \exists c \in (a, b):\ f(c) = 0$.'
+      es: '$f \in C[a,b]$, $f(a)\,f(b) < 0 \implies \exists c \in (a, b):\ f(c) = 0$.'
+    proofIdea:
+      en: |
+        Halve the interval and keep the half where the sign still changes. The nested intervals shrink to a point $c$
+        (completeness of $\R$), and continuity forces $f(c) = 0$. The proof *is* the bisection algorithm.
+      es: |
+        Parte el intervalo por la mitad y quédate con la mitad donde el signo sigue cambiando. Los intervalos encajados se
+        reducen a un punto $c$ (completitud de $\R$), y la continuidad obliga a que $f(c) = 0$. La demostración *es* el
+        algoritmo de bisección.
+    applications: []
+
+  - id: intermediate-value-theorem
+    level: fundamental
+    kind: theorem
+    prerequisites: [bolzano-theorem]
+    title: {en: 'Intermediate value theorem', es: 'Teorema del valor intermedio'}
+    aliases: {en: [IVT, Darboux], es: [TVI, Darboux]}
+    summary:
+      en: |
+        A continuous function on $[a, b]$ takes every value between $f(a)$ and $f(b)$. Apply Bolzano to $f(x) - y$.
+      es: |
+        Una función continua en $[a, b]$ toma todos los valores entre $f(a)$ y $f(b)$. Basta aplicar Bolzano a
+        $f(x) - y$.
+    formal:
+      en: '$f \in C[a,b]$ and $y$ between $f(a)$ and $f(b)$ $\implies \exists c \in [a,b]:\ f(c) = y$.'
+      es: '$f \in C[a,b]$ e $y$ entre $f(a)$ y $f(b)$ $\implies \exists c \in [a,b]:\ f(c) = y$.'
+    applications:
+      - to: inverse-kinematics
+        strength: 1
+        type: indirect
+        note:
+          en: 'Existence arguments of the type "some joint angle reaches this position" are intermediate-value arguments.'
+          es: 'Los argumentos de existencia del tipo «algún ángulo de la articulación alcanza esta posición» son argumentos de valor intermedio.'
+
+  - id: extreme-value-theorem
+    level: university
+    kind: theorem
+    prerequisites: [continuity, subsequences]
+    title: {en: 'Weierstrass extreme value theorem', es: 'Teorema de Weierstrass (valores extremos)'}
+    aliases: {en: [extreme value theorem, maximum exists, compact], es: [teorema de los valores extremos, existe el máximo, compacto]}
+    summary:
+      en: |
+        A continuous function on a closed bounded interval attains a maximum and a minimum. Without it, "find the best
+        solution" might have no answer.
+      es: |
+        Una función continua en un intervalo cerrado y acotado alcanza un máximo y un mínimo. Sin él, «encontrar la mejor
+        solución» podría no tener respuesta.
+    formal:
+      en: '$f \in C[a,b] \implies \exists x_m, x_M \in [a,b]:\ f(x_m) \le f(x) \le f(x_M)\ \forall x \in [a,b]$.'
+      es: '$f \in C[a,b] \implies \exists x_m, x_M \in [a,b]:\ f(x_m) \le f(x) \le f(x_M)\ \forall x \in [a,b]$.'
+    proofIdea:
+      en: 'Take $x_n$ with $f(x_n) \to \sup f$; Bolzano–Weierstrass gives a convergent subsequence $x_{n_k} \to c$, and continuity gives $f(c) = \sup f$.'
+      es: 'Toma $x_n$ con $f(x_n) \to \sup f$; Bolzano–Weierstrass da una subsucesión convergente $x_{n_k} \to c$ y la continuidad da $f(c) = \sup f$.'
+    applications:
+      - to: operations-research
+        strength: 2
+        type: advanced
+        note:
+          en: 'Existence of an optimal solution: a continuous cost on a compact feasible set always has a minimum.'
+          es: 'Existencia de solución óptima: un coste continuo sobre un conjunto factible compacto siempre tiene mínimo.'

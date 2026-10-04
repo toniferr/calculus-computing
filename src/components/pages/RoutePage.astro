@@ -1,0 +1,225 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getGraph } from '../../lib/graph';
+import { href, t, type Lang } from '../../lib/i18n';
+import { mdInline, unlink } from '../../lib/md';
+import Level from '../Level.astro';
+
+interface Props {
+  lang: Lang;
+  id: string;
+}
+const { lang, id } = Astro.props;
+const g = await getGraph();
+const route = g.routes.find((r) => r.id === id)!;
+const steps = route.steps.map((s) => g.topic(s));
+---
+
+<Base lang={lang} title={route.title[lang]} description={route.summary[lang]}>
+  <header class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="breadcrumb">
+        <a href={href(lang, 'routes/')}>{t(lang, 'routes.title')}</a>
+      </nav>
+      <h1><span class="glyph route-glyph">{route.glyph}</span> {route.title[lang]}</h1>
+      <p class="lead">{route.summary[lang]}</p>
+      <div class="route-bar" data-route={route.id} data-total={steps.length}>
+        <div class="route-bar-track"><div class="route-bar-fill"></div></div>
+        <span class="route-bar-label mono">0/{steps.length}</span>
+        <button class="btn small" type="button" data-reset>{t(lang, 'routes.reset')}</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap section">
+    <ol class="route-steps" data-route={route.id}>
+      {
+        steps.map((tp, i) => (
+          <li class:list={['route-step', `lv-${tp.level}`]} data-step={tp.id}>
+            <span class="route-n mono">{String(i + 1).padStart(2, '0')}</span>
+            <div class="route-body">
+              <h2>
+                <a href={href(lang, `topic/${tp.id}/`)}>{tp.title[lang]}</a>
+              </h2>
+              <p set:html={unlink(mdInline(tp.summary[lang], lang, `${tp.id}.summary`))} />
+              <span class="meta">
+                <Level lang={lang} level={tp.level} />
+                <span class:list={['chip', tp.areaKind]}>{g.area(tp.area).title[lang]}</span>
+              </span>
+            </div>
+            <label class="route-check">
+              <input type="checkbox" data-check={tp.id} />
+              <span>{t(lang, 'routes.mark')}</span>
+            </label>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</Base>
+
+<script>
+  import { readProgress, writeProgress } from '../../scripts/routes';
+  const list = document.querySelector<HTMLElement>('.route-steps')!;
+  const bar = document.querySelector<HTMLElement>('.route-bar')!;
+  const route = list.dataset.route!;
+  const total = Number(bar.dataset.total);
+  const done = readProgress(route);
+  const fill = bar.querySelector<HTMLElement>('.route-bar-fill')!;
+  const label = bar.querySelector<HTMLElement>('.route-bar-label')!;
+
+  function render(): void {
+    for (const box of list.querySelectorAll<HTMLInputElement>('[data-check]')) {
+      box.checked = done.has(box.dataset.check!);
+      box.closest('li')!.classList.toggle('done', box.checked);
+    }
+    const n = [...done].filter((s) => list.querySelector(`[data-step="${s}"]`)).length;
+    fill.style.width = `${(100 * n) / total}%`;
+    label.textContent = `${n}/${total}`;
+  }
+
+  list.addEventListener('change', (e) => {
+    const box = e.target as HTMLInputElement;
+    if (!box.dataset.check) return;
+    if (box.checked) done.add(box.dataset.check);
+    else done.delete(box.dataset.check);
+    writeProgress(route, done);
+    render();
+  });
+  bar.querySelector('[data-reset]')!.addEventListener('click', () => {
+    done.clear();
+    writeProgress(route, done);
+    render();
+  });
+  render();
+</script>
+
+<style is:global>
+  .route-glyph {
+    font-size: 0.8em;
+    margin-right: 0.2em;
+  }
+
+  .route-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 34rem;
+    margin-top: 1.2rem;
+  }
+
+  .route-bar-track {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--surface-3);
+    overflow: hidden;
+  }
+
+  .route-bar-fill {
+    width: 0;
+    height: 100%;
+    background: var(--good);
+    transition: width 0.3s;
+  }
+
+  .route-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    display: grid;
+    gap: 0.9rem;
+    max-width: 52rem;
+  }
+
+  .route-steps::before {
+    content: '';
+    position: absolute;
+    left: 1.1rem;
+    top: 1rem;
+    bottom: 1rem;
+    border-left: 1px dashed var(--line-2);
+  }
+
+  .route-step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.2rem minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .route-n {
+    display: grid;
+    place-items: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    border: 1.5px solid var(--lv);
+    background: var(--bg);
+    font-size: 0.75rem;
+    z-index: 1;
+  }
+
+  .route-step.done .route-n {
+    background: var(--lv);
+    color: var(--bg);
+  }
+
+  .route-body {
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--surface);
+    padding: 0.8rem 1rem;
+  }
+
+  .route-body h2 {
+    font-size: 1.05rem;
+    margin: 0 0 0.25rem;
+  }
+
+  .route-body h2 a {
+    color: var(--fg);
+  }
+
+  .route-body p {
+    margin: 0 0 0.4rem;
+    color: var(--fg-2);
+    font-size: 0.9rem;
+  }
+
+  .route-body .meta {
+    display: flex;
+    gap: 0.7rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .route-check {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    padding-top: 0.9rem;
+    cursor: pointer;
+  }
+
+  .route-check input {
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--good);
+  }
+
+  @media (max-width: 640px) {
+    .route-step {
+      grid-template-columns: 2.2rem minmax(0, 1fr);
+    }
+
+    .route-check {
+      grid-column: 2;
+      padding-top: 0;
+    }
+  }
+</style>

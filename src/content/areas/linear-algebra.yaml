@@ -1,0 +1,126 @@
+kind: math
+order: 2
+glyph: 'v⃗'
+title: {en: 'Linear algebra (bridge)', es: 'Álgebra lineal (puente)'}
+summary:
+  en: |
+    The minimum of linear algebra that multivariable calculus needs: vectors, the dot product and matrices. The full
+    story lives in the linear algebra chapter of Math of AI.
+  es: |
+    Lo mínimo de álgebra lineal que necesita el cálculo multivariable: vectores, producto escalar y matrices. La
+    historia completa está en el capítulo de álgebra lineal de Math of AI.
+intro:
+  en: |
+    This portal is about calculus, but from the gradient onwards calculus speaks the language of linear algebra:
+    derivatives of functions of many variables are vectors and matrices. These three topics are the bridge. For
+    eigenvalues, the SVD and embeddings, see [Math of AI · Linear algebra](https://toniferr.github.io/math-of-ai/linear-algebra/).
+  es: |
+    Este portal trata de cálculo, pero a partir del gradiente el cálculo habla el idioma del álgebra lineal: las
+    derivadas de funciones de varias variables son vectores y matrices. Estos tres temas son el puente. Para valores
+    propios, la SVD y los embeddings, mira [Math of AI · Álgebra lineal](https://toniferr.github.io/math-of-ai/es/algebra-lineal/).
+topics:
+  - id: vectors
+    level: fundamental
+    prerequisites: [real-numbers]
+    title: {en: 'Vectors', es: 'Vectores'}
+    aliases: {en: [R^n, vector space, coordinates, norm], es: [R^n, espacio vectorial, coordenadas, norma]}
+    summary:
+      en: |
+        Lists of numbers $v = (v_1, \dots, v_n) \in \R^n$ that can be added and scaled. Geometrically, arrows with a
+        length and a direction; computationally, arrays.
+      es: |
+        Listas de números $v = (v_1, \dots, v_n) \in \R^n$ que se pueden sumar y escalar. Geométricamente, flechas con
+        longitud y dirección; computacionalmente, arrays.
+    formulas:
+      - tex: |-
+          \norm{v} = \sqrt{v_1^2 + \dots + v_n^2}
+        label: {en: 'Euclidean norm (length)', es: 'norma euclídea (longitud)'}
+    applications:
+      - to: neural-networks
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Inputs, activations and parameters are vectors (and tensors) in $\R^n$.'
+          es: 'Las entradas, activaciones y parámetros son vectores (y tensores) de $\R^n$.'
+      - to: physics-engine
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Positions, velocities and forces are 3D vectors updated every frame.'
+          es: 'Posiciones, velocidades y fuerzas son vectores 3D que se actualizan en cada fotograma.'
+
+  - id: dot-product
+    level: fundamental
+    prerequisites: [vectors, trigonometric-functions]
+    title: {en: 'Dot product', es: 'Producto escalar'}
+    aliases: {en: [inner product, scalar product, projection, cosine similarity], es: [producto interno, proyección, similitud coseno]}
+    summary:
+      en: |
+        $u \cdot v = \sum_i u_i v_i = \norm u \norm v \cos\theta$. It measures how much two vectors point the same way,
+        and it is the single most executed operation in machine learning.
+      es: |
+        $u \cdot v = \sum_i u_i v_i = \norm u \norm v \cos\theta$. Mide cuánto apuntan dos vectores en la misma
+        dirección, y es la operación más ejecutada del aprendizaje automático.
+    formulas:
+      - tex: |-
+          u \cdot v = \sum_{i=1}^n u_i v_i = \norm u\,\norm v \cos\theta
+      - tex: |-
+          \operatorname{proj}_u v = \frac{u \cdot v}{u \cdot u}\, u
+        label: {en: 'projection', es: 'proyección'}
+    applications:
+      - to: shading
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Diffuse lighting is $\max(0, n \cdot l)$, the dot product of the unit normal and the light direction.'
+          es: 'La iluminación difusa es $\max(0, n \cdot l)$, el producto escalar de la normal unitaria y la dirección de la luz.'
+      - to: neural-networks
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Each neuron computes $w \cdot x + b$ before its activation.'
+          es: 'Cada neurona calcula $w \cdot x + b$ antes de su activación.'
+      - to: recommender-systems
+        strength: 4
+        type: frequent
+        note:
+          en: 'Predicted affinity between a user and an item is the dot product of their embedding vectors.'
+          es: 'La afinidad prevista entre un usuario y un artículo es el producto escalar de sus vectores de embedding.'
+
+  - id: matrices
+    level: university
+    prerequisites: [vectors, dot-product]
+    title: {en: 'Matrices and linear maps', es: 'Matrices y aplicaciones lineales'}
+    aliases: {en: [matrix, linear map, determinant, matrix multiplication], es: [matriz, aplicación lineal, determinante, producto de matrices]}
+    summary:
+      en: |
+        A matrix $A \in \R^{m \times n}$ is a linear map $x \mapsto Ax$ from $\R^n$ to $\R^m$. The derivative of a
+        function of several variables is a matrix (the Jacobian), and a layer of a neural network is $Wx + b$.
+      es: |
+        Una matriz $A \in \R^{m \times n}$ es una aplicación lineal $x \mapsto Ax$ de $\R^n$ en $\R^m$. La derivada de
+        una función de varias variables es una matriz (la jacobiana), y una capa de una red neuronal es $Wx + b$.
+    formulas:
+      - tex: |-
+          (Ax)_i = \sum_j a_{ij} x_j, \qquad (AB)x = A(Bx)
+      - tex: |-
+          \det\begin{pmatrix} a & b \\ c & d \end{pmatrix} = ad - bc
+        label: {en: 'area scaling factor of the map', es: 'factor por el que la aplicación escala las áreas'}
+    applications:
+      - to: neural-networks
+        strength: 5
+        type: fundamental
+        note:
+          en: 'A dense layer is $\sigma(Wx + b)$; GPUs exist to multiply these matrices fast.'
+          es: 'Una capa densa es $\sigma(Wx + b)$; las GPU existen para multiplicar estas matrices deprisa.'
+      - to: kalman-filter
+        strength: 4
+        type: frequent
+        note:
+          en: 'State transition, observation and covariance updates are all matrix products.'
+          es: 'La transición de estado, la observación y la actualización de covarianzas son productos de matrices.'
+      - to: control-theory
+        strength: 4
+        type: frequent
+        note:
+          en: 'State-space models $\dot x = Ax + Bu$ are linear maps.'
+          es: 'Los modelos en espacio de estados $\dot x = Ax + Bu$ son aplicaciones lineales.'

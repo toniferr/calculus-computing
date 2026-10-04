@@ -1,0 +1,607 @@
+kind: math
+order: 14
+glyph: 'ẏ'
+title: {en: 'Differential equations', es: 'Ecuaciones diferenciales'}
+summary:
+  en: |
+    Laws written as rates of change, and how to solve them — exactly when possible, numerically always. Every
+    simulation, from a game engine to a climate model, is a differential equation being integrated.
+  es: |
+    Leyes escritas como tasas de cambio, y cómo resolverlas: exactamente cuando se puede, numéricamente siempre. Toda
+    simulación, de un motor de videojuegos a un modelo climático, es una ecuación diferencial que se integra.
+intro:
+  en: |
+    Nature rarely tells us *where* things are; it tells us how they *change*: force determines acceleration, the number
+    of infected determines new infections, the error determines the controller's correction. A differential equation
+    states that law; solving it predicts the future from the present. Traditionally a separate course, it is included
+    here in full because it is where calculus becomes simulation.
+  es: |
+    La naturaleza rara vez dice *dónde* están las cosas; dice cómo *cambian*: la fuerza determina la aceleración, el
+    número de infectados determina los nuevos contagios, el error determina la corrección del controlador. Una ecuación
+    diferencial enuncia esa ley; resolverla predice el futuro a partir del presente. Aunque suele ser una asignatura
+    aparte, se incluye aquí completa porque es donde el cálculo se convierte en simulación.
+topics:
+  - id: ode
+    level: university
+    core: true
+    prerequisites: [derivative, antiderivative, functions]
+    title: {en: 'Ordinary differential equations', es: 'Ecuaciones diferenciales ordinarias (EDO)'}
+    aliases: {en: [ODE, differential equation, dynamics, 'y'' = f(t,y)'], es: [EDO, ecuación diferencial, dinámica, 'y'' = f(t,y)']}
+    summary:
+      en: |
+        An equation relating an unknown function to its derivatives, $y' = f(t, y)$. Its solutions are trajectories: given
+        where you start, the equation says where you go next — the mathematical model of anything that evolves in time.
+      es: |
+        Una ecuación que relaciona una función desconocida con sus derivadas, $y' = f(t, y)$. Sus soluciones son
+        trayectorias: dado dónde empiezas, la ecuación dice adónde vas después; el modelo matemático de todo lo que
+        evoluciona en el tiempo.
+    why:
+      en: |
+        Most laws of science are local in time: Newton's $F = ma$, radioactive decay, chemical kinetics, population
+        growth. They do not give the state as a formula of $t$ but the *rate* at which it changes given the current state.
+        ODEs are how those laws are written, and solving them is how predictions are made.
+      es: |
+        La mayoría de las leyes científicas son locales en el tiempo: $F = ma$ de Newton, la desintegración radiactiva, la
+        cinética química, el crecimiento de poblaciones. No dan el estado como fórmula de $t$, sino la *tasa* a la que
+        cambia en función del estado actual. Las EDO son como se escriben esas leyes, y resolverlas es como se hacen
+        predicciones.
+    intuition:
+      en: |
+        Picture a slope field: at every point $(t, y)$ a tiny arrow with slope $f(t, y)$. A solution is a curve that is
+        tangent to the arrows everywhere — like a leaf carried by a stream. Different starting points give different
+        curves; the initial condition picks one.
+      es: |
+        Imagina un campo de pendientes: en cada punto $(t, y)$ una flechita con pendiente $f(t, y)$. Una solución es una
+        curva tangente a las flechas en todas partes, como una hoja arrastrada por la corriente. Puntos de partida
+        distintos dan curvas distintas; la condición inicial elige una.
+    formal:
+      en: |
+        An ODE of order $n$: $F\big(t, y, y', \dots, y^{(n)}\big) = 0$. Any order-$n$ ODE can be rewritten as a
+        first-order **system** $\mathbf{y}' = \mathbf f(t, \mathbf y)$ with $\mathbf y \in \R^n$ (introduce
+        $y_1 = y, y_2 = y', \dots$) — the form numerical solvers use.
+      es: |
+        Una EDO de orden $n$: $F\big(t, y, y', \dots, y^{(n)}\big) = 0$. Toda EDO de orden $n$ se puede reescribir como un
+        **sistema** de primer orden $\mathbf{y}' = \mathbf f(t, \mathbf y)$ con $\mathbf y \in \R^n$ (introduciendo
+        $y_1 = y, y_2 = y', \dots$), la forma que usan los resolvedores numéricos.
+    formulas:
+      - tex: |-
+          y' = f(t, y), \qquad y(t_0) = y_0
+      - tex: |-
+          m\,\ddot x = F(x, \dot x, t) \iff \begin{cases}\dot x = v\\ \dot v = F(x, v, t)/m\end{cases}
+        label: {en: 'Newton''s law as a first-order system', es: 'la ley de Newton como sistema de primer orden'}
+    example:
+      en: |
+        Cooling: $T' = -k(T - T_{\text{room}})$. Solution $T(t) = T_{\text{room}} + (T_0 - T_{\text{room}})e^{-kt}$. A CPU
+        heat sink, a cup of coffee and an RC circuit obey the same equation.
+      es: |
+        Enfriamiento: $T' = -k(T - T_{\text{amb}})$. Solución $T(t) = T_{\text{amb}} + (T_0 - T_{\text{amb}})e^{-kt}$. Un
+        disipador de CPU, una taza de café y un circuito RC obedecen la misma ecuación.
+    matters:
+      en: |
+        Physics engines, circuit simulators (SPICE), epidemiological models, pharmacokinetics, orbital mechanics and
+        control systems are ODE solvers wrapped in domain knowledge. In AI, neural ODEs make the network itself a
+        differential equation, and diffusion models generate images by integrating one backwards in time.
+      es: |
+        Los motores físicos, los simuladores de circuitos (SPICE), los modelos epidemiológicos, la farmacocinética, la
+        mecánica orbital y los sistemas de control son resolvedores de EDO envueltos en conocimiento del dominio. En IA,
+        las neural ODE convierten la propia red en una ecuación diferencial, y los modelos de difusión generan imágenes
+        integrando una hacia atrás en el tiempo.
+    applications:
+      - to: physics-engine
+        strength: 5
+        type: fundamental
+        note:
+          en: 'A physics engine integrates $\dot x = v$, $\dot v = F/m$ for every body, every frame.'
+          es: 'Un motor físico integra $\dot x = v$, $\dot v = F/m$ para cada cuerpo en cada fotograma.'
+      - to: classical-mechanics
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Newton''s second law is a second-order ODE.'
+          es: 'La segunda ley de Newton es una EDO de segundo orden.'
+      - to: population-models
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Logistic growth, predator–prey and SIR epidemics are ODE models.'
+          es: 'El crecimiento logístico, el depredador–presa y las epidemias SIR son modelos de EDO.'
+      - to: control-theory
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Plants and controllers are described by ODEs; control designs their closed-loop behaviour.'
+          es: 'Las plantas y los controladores se describen con EDO; el control diseña su comportamiento en lazo cerrado.'
+      - to: neural-odes
+        strength: 5
+        type: fundamental
+        note:
+          en: 'A neural ODE defines the hidden state by $h''(t) = f_\theta(h, t)$ and calls an ODE solver as a layer.'
+          es: 'Una neural ODE define el estado oculto con $h''(t) = f_\theta(h, t)$ y usa un resolvedor de EDO como capa.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Rewrite $y'''' + 3y'' + 2y = \sin t$ as a first-order system.'
+          es: 'Reescribe $y'''' + 3y'' + 2y = \sin t$ como un sistema de primer orden.'
+        solution:
+          en: 'With $y_1 = y$, $y_2 = y''$: $y_1'' = y_2$, $y_2'' = \sin t - 2y_1 - 3y_2$.'
+          es: 'Con $y_1 = y$, $y_2 = y''$: $y_1'' = y_2$, $y_2'' = \sin t - 2y_1 - 3y_2$.'
+      - type: applied
+        prompt:
+          en: 'A server room at 35 °C cools to 30 °C in 10 min with the AC at 20 °C. When does it reach 22 °C?'
+          es: 'Una sala de servidores a 35 °C baja a 30 °C en 10 min con el aire a 20 °C. ¿Cuándo llega a 22 °C?'
+        solution:
+          en: '$T - 20 = 15e^{-kt}$; $10 = 15e^{-10k} \Rightarrow k = \ln(1.5)/10$. $2 = 15e^{-kt} \Rightarrow t = 10\ln 7.5/\ln 1.5 \approx 49.7$ min.'
+          es: '$T - 20 = 15e^{-kt}$; $10 = 15e^{-10k} \Rightarrow k = \ln(1{,}5)/10$. $2 = 15e^{-kt} \Rightarrow t = 10\ln 7{,}5/\ln 1{,}5 \approx 49{,}7$ min.'
+
+  - id: initial-value-problem
+    level: university
+    kind: theorem
+    prerequisites: [ode, lipschitz-continuity]
+    title: {en: 'Initial value problems: existence and uniqueness', es: 'Problema de valor inicial: existencia y unicidad'}
+    aliases: {en: [IVP, Picard-Lindelöf, Cauchy problem, well-posedness], es: [PVI, Picard-Lindelöf, problema de Cauchy, buen planteamiento]}
+    summary:
+      en: |
+        Picard–Lindelöf: if $f$ is Lipschitz in $y$, then $y' = f(t, y)$, $y(t_0) = y_0$ has exactly one solution near
+        $t_0$. Determinism, mathematically: the present determines the future — and a simulation has a single right
+        answer to approximate.
+      es: |
+        Picard–Lindelöf: si $f$ es lipschitziana en $y$, entonces $y' = f(t, y)$, $y(t_0) = y_0$ tiene exactamente una
+        solución cerca de $t_0$. El determinismo, en matemáticas: el presente determina el futuro, y una simulación tiene
+        una única respuesta correcta que aproximar.
+    formal:
+      en: 'If $f$ is continuous and $|f(t, y) - f(t, z)| \le L|y - z|$ near $(t_0, y_0)$, the IVP has a unique solution on some interval $[t_0 - h, t_0 + h]$.'
+      es: 'Si $f$ es continua y $|f(t, y) - f(t, z)| \le L|y - z|$ cerca de $(t_0, y_0)$, el PVI tiene solución única en algún intervalo $[t_0 - h, t_0 + h]$.'
+    proofIdea:
+      en: 'Rewrite as $y(t) = y_0 + \int_{t_0}^t f(s, y(s))\,\dd s$ and show the right-hand side is a contraction (Banach fixed point): Picard iteration converges.'
+      es: 'Reescribe como $y(t) = y_0 + \int_{t_0}^t f(s, y(s))\,\dd s$ y comprueba que el lado derecho es una contracción (punto fijo de Banach): la iteración de Picard converge.'
+    applications:
+      - to: physics-engine
+        strength: 3
+        type: frequent
+        note:
+          en: 'Non-Lipschitz forces (contacts, friction switches) break uniqueness, which is why engines treat them specially.'
+          es: 'Las fuerzas no lipschitzianas (contactos, cambios de rozamiento) rompen la unicidad, y por eso los motores las tratan aparte.'
+
+  - id: separable-odes
+    level: university
+    kind: method
+    prerequisites: [ode, substitution]
+    title: {en: 'Separable equations', es: 'Ecuaciones de variables separables'}
+    aliases: {en: [separation of variables, logistic equation], es: [separación de variables, ecuación logística]}
+    summary:
+      en: |
+        $y' = g(t)\,h(y)$: put all the $y$ on one side and integrate, $\int\frac{\dd y}{h(y)} = \int g(t)\,\dd t$. Exponential
+        growth and the logistic curve are solved this way.
+      es: |
+        $y' = g(t)\,h(y)$: se pasan todas las $y$ a un lado y se integra, $\int\frac{\dd y}{h(y)} = \int g(t)\,\dd t$. El
+        crecimiento exponencial y la curva logística se resuelven así.
+    formulas:
+      - tex: |-
+          y' = r\,y\Big(1 - \frac{y}{K}\Big) \implies y(t) = \frac{K}{1 + \big(\frac{K}{y_0} - 1\big)e^{-rt}}
+        label: {en: 'logistic growth: the sigmoid is its solution', es: 'crecimiento logístico: la sigmoide es su solución'}
+    applications:
+      - to: population-models
+        strength: 4
+        type: frequent
+        note:
+          en: 'The logistic equation of population and adoption curves is separable; its solution is a shifted sigmoid.'
+          es: 'La ecuación logística de las curvas de población y de adopción es separable; su solución es una sigmoide desplazada.'
+
+  - id: first-order-linear-odes
+    level: university
+    kind: method
+    prerequisites: [ode, exponential-functions]
+    title: {en: 'First-order linear equations', es: 'EDO lineales de primer orden'}
+    aliases: {en: [integrating factor, exponential decay, RC circuit], es: [factor integrante, decaimiento exponencial, circuito RC]}
+    summary:
+      en: |
+        $y' + p(t)\,y = q(t)$, solved with an integrating factor $e^{\int p}$. The response of every first-order system
+        (thermometer, RC filter, simple capacitor charging) is an exponential approach to equilibrium.
+      es: |
+        $y' + p(t)\,y = q(t)$, que se resuelve con un factor integrante $e^{\int p}$. La respuesta de todo sistema de primer
+        orden (un termómetro, un filtro RC, un condensador cargándose) es una aproximación exponencial al equilibrio.
+    formulas:
+      - tex: |-
+          y' + a\,y = b \implies y(t) = \frac ba + \Big(y_0 - \frac ba\Big)e^{-at}
+    applications:
+      - to: control-theory
+        strength: 4
+        type: frequent
+        note:
+          en: 'First-order lags with time constant $\tau = 1/a$ are the building blocks of system models.'
+          es: 'Los retardos de primer orden con constante de tiempo $\tau = 1/a$ son los ladrillos de los modelos de sistemas.'
+      - to: digital-filters
+        strength: 3
+        type: frequent
+        note:
+          en: 'The exponential moving average $y_k = (1-\alpha)y_{k-1} + \alpha x_k$ is a discretized first-order linear ODE (an RC low-pass).'
+          es: 'La media móvil exponencial $y_k = (1-\alpha)y_{k-1} + \alpha x_k$ es una EDO lineal de primer orden discretizada (un paso bajo RC).'
+
+  - id: second-order-odes
+    level: university
+    prerequisites: [first-order-linear-odes, complex-numbers]
+    title: {en: 'Second-order linear equations (oscillations)', es: 'EDO lineales de segundo orden (oscilaciones)'}
+    aliases: {en: [harmonic oscillator, damping, resonance, characteristic equation, spring-mass], es: [oscilador armónico, amortiguamiento, resonancia, ecuación característica, masa-muelle]}
+    summary:
+      en: |
+        $m\ddot x + c\dot x + kx = F(t)$: springs, pendulums, circuits, suspensions. The roots of the characteristic
+        equation $m r^2 + c r + k = 0$ decide whether the system oscillates (complex roots), returns smoothly (real roots)
+        or resonates.
+      es: |
+        $m\ddot x + c\dot x + kx = F(t)$: muelles, péndulos, circuitos, suspensiones. Las raíces de la ecuación
+        característica $m r^2 + c r + k = 0$ deciden si el sistema oscila (raíces complejas), vuelve suavemente (raíces
+        reales) o entra en resonancia.
+    formulas:
+      - tex: |-
+          \ddot x + 2\zeta\omega_0\dot x + \omega_0^2 x = 0, \qquad \omega_0 = \sqrt{k/m}, \quad \zeta = \frac{c}{2\sqrt{km}}
+      - tex: |-
+          x(t) = A e^{-\zeta\omega_0 t}\cos\big(\omega_d t + \varphi\big), \quad \omega_d = \omega_0\sqrt{1 - \zeta^2}\ \ (\zeta < 1)
+        label: {en: 'underdamped response', es: 'respuesta subamortiguada'}
+    applications:
+      - to: classical-mechanics
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The harmonic oscillator is the model of every small vibration around an equilibrium.'
+          es: 'El oscilador armónico es el modelo de toda vibración pequeña alrededor de un equilibrio.'
+      - to: pid-control
+        strength: 4
+        type: frequent
+        note:
+          en: 'Tuning a controller is choosing the damping ratio $\zeta$ of the closed loop: fast without overshoot.'
+          es: 'Ajustar un controlador es elegir el factor de amortiguamiento $\zeta$ del lazo cerrado: rápido y sin sobreoscilación.'
+      - to: physics-engine
+        strength: 4
+        type: frequent
+        note:
+          en: 'Springs and dampers drive cloth, ragdolls, camera smoothing and vehicle suspensions.'
+          es: 'Muelles y amortiguadores mueven la tela, los ragdolls, el suavizado de cámara y las suspensiones de vehículos.'
+      - to: adam
+        strength: 3
+        type: advanced
+        note:
+          en: 'Gradient descent with momentum is a discretized damped oscillator (heavy-ball ODE) rolling in the loss landscape.'
+          es: 'El descenso de gradiente con momento es un oscilador amortiguado discretizado (EDO de la bola pesada) rodando por el paisaje de pérdida.'
+
+  - id: ode-systems
+    level: university
+    prerequisites: [first-order-linear-odes, matrices]
+    title: {en: 'Systems of ODEs', es: 'Sistemas de EDO'}
+    aliases: {en: [linear system, matrix exponential, coupled equations, state space], es: [sistema lineal, exponencial de una matriz, ecuaciones acopladas, espacio de estados]}
+    summary:
+      en: |
+        Several coupled unknowns, $\mathbf x' = F(\mathbf x)$. For linear systems $\mathbf x' = A\mathbf x$ the solution is
+        $e^{At}\mathbf x_0$ and the eigenvalues of $A$ decide growth, decay and oscillation.
+      es: |
+        Varias incógnitas acopladas, $\mathbf x' = F(\mathbf x)$. Para sistemas lineales $\mathbf x' = A\mathbf x$ la
+        solución es $e^{At}\mathbf x_0$ y los valores propios de $A$ deciden el crecimiento, el decaimiento y la
+        oscilación.
+    formulas:
+      - tex: |-
+          \mathbf x' = A\mathbf x \implies \mathbf x(t) = e^{At}\mathbf x_0, \qquad e^{At} = \sum_{k\ge0}\frac{(At)^k}{k!}
+      - tex: |-
+          \dot S = -\beta SI, \quad \dot I = \beta SI - \gamma I, \quad \dot R = \gamma I
+        label: {en: 'SIR epidemic model', es: 'modelo epidémico SIR'}
+    applications:
+      - to: population-models
+        strength: 5
+        type: fundamental
+        note:
+          en: 'SIR/SEIR epidemics and Lotka–Volterra predator–prey models are nonlinear ODE systems.'
+          es: 'Las epidemias SIR/SEIR y el modelo depredador–presa de Lotka–Volterra son sistemas no lineales de EDO.'
+      - to: n-body-simulation
+        strength: 5
+        type: fundamental
+        note:
+          en: '$N$ gravitating bodies give $6N$ coupled first-order equations.'
+          es: '$N$ cuerpos que se atraen dan $6N$ ecuaciones de primer orden acopladas.'
+      - to: robot-dynamics
+        strength: 4
+        type: frequent
+        note:
+          en: 'A robot''s equations of motion $M(q)\ddot q + C(q,\dot q)\dot q + g(q) = \tau$ form a coupled system.'
+          es: 'Las ecuaciones del movimiento de un robot $M(q)\ddot q + C(q,\dot q)\dot q + g(q) = \tau$ forman un sistema acoplado.'
+
+  - id: euler-method
+    level: university
+    kind: method
+    core: true
+    prerequisites: [ode, differential]
+    related: [runge-kutta, gradient-descent]
+    title: {en: 'Euler''s method', es: 'Método de Euler'}
+    aliases: {en: [explicit Euler, forward Euler, semi-implicit Euler, symplectic Euler, time stepping], es: [Euler explícito, Euler progresivo, Euler semiimplícito, Euler simpléctico, paso de tiempo]}
+    summary:
+      en: |
+        The simplest numerical ODE solver: follow the tangent for a small time step, $y_{k+1} = y_k + h\,f(t_k, y_k)$. First
+        order (error $O(h)$), easy to destabilize — and, in its semi-implicit form, the default integrator of game
+        physics.
+      es: |
+        El resolvedor numérico de EDO más sencillo: seguir la tangente durante un paso de tiempo pequeño,
+        $y_{k+1} = y_k + h\,f(t_k, y_k)$. De primer orden (error $O(h)$), fácil de desestabilizar y, en su forma
+        semiimplícita, el integrador por defecto de la física de videojuegos.
+    why:
+      en: |
+        Most ODEs have no closed-form solution. Euler's idea (1768): we know the slope at the current point, so assume
+        it stays constant for a short time, step, and repeat. It turns any ODE into a loop.
+      es: |
+        La mayoría de las EDO no tienen solución cerrada. La idea de Euler (1768): conocemos la pendiente en el punto
+        actual, así que suponemos que no cambia durante un rato corto, avanzamos y repetimos. Convierte cualquier EDO en un
+        bucle.
+    intuition:
+      en: |
+        Walking with your eyes closed, opening them every $h$ seconds to check your heading. Small $h$: you follow the path
+        closely. Large $h$: you drift off, and on a circular orbit you spiral outwards because each tangent step leaves
+        the circle. Error per step $O(h^2)$, accumulated over $1/h$ steps: $O(h)$.
+      es: |
+        Caminar con los ojos cerrados abriéndolos cada $h$ segundos para comprobar el rumbo. Con $h$ pequeño sigues el
+        camino de cerca. Con $h$ grande te desvías, y en una órbita circular sales en espiral porque cada paso por la
+        tangente abandona la circunferencia. Error por paso $O(h^2)$, acumulado en $1/h$ pasos: $O(h)$.
+    formal:
+      en: |
+        Explicit Euler: $y_{k+1} = y_k + h\,f(t_k, y_k)$. Global error $\max_k|y(t_k) - y_k| = O(h)$ for Lipschitz $f$.
+        On the test equation $y' = \lambda y$ ($\lambda < 0$) it is stable only if $|1 + h\lambda| \le 1$, i.e.
+        $h \le 2/|\lambda|$.
+      es: |
+        Euler explícito: $y_{k+1} = y_k + h\,f(t_k, y_k)$. Error global $\max_k|y(t_k) - y_k| = O(h)$ para $f$
+        lipschitziana. En la ecuación de prueba $y' = \lambda y$ ($\lambda < 0$) solo es estable si $|1 + h\lambda| \le 1$,
+        es decir, $h \le 2/|\lambda|$.
+    formulas:
+      - tex: |-
+          y_{k+1} = y_k + h\,f(t_k, y_k)
+        label: {en: 'explicit Euler', es: 'Euler explícito'}
+      - tex: |-
+          v_{k+1} = v_k + h\,\frac{F(x_k)}{m}, \qquad x_{k+1} = x_k + h\,v_{k+1}
+        label: {en: 'semi-implicit (symplectic) Euler, used in game engines', es: 'Euler semiimplícito (simpléctico), usado en motores de juego'}
+      - tex: |-
+          \theta_{k+1} = \theta_k - \eta\,\nabla L(\theta_k) \quad\Longleftrightarrow\quad \dot\theta = -\nabla L(\theta)
+        label: {en: 'gradient descent is explicit Euler on the gradient flow', es: 'el descenso de gradiente es Euler explícito sobre el flujo de gradiente'}
+    compute:
+      en: |
+        ```
+        t, y = t0, y0
+        while t < T:
+            y = y + h * f(t, y)
+            t = t + h
+        ```
+        For mechanics, update velocity first and then position with the *new* velocity (semi-implicit): energy stays
+        bounded instead of growing.
+      es: |
+        ```
+        t, y = t0, y0
+        mientras t < T:
+            y = y + h * f(t, y)
+            t = t + h
+        ```
+        En mecánica, actualiza primero la velocidad y después la posición con la velocidad *nueva* (semiimplícito): la
+        energía se mantiene acotada en vez de crecer.
+    example:
+      en: |
+        $y' = -2y$, $y(0) = 1$ (exact $e^{-2t}$), step $h = 0.1$: $y_k = 0.8^k$, so $y(1) \approx 0.8^{10} = 0.107$ vs
+        $e^{-2} = 0.135$. With $h = 1.5$: $y_k = (-2)^k$ — the numerical solution explodes while the true one decays. That
+        is numerical instability.
+      es: |
+        $y' = -2y$, $y(0) = 1$ (exacta $e^{-2t}$), paso $h = 0{,}1$: $y_k = 0{,}8^k$, así que $y(1) \approx 0{,}8^{10} = 0{,}107$
+        frente a $e^{-2} = 0{,}135$. Con $h = 1{,}5$: $y_k = (-2)^k$; la solución numérica explota mientras la real decae.
+        Eso es inestabilidad numérica.
+    matters:
+      en: |
+        Every game engine steps its world with a variant of Euler at 60 Hz. And the most important algorithm of machine
+        learning is Euler's method in disguise: gradient descent is explicit Euler applied to the gradient flow
+        $\dot\theta = -\nabla L$, with the learning rate as the time step — so its stability limit $\eta < 2/\lambda_{\max}$
+        is Euler's stability limit.
+      es: |
+        Todo motor de videojuegos avanza su mundo con una variante de Euler a 60 Hz. Y el algoritmo más importante del
+        aprendizaje automático es el método de Euler disfrazado: el descenso de gradiente es Euler explícito aplicado al
+        flujo de gradiente $\dot\theta = -\nabla L$, con el learning rate como paso de tiempo; por eso su límite de
+        estabilidad $\eta < 2/\lambda_{\max}$ es el límite de estabilidad de Euler.
+    applications:
+      - to: physics-engine
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Semi-implicit Euler is the default integrator of Box2D, Bullet and most game engines.'
+          es: 'Euler semiimplícito es el integrador por defecto de Box2D, Bullet y la mayoría de motores de juego.'
+      - to: gradient-descent
+        strength: 4
+        type: advanced
+        note:
+          en: 'GD is explicit Euler on $\dot\theta = -\nabla L$; the learning rate is the time step and inherits its stability limit.'
+          es: 'El descenso de gradiente es Euler explícito sobre $\dot\theta = -\nabla L$; el learning rate es el paso de tiempo y hereda su límite de estabilidad.'
+      - to: generative-models
+        strength: 3
+        type: advanced
+        note:
+          en: 'Diffusion and flow-matching samplers integrate a learned ODE/SDE with Euler-type steps.'
+          es: 'Los muestreadores de difusión y flow matching integran una EDO/EDE aprendida con pasos tipo Euler.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Do three Euler steps with $h = 0.5$ for $y'' = t - y$, $y(0) = 1$.'
+          es: 'Haz tres pasos de Euler con $h = 0{,}5$ para $y'' = t - y$, $y(0) = 1$.'
+        solution:
+          en: '$y_1 = 1 + 0.5(0 - 1) = 0.5$; $y_2 = 0.5 + 0.5(0.5 - 0.5) = 0.5$; $y_3 = 0.5 + 0.5(1 - 0.5) = 0.75$ (exact $y(1.5) = 1.5 - 1 + 2e^{-1.5} \approx 0.946$).'
+          es: '$y_1 = 1 + 0{,}5(0 - 1) = 0{,}5$; $y_2 = 0{,}5 + 0{,}5(0{,}5 - 0{,}5) = 0{,}5$; $y_3 = 0{,}5 + 0{,}5(1 - 0{,}5) = 0{,}75$ (exacta $y(1{,}5) = 1{,}5 - 1 + 2e^{-1{,}5} \approx 0{,}946$).'
+      - type: computing
+        prompt:
+          en: 'Simulate a planet on a circular orbit with explicit Euler. What happens to its energy? How does semi-implicit Euler fix it?'
+          es: 'Simula un planeta en órbita circular con Euler explícito. ¿Qué le pasa a su energía? ¿Cómo lo arregla Euler semiimplícito?'
+        solution:
+          en: |
+            Each explicit step moves along the tangent, outside the circle: the radius and energy grow every step and the
+            planet spirals out. Semi-implicit Euler is symplectic: it preserves a slightly perturbed energy, so the orbit
+            stays closed for very long times.
+          es: |
+            Cada paso explícito avanza por la tangente, fuera de la circunferencia: el radio y la energía crecen en cada
+            paso y el planeta sale en espiral. Euler semiimplícito es simpléctico: conserva una energía ligeramente
+            perturbada, así que la órbita sigue cerrada durante muchísimo tiempo.
+      - type: ai
+        prompt:
+          en: 'Explain why a learning rate above $2/\lambda_{\max}(H)$ makes training diverge, using Euler''s method.'
+          es: 'Explica con el método de Euler por qué un learning rate mayor que $2/\lambda_{\max}(H)$ hace divergir el entrenamiento.'
+        solution:
+          en: 'Near a minimum $\nabla L \approx H(\theta - \theta^\ast)$, so GD is Euler on $\dot e = -He$. Along the top eigenvector, $e_{k+1} = (1 - \eta\lambda_{\max})e_k$, which grows when $|1 - \eta\lambda_{\max}| > 1$, i.e. $\eta > 2/\lambda_{\max}$.'
+          es: 'Cerca de un mínimo $\nabla L \approx H(\theta - \theta^\ast)$, así que el descenso de gradiente es Euler sobre $\dot e = -He$. En el vector propio dominante, $e_{k+1} = (1 - \eta\lambda_{\max})e_k$, que crece cuando $|1 - \eta\lambda_{\max}| > 1$, es decir, $\eta > 2/\lambda_{\max}$.'
+
+  - id: runge-kutta
+    level: advanced
+    kind: method
+    core: true
+    prerequisites: [euler-method, taylor-polynomial]
+    title: {en: 'Runge–Kutta methods', es: 'Métodos de Runge–Kutta'}
+    aliases: {en: [RK4, adaptive step, Dormand-Prince, ode45, higher-order integrator], es: [RK4, paso adaptativo, Dormand-Prince, ode45, integrador de orden alto]}
+    summary:
+      en: |
+        Sample the slope at several points inside the step and combine them to cancel error terms. The classic RK4 has
+        error $O(h^4)$: halve the step, divide the error by 16. Adaptive pairs (Dormand–Prince, `ode45`, `solve_ivp`)
+        adjust $h$ automatically.
+      es: |
+        Muestrear la pendiente en varios puntos dentro del paso y combinarlas para cancelar términos de error. El RK4
+        clásico tiene error $O(h^4)$: con la mitad de paso, el error se divide entre 16. Los pares adaptativos
+        (Dormand–Prince, `ode45`, `solve_ivp`) ajustan $h$ automáticamente.
+    intuition:
+      en: |
+        Euler trusts the slope at the start of the step. RK2 (midpoint) takes a half step, looks at the slope there, and
+        uses *that* slope for the full step. RK4 does this four times and averages with weights $1, 2, 2, 1$ — like
+        Simpson's rule for integrals. The weights are chosen so the result agrees with the Taylor expansion up to $h^4$.
+      es: |
+        Euler se fía de la pendiente al principio del paso. RK2 (punto medio) da medio paso, mira la pendiente ahí y usa
+        *esa* pendiente para el paso completo. RK4 lo hace cuatro veces y promedia con pesos $1, 2, 2, 1$, como la regla
+        de Simpson para integrales. Los pesos se eligen para que el resultado coincida con el desarrollo de Taylor hasta
+        $h^4$.
+    formulas:
+      - tex: |-
+          \begin{aligned} k_1 &= f(t_k, y_k), & k_2 &= f\big(t_k + \tfrac h2, y_k + \tfrac h2 k_1\big),\\ k_3 &= f\big(t_k + \tfrac h2, y_k + \tfrac h2 k_2\big), & k_4 &= f(t_k + h, y_k + h k_3),\end{aligned}
+      - tex: |-
+          y_{k+1} = y_k + \frac h6\big(k_1 + 2k_2 + 2k_3 + k_4\big)
+        label: {en: 'classic RK4', es: 'RK4 clásico'}
+    matters:
+      en: |
+        RK methods are the default for non-stiff problems in scientific computing (MATLAB `ode45`, SciPy `RK45`), used in
+        orbit propagation, chemical kinetics and the adaptive solvers inside neural ODEs. Games prefer cheaper, symplectic
+        schemes; scientists prefer accuracy per function evaluation.
+      es: |
+        Los métodos RK son la opción por defecto para problemas no rígidos en computación científica (`ode45` de MATLAB,
+        `RK45` de SciPy), y se usan en propagación de órbitas, cinética química y los resolvedores adaptativos de las
+        neural ODE. Los videojuegos prefieren esquemas más baratos y simplécticos; la ciencia prefiere precisión por
+        evaluación de la función.
+    applications:
+      - to: scientific-computing
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Adaptive Runge–Kutta pairs are the standard general-purpose ODE solvers.'
+          es: 'Los pares de Runge–Kutta adaptativos son los resolvedores de EDO de propósito general estándar.'
+      - to: n-body-simulation
+        strength: 4
+        type: frequent
+        note:
+          en: 'High-order RK is used for accurate short-term orbits; symplectic methods for long-term stability.'
+          es: 'Se usa RK de orden alto para órbitas precisas a corto plazo y métodos simplécticos para la estabilidad a largo plazo.'
+      - to: neural-odes
+        strength: 4
+        type: frequent
+        note:
+          en: 'Neural ODE libraries (torchdiffeq, Diffrax) default to adaptive Runge–Kutta solvers.'
+          es: 'Las librerías de neural ODE (torchdiffeq, Diffrax) usan por defecto resolvedores de Runge–Kutta adaptativos.'
+      - to: weather-climate
+        strength: 4
+        type: frequent
+        note:
+          en: 'Atmospheric models advance their discretized equations in time with Runge–Kutta-type schemes.'
+          es: 'Los modelos atmosféricos avanzan en el tiempo sus ecuaciones discretizadas con esquemas de tipo Runge–Kutta.'
+    exercises:
+      - type: computing
+        prompt:
+          en: 'RK4 costs 4 evaluations of $f$ per step, Euler 1. For error $10^{-6}$ on $[0,1]$, roughly how many evaluations does each need if the error constants are about 1?'
+          es: 'RK4 cuesta 4 evaluaciones de $f$ por paso y Euler 1. Para un error de $10^{-6}$ en $[0,1]$, ¿cuántas evaluaciones necesita aproximadamente cada uno si las constantes de error son del orden de 1?'
+        solution:
+          en: 'Euler: $h \approx 10^{-6}$ → $10^6$ evaluations. RK4: $h^4 \approx 10^{-6}$ → $h \approx 0.03$, about 32 steps → ~130 evaluations. Higher order wins by orders of magnitude.'
+          es: 'Euler: $h \approx 10^{-6}$ → $10^6$ evaluaciones. RK4: $h^4 \approx 10^{-6}$ → $h \approx 0{,}03$, unos 32 pasos → ~130 evaluaciones. El orden alto gana por órdenes de magnitud.'
+
+  - id: stiff-equations
+    level: advanced
+    prerequisites: [euler-method, equilibrium-stability]
+    title: {en: 'Stiffness and implicit methods', es: 'Rigidez y métodos implícitos'}
+    aliases: {en: [stiff ODE, implicit Euler, backward Euler, BDF, A-stability], es: [EDO rígida, Euler implícito, Euler regresivo, BDF, A-estabilidad]}
+    summary:
+      en: |
+        Systems with very different time scales (a stiff spring on a slow body) force explicit methods to take tiny steps
+        just to stay stable. Implicit methods, $y_{k+1} = y_k + h f(y_{k+1})$, are stable for any step at the price of
+        solving an equation each step.
+      es: |
+        Los sistemas con escalas de tiempo muy distintas (un muelle rígido sobre un cuerpo lento) obligan a los métodos
+        explícitos a dar pasos diminutos solo para seguir siendo estables. Los métodos implícitos,
+        $y_{k+1} = y_k + h f(y_{k+1})$, son estables con cualquier paso a cambio de resolver una ecuación en cada paso.
+    formulas:
+      - tex: |-
+          y_{k+1} = y_k + h\,f(t_{k+1}, y_{k+1}), \qquad y' = \lambda y \Rightarrow y_{k+1} = \frac{y_k}{1 - h\lambda}
+        label: {en: 'implicit Euler: stable for every $h > 0$ when $\lambda < 0$', es: 'Euler implícito: estable para todo $h > 0$ si $\lambda < 0$'}
+    applications:
+      - to: physics-engine
+        strength: 4
+        type: frequent
+        note:
+          en: 'Cloth and soft bodies use implicit integration (Baraff–Witkin) so stiff springs do not explode.'
+          es: 'La tela y los cuerpos blandos usan integración implícita (Baraff–Witkin) para que los muelles rígidos no exploten.'
+      - to: scientific-computing
+        strength: 4
+        type: frequent
+        note:
+          en: 'Chemical kinetics and circuit simulation (SPICE) rely on stiff solvers (BDF, Rosenbrock).'
+          es: 'La cinética química y la simulación de circuitos (SPICE) dependen de resolvedores para problemas rígidos (BDF, Rosenbrock).'
+
+  - id: pde
+    level: advanced
+    prerequisites: [ode, partial-derivatives]
+    title: {en: 'Partial differential equations', es: 'Ecuaciones en derivadas parciales (EDP)'}
+    aliases: {en: [PDE, heat equation, wave equation, Laplace equation, boundary conditions], es: [EDP, ecuación del calor, ecuación de ondas, ecuación de Laplace, condiciones de contorno]}
+    summary:
+      en: |
+        Equations for fields that depend on space *and* time, involving partial derivatives: heat diffusion, waves,
+        fluid flow, electromagnetism, quantum mechanics. Solved numerically by discretizing space (finite differences,
+        finite volumes, finite elements, spectral methods).
+      es: |
+        Ecuaciones para campos que dependen del espacio *y* del tiempo, con derivadas parciales: difusión del calor, ondas,
+        flujo de fluidos, electromagnetismo, mecánica cuántica. Se resuelven numéricamente discretizando el espacio
+        (diferencias finitas, volúmenes finitos, elementos finitos, métodos espectrales).
+    formulas:
+      - tex: |-
+          u_t = \alpha\,\Delta u, \qquad u_{tt} = c^2\Delta u, \qquad \Delta u = 0
+        label: {en: 'heat, wave, Laplace: parabolic, hyperbolic, elliptic', es: 'calor, ondas, Laplace: parabólica, hiperbólica, elíptica'}
+    applications:
+      - to: heat-equation
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The prototype parabolic PDE.'
+          es: 'El prototipo de EDP parabólica.'
+      - to: wave-equation
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The prototype hyperbolic PDE.'
+          es: 'El prototipo de EDP hiperbólica.'
+      - to: fluid-dynamics
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The Navier–Stokes equations are a nonlinear system of PDEs.'
+          es: 'Las ecuaciones de Navier–Stokes son un sistema no lineal de EDP.'
+      - to: finite-elements
+        strength: 5
+        type: fundamental
+        note:
+          en: 'FEM is the dominant method to solve PDEs on complex geometries in engineering.'
+          es: 'Los elementos finitos son el método dominante para resolver EDP sobre geometrías complejas en ingeniería.'
+      - to: generative-models
+        strength: 3
+        type: advanced
+        note:
+          en: 'Diffusion models are tied to the Fokker–Planck PDE of a noising process, reversed by learning the score $\nabla\log p$.'
+          es: 'Los modelos de difusión están ligados a la EDP de Fokker–Planck de un proceso de ruido, que se invierte aprendiendo el score $\nabla\log p$.'
+      - to: image-processing
+        strength: 3
+        type: advanced
+        note:
+          en: 'Anisotropic (Perona–Malik) diffusion denoises images while preserving edges by solving a nonlinear heat equation.'
+          es: 'La difusión anisótropa (Perona–Malik) elimina ruido preservando bordes resolviendo una ecuación del calor no lineal.'

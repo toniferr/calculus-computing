@@ -1,0 +1,537 @@
+kind: math
+order: 8
+glyph: '≈'
+title: {en: 'Numerical methods', es: 'Métodos numéricos'}
+summary:
+  en: |
+    Calculus as an algorithm: finding roots, interpolating, differentiating and integrating with finite arithmetic —
+    and knowing how wrong the answer can be.
+  es: |
+    El cálculo como algoritmo: encontrar raíces, interpolar, derivar e integrar con aritmética finita, y saber cuánto
+    puede equivocarse la respuesta.
+intro:
+  en: |
+    Closed-form answers are the exception. Most equations of engineering, physics and machine learning are solved by
+    iterating a simple step until the answer stops changing:
+
+    ```
+    x₀ → f(x₀), f'(x₀) → x₁ → f(x₁), f'(x₁) → x₂ → … → solution
+    ```
+
+    Three questions decide whether that works: does the iteration **converge**, how **fast**, and how much do
+    **rounding errors** and badly **conditioned** problems spoil the result?
+  es: |
+    Las soluciones cerradas son la excepción. La mayoría de las ecuaciones de la ingeniería, la física y el aprendizaje
+    automático se resuelven iterando un paso sencillo hasta que la respuesta deja de cambiar:
+
+    ```
+    x₀ → f(x₀), f'(x₀) → x₁ → f(x₁), f'(x₁) → x₂ → … → solución
+    ```
+
+    Tres preguntas deciden si eso funciona: ¿la iteración **converge**?, ¿a qué **velocidad**?, ¿y cuánto estropean el
+    resultado los **errores de redondeo** y los problemas mal **condicionados**?
+topics:
+  - id: numerical-error
+    level: fundamental
+    prerequisites: [absolute-value]
+    title: {en: 'Absolute and relative error', es: 'Error absoluto y relativo'}
+    aliases: {en: [error, significant digits, machine epsilon, truncation error, rounding error], es: [error, cifras significativas, épsilon de máquina, error de truncamiento, error de redondeo]}
+    summary:
+      en: |
+        Absolute error $|x - \hat x|$ and relative error $|x - \hat x|/|x|$. Relative error counts correct significant
+        digits, and it is what floating point controls: every operation is exact up to a relative error of at most
+        $\varepsilon_{\text{mach}} \approx 1.1 \cdot 10^{-16}$ in double precision.
+      es: |
+        Error absoluto $|x - \hat x|$ y relativo $|x - \hat x|/|x|$. El error relativo cuenta cifras significativas
+        correctas, y es lo que controla la coma flotante: cada operación es exacta salvo un error relativo de como
+        mucho $\varepsilon_{\text{mach}} \approx 1{,}1 \cdot 10^{-16}$ en doble precisión.
+    formulas:
+      - tex: |-
+          e_{\text{abs}} = |x - \hat x|, \qquad e_{\text{rel}} = \frac{|x - \hat x|}{|x|}
+      - tex: |-
+          \operatorname{fl}(a \circ b) = (a \circ b)(1 + \delta), \quad |\delta| \le \varepsilon_{\text{mach}} = 2^{-53}
+        label: {en: 'the IEEE 754 model of arithmetic', es: 'el modelo de aritmética de IEEE 754'}
+    applications:
+      - to: floating-point
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Floating point is designed around a guaranteed relative error per operation.'
+          es: 'La coma flotante está diseñada en torno a un error relativo garantizado por operación.'
+      - to: scientific-computing
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Every numerical result should come with an error estimate; truncation and rounding errors are budgeted separately.'
+          es: 'Todo resultado numérico debería ir con una estimación de su error; los errores de truncamiento y redondeo se presupuestan por separado.'
+
+  - id: conditioning
+    level: university
+    prerequisites: [numerical-error, differential]
+    title: {en: 'Conditioning', es: 'Condicionamiento'}
+    aliases: {en: [condition number, ill-conditioned, sensitivity], es: [número de condición, mal condicionado, sensibilidad]}
+    summary:
+      en: |
+        How much a *problem* amplifies relative errors in its data, independently of the algorithm. Its condition
+        number $\kappa$ says you can lose about $\log_{10}\kappa$ digits however cleverly you compute.
+      es: |
+        Cuánto amplifica un *problema* los errores relativos de sus datos, independientemente del algoritmo. Su número de
+        condición $\kappa$ dice que se pueden perder unas $\log_{10}\kappa$ cifras por muy bien que se calcule.
+    formulas:
+      - tex: |-
+          \kappa_f(x) = \left|\frac{x\,f'(x)}{f(x)}\right|, \qquad \kappa(A) = \norm A\,\norm{A^{-1}}
+    applications:
+      - to: scientific-computing
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Ill-conditioned systems (large $\kappa$) need reformulation or higher precision, not a better solver.'
+          es: 'Los sistemas mal condicionados ($\kappa$ grande) necesitan reformularse o más precisión, no un resolvedor mejor.'
+      - to: loss-landscape
+        strength: 4
+        type: frequent
+        note:
+          en: 'A Hessian with large condition number makes gradient descent zigzag; preconditioning (Adam, normalization layers) helps.'
+          es: 'Un hessiano con número de condición grande hace zigzaguear al descenso de gradiente; el precondicionamiento (Adam, capas de normalización) ayuda.'
+
+  - id: numerical-stability
+    level: university
+    prerequisites: [numerical-error, conditioning]
+    title: {en: 'Numerical stability', es: 'Estabilidad numérica'}
+    aliases: {en: [catastrophic cancellation, stable algorithm, backward stability, blow-up], es: [cancelación catastrófica, algoritmo estable, estabilidad hacia atrás, explosión]}
+    summary:
+      en: |
+        Whether an *algorithm* keeps rounding errors under control. Two mathematically equal formulas can behave very
+        differently: subtracting nearly equal numbers (catastrophic cancellation) or iterating an unstable recurrence
+        destroys accuracy.
+      es: |
+        Si un *algoritmo* mantiene a raya los errores de redondeo. Dos fórmulas matemáticamente iguales pueden
+        comportarse de forma muy distinta: restar números casi iguales (cancelación catastrófica) o iterar una
+        recurrencia inestable destruye la precisión.
+    formulas:
+      - tex: |-
+          x_{1,2} = \frac{-b \mp \sqrt{b^2 - 4ac}}{2a} \ \longrightarrow\ x_1 = \frac{-b - \operatorname{sign}(b)\sqrt{b^2 - 4ac}}{2a},\ \ x_2 = \frac{c}{a\,x_1}
+        label: {en: 'the stable way to solve a quadratic', es: 'la forma estable de resolver una cuadrática'}
+    applications:
+      - to: floating-point
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Catastrophic cancellation is the classic floating-point pitfall; stable reformulations avoid it.'
+          es: 'La cancelación catastrófica es la trampa clásica de la coma flotante; las reformulaciones estables la evitan.'
+      - to: physics-engine
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Explicit integrators with too large a time step blow up; engines pick stable schemes and sub-step.'
+          es: 'Los integradores explícitos con un paso demasiado grande explotan; los motores eligen esquemas estables y subdividen el paso.'
+      - to: loss-function
+        strength: 4
+        type: frequent
+        note:
+          en: 'Libraries fuse softmax and cross-entropy (log-sum-exp) because the naive composition overflows.'
+          es: 'Las librerías fusionan softmax y entropía cruzada (log-sum-exp) porque la composición ingenua desborda.'
+
+  - id: rate-of-convergence
+    level: university
+    prerequisites: [sequence-convergence, asymptotic-notation]
+    title: {en: 'Order of convergence', es: 'Orden y velocidad de convergencia'}
+    aliases: {en: [linear convergence, quadratic convergence, superlinear], es: [convergencia lineal, convergencia cuadrática, superlineal]}
+    summary:
+      en: |
+        How fast the error $e_k = |x_k - x^\ast|$ shrinks: linear ($e_{k+1} \approx c\,e_k$, a fixed number of digits per
+        step), quadratic ($e_{k+1} \approx c\,e_k^2$, digits double each step). Bisection is linear; Newton is
+        quadratic.
+      es: |
+        Lo deprisa que se reduce el error $e_k = |x_k - x^\ast|$: lineal ($e_{k+1} \approx c\,e_k$, un número fijo de
+        cifras por paso) o cuadrática ($e_{k+1} \approx c\,e_k^2$, las cifras se duplican en cada paso). La bisección es
+        lineal; Newton, cuadrático.
+    formulas:
+      - tex: |-
+          \lim_{k\to\infty}\frac{e_{k+1}}{e_k^{\,p}} = C \in (0, \infty)
+        label: {en: 'convergence of order $p$', es: 'convergencia de orden $p$'}
+    applications:
+      - to: gradient-descent
+        strength: 4
+        type: frequent
+        note:
+          en: 'On strongly convex problems GD converges linearly, at a rate set by the condition number $L/\mu$.'
+          es: 'En problemas fuertemente convexos el descenso de gradiente converge linealmente, a un ritmo fijado por el número de condición $L/\mu$.'
+      - to: scientific-computing
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The order of a method decides how many iterations (and how much compute) an accurate answer costs.'
+          es: 'El orden de un método decide cuántas iteraciones (y cuánto cómputo) cuesta una respuesta precisa.'
+
+  - id: bisection-method
+    level: fundamental
+    kind: method
+    prerequisites: [bolzano-theorem]
+    title: {en: 'Bisection method', es: 'Método de bisección'}
+    aliases: {en: [bisection, interval halving, binary search, bracketing], es: [bisección, partir el intervalo, búsqueda binaria, horquillado]}
+    summary:
+      en: |
+        Keep an interval where $f$ changes sign and halve it each step. Slow (one bit per step) but impossible to break:
+        Bolzano's theorem guarantees a root inside. It is binary search on a continuous function.
+      es: |
+        Mantén un intervalo en el que $f$ cambie de signo y pártelo por la mitad en cada paso. Lento (un bit por paso)
+        pero imposible de romper: el teorema de Bolzano garantiza una raíz dentro. Es la búsqueda binaria sobre una
+        función continua.
+    formulas:
+      - tex: |-
+          m = \frac{a + b}{2}, \qquad [a,b] \leftarrow \begin{cases}[a, m] & f(a)f(m) < 0 \\ [m, b] & f(a)f(m) \ge 0\end{cases}
+      - tex: |-
+          |x_k - x^\ast| \le \frac{b - a}{2^{k+1}}
+        label: {en: 'guaranteed error after $k$ steps', es: 'error garantizado tras $k$ pasos'}
+    applications:
+      - to: scientific-computing
+        strength: 4
+        type: frequent
+        note:
+          en: 'Robust solvers (Brent''s method) combine bisection''s guarantee with faster steps.'
+          es: 'Los resolvedores robustos (método de Brent) combinan la garantía de la bisección con pasos más rápidos.'
+      - to: ray-tracing
+        strength: 3
+        type: frequent
+        note:
+          en: 'Intersecting rays with implicit surfaces or height fields often brackets the hit and bisects.'
+          es: 'Intersecar rayos con superficies implícitas o mapas de alturas a menudo horquilla el impacto y biseca.'
+      - to: algorithm-complexity
+        strength: 2
+        type: indirect
+        note:
+          en: 'Same idea as binary search (and `git bisect`): halving gives $O(\log n)$ steps.'
+          es: 'La misma idea que la búsqueda binaria (y `git bisect`): partir por la mitad da $O(\log n)$ pasos.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'How many bisection steps on $[1, 2]$ guarantee $\sqrt 2$ to within $10^{-6}$?'
+          es: '¿Cuántos pasos de bisección en $[1, 2]$ garantizan $\sqrt 2$ con error menor que $10^{-6}$?'
+        solution:
+          en: '$2^{-(k+1)} < 10^{-6} \iff k + 1 > 6\log_2 10 \approx 19.9$: $k = 19$ steps.'
+          es: '$2^{-(k+1)} < 10^{-6} \iff k + 1 > 6\log_2 10 \approx 19{,}9$: $k = 19$ pasos.'
+
+  - id: newton-method
+    level: university
+    kind: method
+    core: true
+    demo: newton
+    prerequisites: [derivative, differential, sequence-convergence]
+    related: [bisection-method, second-order-optimization, rate-of-convergence]
+    title: {en: 'Newton''s method', es: 'Método de Newton'}
+    aliases: {en: [Newton-Raphson, root finding, tangent method, quadratic convergence], es: [Newton-Raphson, búsqueda de raíces, método de la tangente, convergencia cuadrática]}
+    summary:
+      en: |
+        To solve $f(x) = 0$, replace $f$ by its tangent line at the current guess and jump to where the tangent hits
+        zero: $x_{k+1} = x_k - f(x_k)/f'(x_k)$. Near a simple root the number of correct digits doubles every step.
+      es: |
+        Para resolver $f(x) = 0$, sustituye $f$ por su recta tangente en la aproximación actual y salta a donde la
+        tangente corta el cero: $x_{k+1} = x_k - f(x_k)/f'(x_k)$. Cerca de una raíz simple el número de cifras correctas
+        se duplica en cada paso.
+    why:
+      en: |
+        Equations like $\cos x = x$ or $x e^x = 3$ have no formula for their solution, and nonlinear systems in
+        engineering have thousands of unknowns. Newton's insight: we cannot solve $f = 0$, but we can solve its linear
+        approximation exactly — and repeat.
+      es: |
+        Ecuaciones como $\cos x = x$ o $x e^x = 3$ no tienen fórmula para su solución, y los sistemas no lineales de la
+        ingeniería tienen miles de incógnitas. La idea de Newton: no sabemos resolver $f = 0$, pero sí resolver
+        exactamente su aproximación lineal, y repetir.
+    intuition:
+      en: |
+        Stand on the curve at $(x_k, f(x_k))$, slide down the tangent until you hit the $x$-axis, step up to the curve
+        again. If the curve is close to straight near the root, each tangent lands very close. The step
+        $-f/f'$ is "how far, at the current slope, until I reach zero". It fails when the slope is nearly flat (huge
+        jumps) or when the start is in the wrong basin.
+      es: |
+        Ponte en la curva en $(x_k, f(x_k))$, baja por la tangente hasta tocar el eje $x$ y sube otra vez a la curva. Si
+        la curva es casi recta cerca de la raíz, cada tangente cae muy cerca. El paso $-f/f'$ es «cuánto falta, con la
+        pendiente actual, para llegar a cero». Falla cuando la pendiente es casi plana (saltos enormes) o cuando se
+        empieza en la cuenca equivocada.
+
+        ```
+        x₀ → f(x₀), f'(x₀) → x₁ = x₀ − f(x₀)/f'(x₀) → x₂ → … → raíz
+        ```
+    formal:
+      en: |
+        **Theorem (local quadratic convergence).** Let $f \in C^2$ near a root $x^\ast$ with $f'(x^\ast) \ne 0$. Then
+        there is $\delta > 0$ such that for every $x_0$ with $|x_0 - x^\ast| < \delta$ the iterates converge to $x^\ast$ and
+        $$|x_{k+1} - x^\ast| \le C\,|x_k - x^\ast|^2, \qquad C \approx \left|\frac{f''(x^\ast)}{2f'(x^\ast)}\right|.$$
+      es: |
+        **Teorema (convergencia cuadrática local).** Sea $f \in C^2$ cerca de una raíz $x^\ast$ con $f'(x^\ast) \ne 0$.
+        Entonces existe $\delta > 0$ tal que para todo $x_0$ con $|x_0 - x^\ast| < \delta$ los iterados convergen a $x^\ast$
+        y
+        $$|x_{k+1} - x^\ast| \le C\,|x_k - x^\ast|^2, \qquad C \approx \left|\frac{f''(x^\ast)}{2f'(x^\ast)}\right|.$$
+    proofIdea:
+      en: |
+        Taylor at $x_k$: $0 = f(x^\ast) = f(x_k) + f'(x_k)(x^\ast - x_k) + \tfrac12 f''(\xi)(x^\ast - x_k)^2$. Divide by
+        $f'(x_k)$ and use the definition of $x_{k+1}$: $x_{k+1} - x^\ast = \frac{f''(\xi)}{2f'(x_k)}(x_k - x^\ast)^2$.
+      es: |
+        Taylor en $x_k$: $0 = f(x^\ast) = f(x_k) + f'(x_k)(x^\ast - x_k) + \tfrac12 f''(\xi)(x^\ast - x_k)^2$. Divide entre
+        $f'(x_k)$ y usa la definición de $x_{k+1}$: $x_{k+1} - x^\ast = \frac{f''(\xi)}{2f'(x_k)}(x_k - x^\ast)^2$.
+    formulas:
+      - tex: |-
+          x_{k+1} = x_k - \frac{f(x_k)}{f'(x_k)}
+      - tex: |-
+          x_{k+1} = x_k - J_F(x_k)^{-1}F(x_k)
+        label: {en: 'systems: solve a linear system with the Jacobian each step', es: 'sistemas: resolver un sistema lineal con la jacobiana en cada paso'}
+      - tex: |-
+          x_{k+1} = x_k - \frac{f'(x_k)}{f''(x_k)}
+        label: {en: 'optimization: Newton applied to $f'' = 0$', es: 'optimización: Newton aplicado a $f'' = 0$'}
+    compute:
+      en: |
+        ```
+        x = x0
+        repeat:
+            step = f(x) / df(x)
+            x = x - step
+        until |step| < tol·|x|  or  too many iterations
+        ```
+        In practice add safeguards: fall back to bisection if the step leaves a bracketing interval, and damp the step
+        ($x - \alpha\,f/f'$) far from the root.
+      es: |
+        ```
+        x = x0
+        repetir:
+            paso = f(x) / df(x)
+            x = x - paso
+        hasta |paso| < tol·|x|  o  demasiadas iteraciones
+        ```
+        En la práctica se añaden salvaguardas: volver a la bisección si el paso sale de un intervalo que horquilla la
+        raíz, y amortiguar el paso ($x - \alpha\,f/f'$) lejos de la raíz.
+    example:
+      en: |
+        $\sqrt 2$ as the root of $x^2 - 2$: $x_{k+1} = \frac12\left(x_k + \frac{2}{x_k}\right)$ — the Babylonian method,
+        4000 years old. From $x_0 = 1$: $1.5$, $1.41667$, $1.4142157$, $1.41421356237469$, … The correct digits go
+        1, 3, 6, 12: doubling each step.
+      es: |
+        $\sqrt 2$ como raíz de $x^2 - 2$: $x_{k+1} = \frac12\left(x_k + \frac{2}{x_k}\right)$, el método babilónico, de
+        hace 4000 años. Desde $x_0 = 1$: $1{,}5$; $1{,}41667$; $1{,}4142157$; $1{,}41421356237469$; … Las cifras correctas
+        van 1, 3, 6, 12: se duplican en cada paso.
+    matters:
+      en: |
+        Newton's method is inside your CPU (division and square roots refine an initial approximation by Newton steps),
+        inside every nonlinear solver of engineering software, inside implicit physics integrators and inverse
+        kinematics, and — applied to $\nabla f = 0$ — it is the prototype of all second-order optimization methods.
+      es: |
+        El método de Newton está dentro de tu CPU (la división y la raíz cuadrada refinan una aproximación inicial con
+        pasos de Newton), dentro de todo resolvedor no lineal del software de ingeniería, de los integradores físicos
+        implícitos y de la cinemática inversa, y, aplicado a $\nabla f = 0$, es el prototipo de todos los métodos de
+        optimización de segundo orden.
+    applications:
+      - to: second-order-optimization
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Newton''s method on $\nabla f = 0$ uses the Hessian: $x \leftarrow x - H^{-1}\nabla f$.'
+          es: 'Newton sobre $\nabla f = 0$ usa el hessiano: $x \leftarrow x - H^{-1}\nabla f$.'
+      - to: scientific-computing
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The default solver for nonlinear equations and systems, usually with safeguards.'
+          es: 'El resolvedor por defecto de ecuaciones y sistemas no lineales, normalmente con salvaguardas.'
+      - to: floating-point
+        strength: 4
+        type: frequent
+        note:
+          en: 'Hardware and libraries compute $1/x$ and $\sqrt x$ from a table guess refined by Newton iterations.'
+          es: 'El hardware y las librerías calculan $1/x$ y $\sqrt x$ con una aproximación de tabla refinada con iteraciones de Newton.'
+      - to: inverse-kinematics
+        strength: 4
+        type: frequent
+        note:
+          en: 'Solving for joint angles that reach a target is a Newton (Gauss–Newton) iteration with the robot Jacobian.'
+          es: 'Calcular los ángulos articulares que alcanzan un objetivo es una iteración de Newton (Gauss–Newton) con la jacobiana del robot.'
+      - to: physics-engine
+        strength: 3
+        type: advanced
+        note:
+          en: 'Implicit integrators for stiff systems (cloth, soft bodies) solve a nonlinear system with Newton each step.'
+          es: 'Los integradores implícitos para sistemas rígidos (tela, cuerpos blandos) resuelven un sistema no lineal con Newton en cada paso.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Write the Newton iteration for $f(x) = x^3 - 2x - 5$ and do two steps from $x_0 = 2$.'
+          es: 'Escribe la iteración de Newton para $f(x) = x^3 - 2x - 5$ y haz dos pasos desde $x_0 = 2$.'
+        solution:
+          en: '$x_{k+1} = x_k - \frac{x_k^3 - 2x_k - 5}{3x_k^2 - 2}$. $x_1 = 2 - \frac{-1}{10} = 2.1$, $x_2 = 2.1 - \frac{0.061}{11.23} \approx 2.094568$ (root $2.0945515$).'
+          es: '$x_{k+1} = x_k - \frac{x_k^3 - 2x_k - 5}{3x_k^2 - 2}$. $x_1 = 2 - \frac{-1}{10} = 2{,}1$, $x_2 = 2{,}1 - \frac{0{,}061}{11{,}23} \approx 2{,}094568$ (raíz $2{,}0945515$).'
+      - type: graphical
+        prompt:
+          en: 'Use the demo with $f(x) = x^3 - 2x + 2$ and $x_0 = 0$. What happens, and why?'
+          es: 'Usa la demo con $f(x) = x^3 - 2x + 2$ y $x_0 = 0$. ¿Qué pasa y por qué?'
+        solution:
+          en: '$x_1 = 0 - \frac{2}{-2} = 1$, $x_2 = 1 - \frac{1}{1} = 0$: a 2-cycle. The tangents bounce between 0 and 1 forever; the real root ($\approx -1.77$) is in another basin.'
+          es: '$x_1 = 0 - \frac{2}{-2} = 1$, $x_2 = 1 - \frac{1}{1} = 0$: un ciclo de periodo 2. Las tangentes rebotan entre 0 y 1 para siempre; la raíz real ($\approx -1{,}77$) está en otra cuenca.'
+      - type: computing
+        prompt:
+          en: 'Derive the Newton iteration that computes $1/a$ using only multiplications and subtractions.'
+          es: 'Deduce la iteración de Newton que calcula $1/a$ usando solo multiplicaciones y restas.'
+        solution:
+          en: 'Take $f(x) = \frac1x - a$: $x_{k+1} = x_k - \frac{1/x_k - a}{-1/x_k^2} = x_k(2 - a x_k)$. No division needed — this is how many processors divide.'
+          es: 'Toma $f(x) = \frac1x - a$: $x_{k+1} = x_k - \frac{1/x_k - a}{-1/x_k^2} = x_k(2 - a x_k)$. Sin divisiones: así dividen muchos procesadores.'
+
+  - id: fixed-point-iteration
+    level: university
+    kind: method
+    prerequisites: [sequence-convergence, continuity, mean-value-theorem]
+    title: {en: 'Fixed-point iteration', es: 'Iteración de punto fijo'}
+    aliases: {en: [contraction mapping, Banach fixed point theorem, x = g(x)], es: [aplicación contractiva, teorema del punto fijo de Banach, x = g(x)]}
+    summary:
+      en: |
+        Rewrite the equation as $x = g(x)$ and iterate $x_{k+1} = g(x_k)$. If $g$ is a contraction ($|g'| \le q < 1$),
+        Banach's theorem guarantees a unique fixed point and linear convergence with ratio $q$.
+      es: |
+        Reescribe la ecuación como $x = g(x)$ e itera $x_{k+1} = g(x_k)$. Si $g$ es contractiva ($|g'| \le q < 1$), el
+        teorema de Banach garantiza un único punto fijo y convergencia lineal de razón $q$.
+    formulas:
+      - tex: |-
+          |g(x) - g(y)| \le q\,|x - y|,\ q < 1 \implies |x_k - x^\ast| \le \frac{q^k}{1 - q}\,|x_1 - x_0|
+    applications:
+      - to: reinforcement-learning
+        strength: 4
+        type: fundamental
+        note:
+          en: 'Value iteration converges because the Bellman operator is a $\gamma$-contraction.'
+          es: 'La iteración de valores converge porque el operador de Bellman es una contracción de razón $\gamma$.'
+      - to: scientific-computing
+        strength: 4
+        type: frequent
+        note:
+          en: 'Jacobi and Gauss–Seidel solvers, and many self-consistent schemes, are fixed-point iterations.'
+          es: 'Los métodos de Jacobi y Gauss–Seidel, y muchos esquemas autoconsistentes, son iteraciones de punto fijo.'
+
+  - id: interpolation
+    level: university
+    prerequisites: [polynomial-functions, continuity]
+    title: {en: 'Interpolation', es: 'Interpolación'}
+    aliases: {en: [Lagrange interpolation, linear interpolation, lerp, bilinear, splines, Runge phenomenon], es: [interpolación de Lagrange, interpolación lineal, lerp, bilineal, splines, fenómeno de Runge]}
+    summary:
+      en: |
+        Building a function that passes through given data points. Linear interpolation (`lerp`) is everywhere in
+        graphics and animation; polynomials of high degree oscillate wildly (Runge's phenomenon), so practice uses
+        piecewise polynomials: splines.
+      es: |
+        Construir una función que pase por unos puntos dados. La interpolación lineal (`lerp`) está en todas partes en
+        gráficos y animación; los polinomios de grado alto oscilan mucho (fenómeno de Runge), así que en la práctica se
+        usan polinomios a trozos: splines.
+    formulas:
+      - tex: |-
+          \operatorname{lerp}(a, b, t) = (1 - t)\,a + t\,b, \quad t \in [0, 1]
+      - tex: |-
+          p(x) = \sum_{i=0}^{n} y_i \prod_{j \ne i}\frac{x - x_j}{x_i - x_j}
+        label: {en: 'Lagrange form', es: 'forma de Lagrange'}
+    applications:
+      - to: image-processing
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Resizing and rotating images samples between pixels with bilinear or bicubic interpolation.'
+          es: 'Redimensionar y rotar imágenes muestrea entre píxeles con interpolación bilineal o bicúbica.'
+      - to: shading
+        strength: 4
+        type: frequent
+        note:
+          en: 'GPUs interpolate colours, normals and texture coordinates across each triangle (barycentric interpolation).'
+          es: 'Las GPU interpolan colores, normales y coordenadas de textura dentro de cada triángulo (interpolación baricéntrica).'
+      - to: bezier-curves
+        strength: 4
+        type: frequent
+        note:
+          en: 'De Casteljau''s algorithm evaluates a Bézier curve by repeated linear interpolation.'
+          es: 'El algoritmo de De Casteljau evalúa una curva de Bézier por interpolación lineal repetida.'
+      - to: signal-processing
+        strength: 4
+        type: frequent
+        note:
+          en: 'Resampling audio between rates interpolates between samples (ideally with a sinc kernel).'
+          es: 'Remuestrear audio entre frecuencias interpola entre muestras (idealmente con un núcleo sinc).'
+
+  - id: numerical-differentiation
+    level: university
+    kind: method
+    prerequisites: [derivative, taylor-polynomial, numerical-stability]
+    title: {en: 'Numerical differentiation', es: 'Diferenciación numérica'}
+    aliases: {en: [finite differences, forward difference, central difference, gradient checking, stencil], es: [diferencias finitas, diferencia progresiva, diferencia centrada, comprobación de gradientes, estencil]}
+    summary:
+      en: |
+        Estimating derivatives from function values: $\frac{f(x + h) - f(x - h)}{2h}$ has error $O(h^2)$. Too large an $h$
+        gives truncation error, too small an $h$ rounding error; the best $h$ for central differences in double precision
+        is around $10^{-5}$.
+      es: |
+        Estimar derivadas a partir de valores de la función: $\frac{f(x + h) - f(x - h)}{2h}$ tiene error $O(h^2)$. Un
+        $h$ demasiado grande da error de truncamiento y uno demasiado pequeño error de redondeo; el mejor $h$ para
+        diferencias centradas en doble precisión ronda $10^{-5}$.
+    formulas:
+      - tex: |-
+          f'(x) = \frac{f(x + h) - f(x - h)}{2h} + O(h^2)
+      - tex: |-
+          f''(x) \approx \frac{f(x + h) - 2f(x) + f(x - h)}{h^2}
+        label: {en: 'the stencil behind the discrete Laplacian', es: 'el estencil detrás del laplaciano discreto'}
+    applications:
+      - to: heat-equation
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Finite-difference solvers replace $\partial^2/\partial x^2$ by the $[1, -2, 1]/h^2$ stencil on a grid.'
+          es: 'Los resolvedores por diferencias finitas sustituyen $\partial^2/\partial x^2$ por el estencil $[1, -2, 1]/h^2$ sobre una malla.'
+      - to: image-processing
+        strength: 4
+        type: frequent
+        note:
+          en: 'Sobel and Prewitt filters are smoothed finite differences of pixel intensities.'
+          es: 'Los filtros de Sobel y Prewitt son diferencias finitas suavizadas de las intensidades de los píxeles.'
+      - to: automatic-differentiation
+        strength: 3
+        type: frequent
+        note:
+          en: '"Gradient checking" compares autodiff gradients against finite differences to catch bugs.'
+          es: 'La «comprobación de gradientes» compara los gradientes de la diferenciación automática con diferencias finitas para cazar errores.'
+      - to: fluid-dynamics
+        strength: 4
+        type: frequent
+        note:
+          en: 'Grid-based fluid solvers discretize derivatives with finite differences on staggered grids.'
+          es: 'Los resolvedores de fluidos sobre malla discretizan las derivadas con diferencias finitas en mallas desplazadas.'
+
+  - id: numerical-integration
+    level: university
+    kind: method
+    prerequisites: [definite-integral, riemann-sum, taylor-polynomial]
+    title: {en: 'Numerical integration (quadrature)', es: 'Integración numérica (cuadratura)'}
+    aliases: {en: [trapezoidal rule, Simpson rule, Gaussian quadrature, quadrature], es: [regla del trapecio, regla de Simpson, cuadratura de Gauss, cuadratura]}
+    summary:
+      en: |
+        Approximating $\int_a^b f$ by a weighted sum of samples. Trapezoid ($O(h^2)$), Simpson ($O(h^4)$) and Gaussian
+        quadrature are excellent in one or a few dimensions; in high dimensions Monte Carlo takes over.
+      es: |
+        Aproximar $\int_a^b f$ con una suma ponderada de muestras. El trapecio ($O(h^2)$), Simpson ($O(h^4)$) y la
+        cuadratura de Gauss son excelentes en una o pocas dimensiones; en dimensión alta toma el relevo Monte Carlo.
+    formulas:
+      - tex: |-
+          \int_a^b f \approx \frac{h}{2}\Big(f_0 + 2f_1 + \dots + 2f_{n-1} + f_n\Big)
+        label: {en: 'composite trapezoidal rule', es: 'regla del trapecio compuesta'}
+      - tex: |-
+          \int_a^b f \approx \frac{h}{3}\Big(f_0 + 4f_1 + 2f_2 + 4f_3 + \dots + f_n\Big)
+        label: {en: 'composite Simpson rule', es: 'regla de Simpson compuesta'}
+    applications:
+      - to: scientific-computing
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Adaptive quadrature (e.g. `scipy.integrate.quad`) is a standard tool of scientific software.'
+          es: 'La cuadratura adaptativa (por ejemplo `scipy.integrate.quad`) es una herramienta estándar del software científico.'
+      - to: finite-elements
+        strength: 4
+        type: frequent
+        note:
+          en: 'FEM assembles element matrices by Gaussian quadrature on each element.'
+          es: 'Los elementos finitos ensamblan las matrices de cada elemento con cuadratura de Gauss.'
+      - to: bayesian-inference
+        strength: 3
+        type: frequent
+        note:
+          en: 'Low-dimensional posteriors and marginal likelihoods can be computed by quadrature.'
+          es: 'Las posteriores y verosimilitudes marginales de dimensión baja se pueden calcular por cuadratura.'

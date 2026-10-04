@@ -1,0 +1,44 @@
+---
+import type { Lang } from '../../lib/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const L = (en: string, es: string) => (lang === 'es' ? es : en);
+---
+
+<figure class="demo" data-demo="riemann" data-s-sum={L('sum', 'suma')} data-s-exact={L('exact', 'exacto')} data-s-error="error">
+  <div class="demo-controls">
+    <label
+      >f(x) =
+      <select data-fn>
+        <option value="sin">sin x, [0, π]</option>
+        <option value="sq">x², [0, 2]</option>
+        <option value="gauss">e^(−x²), [−2, 2]</option>
+        <option value="inv">1/x, [1, e]</option>
+        <option value="circle">√(1 − x²), [−1, 1]</option>
+      </select>
+    </label>
+    <label
+      >{L('rule', 'regla')}
+      <select data-rule>
+        <option value="left">{L('left', 'izquierda')}</option>
+        <option value="right">{L('right', 'derecha')}</option>
+        <option value="mid">{L('midpoint', 'punto medio')}</option>
+        <option value="trap">{L('trapezoid', 'trapecio')}</option>
+      </select>
+    </label>
+    <label>n <input type="range" data-n min="0" max="27" value="3" /><output data-n-out></output></label>
+  </div>
+  <canvas class="demo-canvas" data-aspect="0.5"></canvas>
+  <div class="demo-readout" aria-live="polite"></div>
+  <figcaption>
+    {L('Increase n and watch the sum converge to the area. Left and right sums have error ∝ 1/n; midpoint and trapezoid ∝ 1/n².', 'Aumenta n y mira cómo la suma converge al área. Las sumas por la izquierda y la derecha tienen error ∝ 1/n; punto medio y trapecio, ∝ 1/n².')}
+  </figcaption>
+</figure>
+
+<script>
+  import { initRiemann } from '../../scripts/demos/riemann';
+  document.querySelectorAll<HTMLElement>('[data-demo="riemann"]').forEach(initRiemann);
+</script>

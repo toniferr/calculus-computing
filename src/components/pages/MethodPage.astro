@@ -1,0 +1,435 @@
+---
+import Base from '../../layouts/Base.astro';
+import { CONNECTION_TYPES, LEVELS } from '../../content.config';
+import { getGraph } from '../../lib/graph';
+import { href, t, type Lang } from '../../lib/i18n';
+import Stars from '../Stars.astro';
+import TopicLink from '../TopicLink.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const g = await getGraph();
+const m = g.matrix();
+const n = g.edges.length;
+
+const copy = {
+  en: {
+    lead: 'How this portal is organised, what the levels and stars mean, and the rules its content follows.',
+    philTitle: 'Every topic answers the same questions',
+    philLead:
+      'A formula alone is not understanding. Each topic page is built around eight questions, in this order, so that pages can be compared and nothing essential is skipped:',
+    questions: [
+      'What is it?',
+      'Why does it exist?',
+      'What problem does it solve?',
+      'How is it interpreted geometrically?',
+      'How is it computed?',
+      'Where does it show up in computing?',
+      'Where does it show up in AI?',
+      'What depends on it?',
+    ],
+    chainTitle: 'The thesis',
+    chain: [
+      'Calculus',
+      'describes change and accumulation',
+      'lets us model systems',
+      'lets us optimize',
+      'lets us approximate',
+      'lets us simulate',
+      'and is a core piece of AI, graphics, physics, robotics and scientific computing',
+    ],
+    levelsTitle: 'Levels',
+    levelsLead: 'Each topic has one of four levels — how far into a typical university curriculum it sits:',
+    levelDesc: {
+      fundamental: 'First-year calculus; needed for almost everything else.',
+      university: 'Rest of a standard calculus / analysis degree course.',
+      advanced: 'Upper-year or graduate material; vector calculus, transforms, modern ML.',
+      specialized: 'Research-level or specialist tools.',
+    },
+    connTitle: 'Connections and how strong they are',
+    connLead: `The map has ${n} edges. "Builds on" edges join mathematical topics; "applied in" edges go from mathematics to computing, and each one is rated and explained in a note. No connection is added just to fill the map.`,
+    connType: {
+      fundamental: 'The computing topic cannot be stated or computed without it.',
+      frequent: 'Used routinely in practice.',
+      advanced: 'Appears in deeper treatments, proofs or state-of-the-art methods.',
+      indirect: 'Real but tangential; worth knowing, not essential.',
+      historical: 'Mattered for how the field developed, less for how it works today.',
+    },
+    starsLead: 'Stars (1–5) say how much the computing topic really depends on the mathematical one. Example:',
+    examples: [
+      ['derivative', 'gradient-descent', 5],
+      ['definite-integral', 'loss-function', 3],
+      ['implicit-differentiation', 'elliptic-curve-cryptography', 2],
+    ],
+    matrixTitle: 'Strongest connection between each area and each domain',
+    matrixLead: 'Computed from the data: each cell is the strongest single "applied in" edge from a topic of the row to a topic of the column.',
+    dataTitle: 'How it is built',
+    data: [
+      'All content lives in data files (one YAML file per area), not in components; every user-facing text exists in English and Spanish, and the build fails if a translation, a reference or a formula is broken.',
+      'Formulas are written in TeX and rendered to MathML at build time. There is no backend, no tracking and a strict Content Security Policy.',
+      'The prerequisite graph is checked to be acyclic, which is what lets every topic page compute "the full path to this topic" and "where is it used" automatically.',
+    ],
+  },
+  es: {
+    lead: 'Cómo está organizado este portal, qué significan los niveles y las estrellas, y las reglas que sigue su contenido.',
+    philTitle: 'Cada concepto responde a las mismas preguntas',
+    philLead:
+      'Una fórmula sola no es entender. Cada página de concepto se construye alrededor de ocho preguntas, en este orden, para que las páginas se puedan comparar y no falte nada esencial:',
+    questions: [
+      '¿Qué es?',
+      '¿Por qué existe?',
+      '¿Qué problema resuelve?',
+      '¿Cómo se interpreta geométricamente?',
+      '¿Cómo se calcula?',
+      '¿Dónde aparece en informática?',
+      '¿Dónde aparece en IA?',
+      '¿Qué conceptos dependen de él?',
+    ],
+    chainTitle: 'La tesis',
+    chain: [
+      'El cálculo',
+      'describe el cambio y la acumulación',
+      'permite modelar sistemas',
+      'permite optimizar',
+      'permite aproximar',
+      'permite simular',
+      'y es una pieza fundamental de la IA, los gráficos, la física, la robótica y la computación científica',
+    ],
+    levelsTitle: 'Niveles',
+    levelsLead: 'Cada concepto tiene uno de cuatro niveles, según dónde está en un plan de estudios universitario típico:',
+    levelDesc: {
+      fundamental: 'Cálculo de primer curso; hace falta para casi todo lo demás.',
+      university: 'El resto de una asignatura estándar de cálculo o análisis.',
+      advanced: 'Cursos superiores o máster: cálculo vectorial, transformadas, ML moderno.',
+      specialized: 'Herramientas de investigación o de especialista.',
+    },
+    connTitle: 'Las conexiones y su fuerza',
+    connLead: `El mapa tiene ${n} aristas. Las de «se apoya en» unen conceptos matemáticos; las de «se aplica en» van de las matemáticas a la informática, y cada una tiene una valoración y una nota que la explica. No se añade ninguna conexión solo para llenar el mapa.`,
+    connType: {
+      fundamental: 'El tema de informática no se puede enunciar ni calcular sin ella.',
+      frequent: 'Se usa de forma habitual en la práctica.',
+      advanced: 'Aparece en tratamientos más profundos, demostraciones o métodos punteros.',
+      indirect: 'Real pero tangencial; conviene conocerla, no es esencial.',
+      historical: 'Importó en cómo se desarrolló el campo, menos en cómo funciona hoy.',
+    },
+    starsLead: 'Las estrellas (1–5) dicen cuánto depende de verdad el tema de informática del matemático. Ejemplo:',
+    examples: [
+      ['derivative', 'gradient-descent', 5],
+      ['definite-integral', 'loss-function', 3],
+      ['implicit-differentiation', 'elliptic-curve-cryptography', 2],
+    ],
+    matrixTitle: 'La conexión más fuerte entre cada área y cada dominio',
+    matrixLead: 'Calculado a partir de los datos: cada celda es la arista «se aplica en» más fuerte desde un concepto de la fila hasta uno de la columna.',
+    dataTitle: 'Cómo está hecho',
+    data: [
+      'Todo el contenido vive en ficheros de datos (un YAML por área), no en componentes; cada texto existe en inglés y en español, y la compilación falla si falta una traducción o si una referencia o una fórmula están rotas.',
+      'Las fórmulas se escriben en TeX y se convierten a MathML al compilar. No hay backend ni rastreo, y la política de seguridad de contenido es estricta.',
+      'Se comprueba que el grafo de prerrequisitos no tiene ciclos, y eso permite que cada página calcule sola «la ruta completa hasta este concepto» y «dónde se utiliza».',
+    ],
+  },
+}[lang];
+
+const levelExamples: Record<string, string> = {
+  fundamental: 'derivative',
+  university: 'gradient',
+  advanced: 'backpropagation',
+  specialized: 'second-order-optimization',
+};
+---
+
+<Base lang={lang} title={t(lang, 'method.title')}>
+  <header class="page-head">
+    <div class="wrap">
+      <p class="eyebrow">{t(lang, 'nav.method')}</p>
+      <h1>{t(lang, 'method.title')}</h1>
+      <p class="lead">{copy.lead}</p>
+    </div>
+  </header>
+
+  <div class="wrap method">
+    <section class="section">
+      <h2>{copy.philTitle}</h2>
+      <p class="muted">{copy.philLead}</p>
+      <ol class="questions">{copy.questions.map((q) => <li>{q}</li>)}</ol>
+    </section>
+
+    <section class="section">
+      <h2>{copy.chainTitle}</h2>
+      <ol class="thesis">{copy.chain.map((c) => <li>{c}</li>)}</ol>
+    </section>
+
+    <section class="section">
+      <h2>{copy.levelsTitle}</h2>
+      <p class="muted">{copy.levelsLead}</p>
+      <div class="grid">
+        {
+          LEVELS.map((lv) => (
+            <div class:list={['card', `lv-${lv}`, 'level-card']}>
+              <span class:list={['level', lv]}>{t(lang, `level.${lv}`)}</span>
+              <p>{copy.levelDesc[lv]}</p>
+              <p class="small">
+                <TopicLink lang={lang} topic={g.topic(levelExamples[lv]!)} />
+              </p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>{copy.connTitle}</h2>
+      <p class="muted">{copy.connLead}</p>
+      <dl class="conn-types">
+        {
+          CONNECTION_TYPES.map((ct) => (
+            <div>
+              <dt>
+                <span class:list={['conn', ct]}>{t(lang, `conn.${ct}`)}</span>
+              </dt>
+              <dd>{copy.connType[ct]}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      <p class="muted">{copy.starsLead}</p>
+      <ul class="examples">
+        {
+          copy.examples.map(([a, b, s]) => (
+            <li>
+              <TopicLink lang={lang} topic={g.topic(a as string)} /> <span class="arrow">→</span>
+              <TopicLink lang={lang} topic={g.topic(b as string)} /> <Stars n={s as number} />
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>{copy.matrixTitle}</h2>
+      <p class="muted">{copy.matrixLead}</p>
+      <div class="matrix-scroll">
+        <table class="matrix">
+          <thead>
+            <tr>
+              <th />
+              {
+                m.computing.map((c) => (
+                  <th scope="col" title={c.title[lang]}>
+                    <a href={href(lang, `area/${c.id}/`)}>{c.glyph}</a>
+                  </th>
+                ))
+              }
+            </tr>
+          </thead>
+          <tbody>
+            {
+              m.math.map((r) => (
+                <tr>
+                  <th scope="row">
+                    <a href={href(lang, `area/${r.id}/`)}>{r.title[lang]}</a>
+                  </th>
+                  {m.computing.map((c) => {
+                    const e = m.cell(r.id, c.id);
+                    return e ? (
+                      <td class:list={[`s${e.strength}`]} title={`${g.topic(e.from).title[lang]} → ${g.topic(e.to).title[lang]} (${e.strength}/5)`}>
+                        {e.strength}
+                      </td>
+                    ) : (
+                      <td class="s0" />
+                    );
+                  })}
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted matrix-legend">
+        {m.computing.map((c) => (
+          <span>
+            {c.glyph} = {c.title[lang]}
+          </span>
+        ))}
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>{copy.dataTitle}</h2>
+      <ul class="prose method-data">{copy.data.map((d) => <li>{d}</li>)}</ul>
+    </section>
+  </div>
+</Base>
+
+<style is:global>
+  .method h2 {
+    margin-bottom: 0.6rem;
+  }
+
+  .questions {
+    columns: 2 18rem;
+    gap: 2rem;
+    padding-left: 1.4rem;
+    font-size: 1.02rem;
+  }
+
+  .questions li {
+    margin: 0.3rem 0;
+    break-inside: avoid;
+  }
+
+  .thesis {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.35rem;
+    max-width: 40rem;
+  }
+
+  .thesis li {
+    padding: 0.55rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    background: var(--surface);
+    position: relative;
+  }
+
+  .thesis li:first-child {
+    font-weight: 650;
+    border-color: var(--math);
+  }
+
+  .thesis li:last-child {
+    border-color: var(--comp);
+  }
+
+  .thesis li + li::before {
+    content: '↓';
+    position: absolute;
+    left: -1.3rem;
+    top: -0.75rem;
+    color: var(--faint);
+  }
+
+  .level-card {
+    border-top: 3px solid var(--lv);
+  }
+
+  .conn-types {
+    display: grid;
+    gap: 0.5rem;
+    margin: 1rem 0 1.4rem;
+  }
+
+  .conn-types div {
+    display: grid;
+    grid-template-columns: 9rem 1fr;
+    gap: 1rem;
+    align-items: baseline;
+  }
+
+  .conn-types dd {
+    margin: 0;
+    color: var(--fg-2);
+  }
+
+  .examples {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .matrix-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--surface);
+  }
+
+  .matrix {
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    width: 100%;
+  }
+
+  .matrix th,
+  .matrix td {
+    padding: 0.35rem 0.5rem;
+    border-bottom: 1px solid var(--line);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .matrix thead th {
+    font-family: var(--font-mono);
+    color: var(--comp);
+  }
+
+  .matrix thead th a {
+    color: inherit;
+  }
+
+  .matrix tbody th {
+    text-align: left;
+    font-weight: 500;
+  }
+
+  .matrix tbody th a {
+    color: var(--fg-2);
+  }
+
+  .matrix td {
+    font-family: var(--font-mono);
+    color: var(--bg);
+    font-weight: 600;
+  }
+
+  .matrix td.s0 {
+    background: transparent;
+  }
+
+  .matrix td.s1 {
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    color: var(--fg-2);
+  }
+
+  .matrix td.s2 {
+    background: color-mix(in srgb, var(--accent) 34%, transparent);
+    color: var(--fg);
+  }
+
+  .matrix td.s3 {
+    background: color-mix(in srgb, var(--accent) 52%, transparent);
+    color: var(--fg);
+  }
+
+  .matrix td.s4 {
+    background: color-mix(in srgb, var(--accent) 74%, transparent);
+  }
+
+  .matrix td.s5 {
+    background: var(--accent);
+  }
+
+  .matrix-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 1.2rem;
+    margin-top: 0.6rem;
+  }
+
+  .method-data {
+    max-width: var(--prose);
+    font-size: 1.02rem;
+  }
+
+  @media (max-width: 560px) {
+    .conn-types div {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+  }
+</style>

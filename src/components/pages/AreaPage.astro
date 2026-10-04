@@ -1,0 +1,180 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getGraph, type Edge, type Topic } from '../../lib/graph';
+import { href, t, type Lang } from '../../lib/i18n';
+import { md, plain } from '../../lib/md';
+import Stars from '../Stars.astro';
+import TopicCard from '../TopicCard.astro';
+import TopicLink from '../TopicLink.astro';
+
+interface Props {
+  lang: Lang;
+  id: string;
+}
+const { lang, id } = Astro.props;
+const g = await getGraph();
+const area = g.area(id);
+const topics = g.topicsOf(id);
+const isMath = area.kind === 'math';
+
+// Aggregate the direct application edges between this area and the others, grouped by the other area.
+type Row = { topic: Topic; strength: number; via: Topic[] };
+const groups = new Map<string, Map<string, Row>>();
+for (const tp of topics) {
+  const edges: Edge[] = isMath ? g.applications(tp.id) : g.mathSources(tp.id);
+  for (const e of edges) {
+    const other = g.topic(isMath ? e.to : e.from);
+    if (other.area === id) continue;
+    const bucket = groups.get(other.area) ?? new Map<string, Row>();
+    const row = bucket.get(other.id) ?? { topic: other, strength: 0, via: [] };
+    row.strength = Math.max(row.strength, e.strength!);
+    row.via.push(tp);
+    bucket.set(other.id, row);
+    groups.set(other.area, bucket);
+  }
+}
+const linked = [...groups.entries()]
+  .map(([a, rows]) => {
+    const list = [...rows.values()].sort((x, y) => y.strength - x.strength || x.topic.index - y.topic.index);
+    return { area: g.area(a), rows: list, max: list[0]!.strength };
+  })
+  .sort((x, y) => y.max - x.max || x.area.order - y.area.order);
+
+const siblings = g.areas.filter((a) => a.kind === area.kind);
+const pos = siblings.findIndex((a) => a.id === id);
+const prev = siblings[pos - 1];
+const next = siblings[pos + 1];
+---
+
+<Base lang={lang} title={area.title[lang]} description={plain(area.summary[lang], lang)}>
+  <header class:list={['page-head', 'area-head', area.kind]}>
+    <div class="wrap">
+      <nav class="crumbs" aria-label="breadcrumb">
+        <a href={href(lang, 'topics/')}>{t(lang, 'nav.syllabus')}</a>
+        <span class="arrow">/</span>
+        <span>{t(lang, isMath ? 'area.math' : 'area.computing')}</span>
+      </nav>
+      <div class="area-title">
+        <span class:list={['glyph', 'glyph-xl', area.kind]} aria-hidden="true">{area.glyph}</span>
+        <h1>{area.title[lang]}</h1>
+      </div>
+      <div class="lead" set:html={md(area.summary[lang], lang, `${id}.summary`)} />
+      <p class="muted small">{topics.length} {t(lang, 'syl.count')}</p>
+    </div>
+  </header>
+
+  <div class="wrap">
+    {area.intro && <section class="section"><div class="prose area-intro" set:html={md(area.intro[lang], lang, `${id}.intro`)} /></section>}
+
+    <section class="section">
+      <div class="section-head"><h2>{t(lang, 'area.topics')}</h2></div>
+      <div class="grid">
+        {topics.map((tp) => <TopicCard lang={lang} topic={tp} graph={g} />)}
+      </div>
+    </section>
+
+    {
+      linked.length > 0 && (
+        <section class="section">
+          <div class="section-head">
+            <h2>{t(lang, isMath ? 'area.feeds' : 'area.fedBy')}</h2>
+          </div>
+          <div class="reach">
+            {linked.map(({ area: a, rows, max }) => (
+              <div class="reach-area">
+                <h3>
+                  <a href={href(lang, `area/${a.id}/`)} class:list={[a.kind]}>
+                    <span class="glyph-sm">{a.glyph}</span> {a.title[lang]}
+                  </a>{' '}
+                  <Stars n={max} label={`${t(lang, 'area.strength')}: ${max}/5`} />
+                </h3>
+                <ul>
+                  {rows.slice(0, 8).map((r) => (
+                    <li>
+                      <TopicLink lang={lang} topic={r.topic} />
+                      <Stars n={r.strength} />
+                      <span class="path">
+                        <span class="arrow">{isMath ? '←' : '→'}</span>
+                        {r.via.map((v, i) => (
+                          <>
+                            {i > 0 && ', '}
+                            <a class="via" href={href(lang, `topic/${v.id}/`)}>
+                              {v.title[lang]}
+                            </a>
+                          </>
+                        ))}
+                      </span>
+                    </li>
+                  ))}
+                  {rows.length > 8 && <li class="muted small">+{rows.length - 8}</li>}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <nav class="pager" aria-label="pager">
+      {
+        prev ? (
+          <a class="card" href={href(lang, `area/${prev.id}/`)}>
+            <span class="eyebrow">←</span>
+            <span>
+              {prev.glyph} {prev.title[lang]}
+            </span>
+          </a>
+        ) : (
+          <span />
+        )
+      }
+      {
+        next && (
+          <a class="card pager-next" href={href(lang, `area/${next.id}/`)}>
+            <span class="eyebrow">→</span>
+            <span>
+              {next.glyph} {next.title[lang]}
+            </span>
+          </a>
+        )
+      }
+    </nav>
+  </div>
+</Base>
+
+<style is:global>
+  .area-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0.4rem 0 0.6rem;
+  }
+
+  .area-title h1 {
+    margin: 0;
+  }
+
+  .glyph-xl {
+    display: inline-grid;
+    place-items: center;
+    min-width: 3.4rem;
+    height: 3.4rem;
+    padding: 0 0.5rem;
+    font-size: 1.7rem;
+    border: 1px solid var(--line-2);
+    border-radius: var(--r);
+    background: var(--surface);
+  }
+
+  .area-intro {
+    max-width: var(--prose);
+  }
+
+  .area-intro h2 {
+    font-family: var(--font-ui);
+  }
+
+  .reach-area h3 a.math {
+    color: var(--math);
+  }
+</style>

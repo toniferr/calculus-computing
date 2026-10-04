@@ -1,0 +1,577 @@
+kind: math
+order: 5
+glyph: 'f′'
+title: {en: 'Derivatives', es: 'Derivadas'}
+summary:
+  en: |
+    The instantaneous rate of change: slope, velocity, sensitivity. The single most used idea of calculus in
+    computing.
+  es: |
+    La tasa de cambio instantánea: pendiente, velocidad, sensibilidad. La idea del cálculo más usada en informática.
+intro:
+  en: |
+    If you keep one idea from calculus, keep this one. A derivative answers *"if I nudge the input, how much does the
+    output move?"* — and that question is everywhere in computing:
+
+    ```
+    DERIVATIVE
+       ├──► Optimization ──► Gradient descent ──► Machine learning ──► Deep learning
+       ├──► Physics ──► Simulation (velocity, acceleration, forces)
+       ├──► Graphics ──► Normals ──► Lighting
+       ├──► Robotics ──► Motion (velocity kinematics, Jacobians)
+       └──► Control ──► Dynamical systems (the D in PID)
+    ```
+
+    Real examples: every training step of a neural network computes millions of partial derivatives with the chain
+    rule; a game engine integrates velocity (a derivative of position) sixty times a second; a renderer computes
+    surface normals as derivatives of the surface; an edge detector looks for large derivatives of image intensity.
+  es: |
+    Si te quedas con una sola idea del cálculo, que sea esta. Una derivada responde a *«si muevo un poco la entrada,
+    ¿cuánto se mueve la salida?»*, y esa pregunta está en toda la informática:
+
+    ```
+    DERIVADA
+       ├──► Optimización ──► Descenso de gradiente ──► Machine learning ──► Deep learning
+       ├──► Física ──► Simulación (velocidad, aceleración, fuerzas)
+       ├──► Gráficos ──► Normales ──► Iluminación
+       ├──► Robótica ──► Movimiento (cinemática de velocidades, jacobianos)
+       └──► Control ──► Sistemas dinámicos (la D del PID)
+    ```
+
+    Ejemplos reales: cada paso de entrenamiento de una red neuronal calcula millones de derivadas parciales con la
+    regla de la cadena; un motor de videojuegos integra la velocidad (derivada de la posición) sesenta veces por
+    segundo; un renderizador calcula las normales de una superficie como derivadas de la superficie; un detector de
+    bordes busca derivadas grandes de la intensidad de la imagen.
+topics:
+  - id: derivative
+    level: fundamental
+    core: true
+    demo: tangent
+    prerequisites: [limit]
+    related: [differential, gradient, numerical-differentiation]
+    title: {en: 'Derivative', es: 'Derivada'}
+    aliases: {en: [slope, rate of change, tangent line, instantaneous velocity, differentiation], es: [pendiente, tasa de cambio, recta tangente, velocidad instantánea, derivación]}
+    summary:
+      en: |
+        $f'(a)$ is the instantaneous rate of change of $f$ at $a$: the slope of the tangent line to the graph,
+        defined as the limit of slopes of secant lines.
+      es: |
+        $f'(a)$ es la tasa de cambio instantánea de $f$ en $a$: la pendiente de la recta tangente a la gráfica, definida
+        como el límite de las pendientes de las rectas secantes.
+    why:
+      en: |
+        Average rates are easy: distance over time. But "how fast is the car going *now*?" asks for a rate over an
+        interval of length zero — $0/0$. Newton needed it for mechanics, Leibniz for tangents; the derivative is their
+        common answer, made rigorous by the limit. It solves the problem of quantifying **local change**.
+      es: |
+        Las tasas medias son fáciles: distancia entre tiempo. Pero «¿a qué velocidad va el coche *ahora*?» pide una tasa
+        sobre un intervalo de longitud cero: $0/0$. Newton la necesitaba para la mecánica y Leibniz para las tangentes;
+        la derivada es la respuesta común, hecha rigurosa con el límite. Resuelve el problema de cuantificar el
+        **cambio local**.
+    intuition:
+      en: |
+        **Geometrically:** zoom in on a smooth curve and it looks like a straight line; the derivative is that line's
+        slope. **Physically:** if $s(t)$ is position, $s'(t)$ is velocity and $s''(t)$ acceleration. **As sensitivity:**
+        $f(a + h) \approx f(a) + f'(a)\,h$ — the output moves $f'(a)$ times as much as the input, for small nudges.
+        That last reading is the one machine learning uses: the derivative of the loss with respect to a weight says
+        which way to move the weight.
+      es: |
+        **Geométricamente:** si haces zoom sobre una curva suave parece una recta; la derivada es la pendiente de esa
+        recta. **Físicamente:** si $s(t)$ es la posición, $s'(t)$ es la velocidad y $s''(t)$ la aceleración. **Como
+        sensibilidad:** $f(a + h) \approx f(a) + f'(a)\,h$: la salida se mueve $f'(a)$ veces lo que se mueve la entrada,
+        para empujones pequeños. Esa última lectura es la que usa el aprendizaje automático: la derivada de la pérdida
+        respecto de un peso dice hacia dónde mover el peso.
+
+        ```
+        f(x)
+         │          ╱  tangent: slope = f'(a)
+         │        ●
+         │      ╱ ╱
+         │_____╱_╱________
+                 a        x
+        ```
+    formal:
+      en: |
+        $$f'(a) = \lim_{h\to 0}\frac{f(a + h) - f(a)}{h}$$
+        when the limit exists (then $f$ is **differentiable** at $a$). The function $f' : x \mapsto f'(x)$ is the
+        derivative of $f$; Leibniz writes it $\frac{\dd f}{\dd x}$.
+      es: |
+        $$f'(a) = \lim_{h\to 0}\frac{f(a + h) - f(a)}{h}$$
+        cuando el límite existe (entonces $f$ es **derivable** en $a$). La función $f' : x \mapsto f'(x)$ es la derivada
+        de $f$; Leibniz la escribe $\frac{\dd f}{\dd x}$.
+    formulas:
+      - tex: |-
+          f'(a) = \lim_{h\to 0}\frac{f(a + h) - f(a)}{h}
+        label: {en: 'definition', es: 'definición'}
+      - tex: |-
+          y = f(a) + f'(a)\,(x - a)
+        label: {en: 'tangent line', es: 'recta tangente'}
+      - tex: |-
+          (x^n)' = n x^{n-1}, \quad (e^x)' = e^x, \quad (\ln x)' = \tfrac1x, \quad (\sin x)' = \cos x
+        label: {en: 'the basic table', es: 'la tabla básica'}
+    compute:
+      en: |
+        Three ways, and all three are used by software:
+        1. **Symbolically**, applying rules (power, product, quotient, chain) to a formula — what a CAS does.
+        2. **Numerically**, with a finite difference $\frac{f(a+h) - f(a - h)}{2h}$ — easy but inexact (truncation
+           error for large $h$, rounding error for tiny $h$).
+        3. **Automatically**: propagate exact derivatives through each elementary operation of a program — automatic
+           differentiation, the engine of PyTorch and JAX.
+      es: |
+        Hay tres formas, y el software usa las tres:
+        1. **Simbólicamente**, aplicando reglas (potencia, producto, cociente, cadena) a una fórmula: lo que hace un CAS.
+        2. **Numéricamente**, con una diferencia finita $\frac{f(a+h) - f(a - h)}{2h}$: fácil pero inexacta (error de
+           truncamiento si $h$ es grande, de redondeo si es diminuto).
+        3. **Automáticamente**: propagando derivadas exactas por cada operación elemental de un programa; es la
+           diferenciación automática, el motor de PyTorch y JAX.
+    example:
+      en: |
+        $f(x) = x^2$ at $a = 3$: $\frac{(3 + h)^2 - 9}{h} = \frac{6h + h^2}{h} = 6 + h \to 6$. So $f'(3) = 6$ and the
+        tangent is $y = 9 + 6(x - 3)$. In code, the central difference with $h = 10^{-5}$ gives $6.000000000039…$,
+        while $h = 10^{-15}$ gives garbage — the subtraction cancels all the digits.
+      es: |
+        $f(x) = x^2$ en $a = 3$: $\frac{(3 + h)^2 - 9}{h} = \frac{6h + h^2}{h} = 6 + h \to 6$. Así que $f'(3) = 6$ y la
+        tangente es $y = 9 + 6(x - 3)$. En código, la diferencia centrada con $h = 10^{-5}$ da $6{,}000000000039…$,
+        mientras que con $h = 10^{-15}$ da basura: la resta cancela todas las cifras.
+    matters:
+      en: |
+        Optimization is following derivatives downhill; simulation is integrating them forward in time; rendering needs
+        them to orient surfaces; control uses them to anticipate. Modern deep learning is, at its computational core,
+        an extremely efficient machine for computing derivatives of one number (the loss) with respect to billions of
+        inputs (the weights).
+      es: |
+        Optimizar es seguir las derivadas cuesta abajo; simular es integrarlas hacia delante en el tiempo; renderizar
+        necesita derivadas para orientar las superficies; controlar las usa para anticiparse. El deep learning moderno
+        es, en su núcleo computacional, una máquina extremadamente eficiente de calcular derivadas de un número (la
+        pérdida) respecto de miles de millones de entradas (los pesos).
+    applications:
+      - to: gradient-descent
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Each step moves the parameter against the derivative of the loss: $w \leftarrow w - \eta\,L''(w)$.'
+          es: 'Cada paso mueve el parámetro en contra de la derivada de la pérdida: $w \leftarrow w - \eta\,L''(w)$.'
+      - to: automatic-differentiation
+        strength: 5
+        type: fundamental
+        note:
+          en: 'AD computes exact derivatives of programs by propagating them through each operation.'
+          es: 'La diferenciación automática calcula derivadas exactas de programas propagándolas por cada operación.'
+      - to: kinematics
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Velocity is the derivative of position, acceleration the derivative of velocity.'
+          es: 'La velocidad es la derivada de la posición y la aceleración, la derivada de la velocidad.'
+      - to: physics-engine
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Engines store positions and their derivatives (velocities) and advance them frame by frame.'
+          es: 'Los motores guardan posiciones y sus derivadas (velocidades) y las avanzan fotograma a fotograma.'
+      - to: pid-control
+        strength: 4
+        type: frequent
+        note:
+          en: 'The D term reacts to the derivative of the error, anticipating where the system is going.'
+          es: 'El término D reacciona a la derivada del error, anticipando hacia dónde va el sistema.'
+      - to: image-processing
+        strength: 4
+        type: frequent
+        note:
+          en: 'Edges are where intensity changes fast: detectors (Sobel, Canny) estimate derivatives of the image.'
+          es: 'Los bordes son donde la intensidad cambia deprisa: los detectores (Sobel, Canny) estiman derivadas de la imagen.'
+      - to: symbolic-computation
+        strength: 4
+        type: frequent
+        note:
+          en: 'Symbolic differentiation is the textbook example of term rewriting on expression trees.'
+          es: 'La derivación simbólica es el ejemplo de libro de reescritura de términos sobre árboles de expresiones.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Using the definition, compute $f''(x)$ for $f(x) = \frac1x$.'
+          es: 'Con la definición, calcula $f''(x)$ para $f(x) = \frac1x$.'
+        solution:
+          en: '$\frac{1}{h}\left(\frac{1}{x+h} - \frac1x\right) = \frac{-h}{h\,x(x+h)} = \frac{-1}{x(x+h)} \to -\frac{1}{x^2}$.'
+          es: '$\frac{1}{h}\left(\frac{1}{x+h} - \frac1x\right) = \frac{-h}{h\,x(x+h)} = \frac{-1}{x(x+h)} \to -\frac{1}{x^2}$.'
+      - type: graphical
+        prompt:
+          en: 'Sketch $f(x) = x^3 - 3x$ and, below it, $f''$. Where is $f''$ zero, positive, negative?'
+          es: 'Dibuja $f(x) = x^3 - 3x$ y, debajo, $f''$. ¿Dónde es $f''$ cero, positiva, negativa?'
+        solution:
+          en: '$f''(x) = 3x^2 - 3$: zero at $x = \pm1$ (a local max at $-1$, a local min at $1$), negative on $(-1,1)$ where $f$ decreases, positive outside.'
+          es: '$f''(x) = 3x^2 - 3$: se anula en $x = \pm1$ (máximo local en $-1$, mínimo local en $1$), negativa en $(-1,1)$ donde $f$ decrece y positiva fuera.'
+      - type: ai
+        prompt:
+          en: |
+            A one-parameter model has loss $L(w) = (w - 3)^2 + 1$. Starting at $w_0 = 0$ with learning rate
+            $\eta = 0.1$, compute two steps of gradient descent.
+          es: |
+            Un modelo de un parámetro tiene pérdida $L(w) = (w - 3)^2 + 1$. Partiendo de $w_0 = 0$ con learning rate
+            $\eta = 0{,}1$, calcula dos pasos de descenso de gradiente.
+        solution:
+          en: '$L''(w) = 2(w - 3)$. $w_1 = 0 - 0.1\cdot(-6) = 0.6$; $w_2 = 0.6 - 0.1\cdot(-4.8) = 1.08$. Each step closes 20% of the gap to the minimum $w = 3$.'
+          es: '$L''(w) = 2(w - 3)$. $w_1 = 0 - 0{,}1\cdot(-6) = 0{,}6$; $w_2 = 0{,}6 - 0{,}1\cdot(-4{,}8) = 1{,}08$. Cada paso cierra un 20 % de la distancia al mínimo $w = 3$.'
+
+  - id: differentiability
+    level: fundamental
+    prerequisites: [derivative, one-sided-limits, continuity]
+    title: {en: 'Differentiability and one-sided derivatives', es: 'Derivabilidad y derivadas laterales'}
+    aliases: {en: [differentiable, left derivative, right derivative, kink, subgradient], es: [derivable, derivada por la izquierda, derivada por la derecha, pico, subgradiente]}
+    summary:
+      en: |
+        A function is differentiable at $a$ when both one-sided derivatives exist and agree. Differentiable implies
+        continuous, but not conversely: $|x|$ and $\operatorname{ReLU}$ are continuous with a kink at 0.
+      es: |
+        Una función es derivable en $a$ cuando las dos derivadas laterales existen y coinciden. Derivable implica
+        continua, pero no al revés: $|x|$ y $\operatorname{ReLU}$ son continuas con un pico en 0.
+    formulas:
+      - tex: |-
+          f'_-(a) = \lim_{h\to 0^-}\frac{f(a+h) - f(a)}{h}, \qquad f'_+(a) = \lim_{h\to 0^+}\frac{f(a+h) - f(a)}{h}
+      - tex: |-
+          \partial |x|\,\big|_{x=0} = [-1, 1]
+        label: {en: 'subdifferential: the set of slopes at a kink', es: 'subdiferencial: el conjunto de pendientes en un pico'}
+    applications:
+      - to: activation-functions
+        strength: 4
+        type: fundamental
+        note:
+          en: 'ReLU has $f''_-(0) = 0 \ne 1 = f''_+(0)$; frameworks simply pick a value (usually 0) at the kink.'
+          es: 'ReLU tiene $f''_-(0) = 0 \ne 1 = f''_+(0)$; los frameworks simplemente eligen un valor (normalmente 0) en el pico.'
+      - to: loss-function
+        strength: 3
+        type: frequent
+        note:
+          en: 'L1 and hinge losses are non-differentiable at a point and are optimized with subgradients.'
+          es: 'Las pérdidas L1 y hinge no son derivables en un punto y se optimizan con subgradientes.'
+
+  - id: differentiation-rules
+    level: fundamental
+    prerequisites: [derivative]
+    title: {en: 'Differentiation rules', es: 'Reglas de derivación'}
+    aliases: {en: [product rule, quotient rule, sum rule, linearity], es: [regla del producto, regla del cociente, regla de la suma, linealidad]}
+    summary:
+      en: |
+        The derivative is linear, and there are rules for products and quotients. With the chain rule, they let you
+        differentiate any formula mechanically — which is why computers can do it.
+      es: |
+        La derivada es lineal y hay reglas para productos y cocientes. Junto con la regla de la cadena permiten derivar
+        cualquier fórmula de forma mecánica, y por eso los ordenadores saben hacerlo.
+    formulas:
+      - tex: |-
+          (af + bg)' = af' + bg'
+        label: {en: 'linearity', es: 'linealidad'}
+      - tex: |-
+          (fg)' = f'g + fg'
+        label: {en: 'product rule (Leibniz)', es: 'regla del producto (Leibniz)'}
+      - tex: |-
+          \left(\frac fg\right)' = \frac{f'g - fg'}{g^2}
+        label: {en: 'quotient rule', es: 'regla del cociente'}
+    applications:
+      - to: automatic-differentiation
+        strength: 5
+        type: fundamental
+        note:
+          en: 'AD applies exactly these rules, one elementary operation at a time, to numbers instead of formulas.'
+          es: 'La diferenciación automática aplica exactamente estas reglas, operación a operación, sobre números en vez de fórmulas.'
+      - to: symbolic-computation
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Each rule is a rewrite rule on the expression tree; the hard part is simplifying the result.'
+          es: 'Cada regla es una regla de reescritura sobre el árbol de expresiones; lo difícil es simplificar el resultado.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Differentiate $f(x) = \frac{x^2 e^x}{1 + x}$.'
+          es: 'Deriva $f(x) = \frac{x^2 e^x}{1 + x}$.'
+        solution:
+          en: '$f''(x) = \frac{(2x + x^2)e^x(1 + x) - x^2 e^x}{(1+x)^2} = \frac{x e^x (x^2 + 2x + 2)}{(1 + x)^2}$.'
+          es: '$f''(x) = \frac{(2x + x^2)e^x(1 + x) - x^2 e^x}{(1+x)^2} = \frac{x e^x (x^2 + 2x + 2)}{(1 + x)^2}$.'
+
+  - id: elementary-derivatives
+    level: fundamental
+    prerequisites: [differentiation-rules, exponential-functions, logarithmic-functions, trigonometric-functions]
+    title: {en: 'Derivatives of elementary functions', es: 'Derivadas de funciones elementales'}
+    aliases: {en: [derivative table, sigmoid derivative, tanh derivative], es: [tabla de derivadas, derivada de la sigmoide, derivada de tanh]}
+    summary:
+      en: |
+        The table every differentiation engine starts from: powers, exponentials, logarithms, trigonometric and
+        hyperbolic functions — and the activation functions built from them.
+      es: |
+        La tabla de la que parte todo motor de derivación: potencias, exponenciales, logaritmos, funciones
+        trigonométricas e hiperbólicas, y las funciones de activación construidas con ellas.
+    formulas:
+      - tex: |-
+          (x^r)' = r x^{r-1}, \quad (a^x)' = a^x \ln a, \quad (\log_a x)' = \frac{1}{x \ln a}
+      - tex: |-
+          (\tan x)' = 1 + \tan^2 x, \quad (\arctan x)' = \frac{1}{1 + x^2}
+      - tex: |-
+          \sigma(x) = \frac{1}{1 + e^{-x}} \implies \sigma'(x) = \sigma(x)\,\big(1 - \sigma(x)\big)
+        label: {en: 'the sigmoid: its derivative comes for free from its value', es: 'la sigmoide: su derivada sale gratis de su valor'}
+    applications:
+      - to: activation-functions
+        strength: 5
+        type: fundamental
+        note:
+          en: '$\sigma'' = \sigma(1 - \sigma)$ and $\tanh'' = 1 - \tanh^2$: backprop reuses the forward value.'
+          es: '$\sigma'' = \sigma(1 - \sigma)$ y $\tanh'' = 1 - \tanh^2$: la retropropagación reutiliza el valor calculado hacia delante.'
+      - to: automatic-differentiation
+        strength: 4
+        type: fundamental
+        note:
+          en: 'Every AD system ships a table of derivatives of its primitive operations.'
+          es: 'Todo sistema de diferenciación automática incluye una tabla de derivadas de sus operaciones primitivas.'
+    exercises:
+      - type: proof
+        prompt:
+          en: 'Prove that $\sigma''(x) = \sigma(x)(1 - \sigma(x))$ for $\sigma(x) = 1/(1 + e^{-x})$. What is the maximum of $\sigma''$?'
+          es: 'Demuestra que $\sigma''(x) = \sigma(x)(1 - \sigma(x))$ para $\sigma(x) = 1/(1 + e^{-x})$. ¿Cuál es el máximo de $\sigma''$?'
+        solution:
+          en: |
+            $\sigma'(x) = \frac{e^{-x}}{(1 + e^{-x})^2} = \frac{1}{1 + e^{-x}}\cdot\frac{e^{-x}}{1 + e^{-x}} = \sigma(1 - \sigma)$.
+            Since $s(1 - s) \le \frac14$, the maximum is $\frac14$ at $x = 0$ — so each sigmoid layer shrinks gradients by
+            at least a factor 4, one cause of vanishing gradients.
+          es: |
+            $\sigma'(x) = \frac{e^{-x}}{(1 + e^{-x})^2} = \frac{1}{1 + e^{-x}}\cdot\frac{e^{-x}}{1 + e^{-x}} = \sigma(1 - \sigma)$.
+            Como $s(1 - s) \le \frac14$, el máximo es $\frac14$ en $x = 0$: cada capa sigmoide encoge los gradientes al
+            menos por 4, una de las causas del desvanecimiento del gradiente.
+
+  - id: chain-rule
+    level: fundamental
+    core: true
+    prerequisites: [derivative, composition]
+    related: [multivariable-chain-rule, backpropagation]
+    title: {en: 'Chain rule', es: 'Regla de la cadena'}
+    aliases: {en: [derivative of composition, Leibniz notation], es: [derivada de la composición, notación de Leibniz]}
+    summary:
+      en: |
+        The derivative of a composition is the product of the derivatives: $(g\circ f)'(x) = g'(f(x))\,f'(x)$. Rates of
+        change multiply along a chain — and backpropagation is this rule applied, very efficiently, to a neural network.
+      es: |
+        La derivada de una composición es el producto de las derivadas: $(g\circ f)'(x) = g'(f(x))\,f'(x)$. Las tasas de
+        cambio se multiplican a lo largo de una cadena, y la retropropagación es esta regla aplicada, de forma muy
+        eficiente, a una red neuronal.
+    why:
+      en: |
+        Almost every function we meet is built by composing simpler ones. Without the chain rule we would have to go back
+        to limits for each new formula; with it, knowing the derivatives of a few primitives is enough to differentiate
+        everything built from them — including a program.
+      es: |
+        Casi todas las funciones que encontramos se construyen componiendo otras más simples. Sin la regla de la cadena
+        habría que volver a los límites con cada fórmula nueva; con ella, conocer las derivadas de unas pocas primitivas
+        basta para derivar todo lo construido con ellas, incluido un programa.
+    intuition:
+      en: |
+        Gears. If $u$ turns 3 times as fast as $x$, and $y$ turns 2 times as fast as $u$, then $y$ turns $2 \times 3 = 6$
+        times as fast as $x$. In Leibniz notation the rule looks like cancelling fractions:
+        $\frac{\dd y}{\dd x} = \frac{\dd y}{\dd u}\cdot\frac{\dd u}{\dd x}$. Along a chain of $n$ functions you multiply
+        $n$ local rates — and if they are all smaller than 1, the product vanishes (that is the vanishing-gradient
+        problem).
+      es: |
+        Engranajes. Si $u$ gira 3 veces más rápido que $x$ e $y$ gira 2 veces más rápido que $u$, entonces $y$ gira
+        $2 \times 3 = 6$ veces más rápido que $x$. En notación de Leibniz la regla parece una simplificación de
+        fracciones: $\frac{\dd y}{\dd x} = \frac{\dd y}{\dd u}\cdot\frac{\dd u}{\dd x}$. A lo largo de una cadena de $n$
+        funciones se multiplican $n$ tasas locales, y si todas son menores que 1 el producto se desvanece (ese es el
+        problema del desvanecimiento del gradiente).
+    formal:
+      en: |
+        If $f$ is differentiable at $x$ and $g$ is differentiable at $f(x)$, then $g \circ f$ is differentiable at $x$
+        and
+        $$(g \circ f)'(x) = g'\big(f(x)\big)\,f'(x).$$
+      es: |
+        Si $f$ es derivable en $x$ y $g$ es derivable en $f(x)$, entonces $g \circ f$ es derivable en $x$ y
+        $$(g \circ f)'(x) = g'\big(f(x)\big)\,f'(x).$$
+    proofIdea:
+      en: |
+        Write $g(f(x+h)) - g(f(x)) = \big(g'(f(x)) + \eta(k)\big)\,k$ with $k = f(x+h) - f(x)$ and $\eta(k) \to 0$; divide
+        by $h$ and let $h \to 0$. (Dividing and multiplying by $k$ directly fails when $k = 0$, which is why the
+        auxiliary function $\eta$ is needed.)
+      es: |
+        Escribe $g(f(x+h)) - g(f(x)) = \big(g'(f(x)) + \eta(k)\big)\,k$ con $k = f(x+h) - f(x)$ y $\eta(k) \to 0$; divide
+        entre $h$ y haz $h \to 0$. (Multiplicar y dividir por $k$ directamente falla cuando $k = 0$, y por eso hace falta
+        la función auxiliar $\eta$.)
+    formulas:
+      - tex: |-
+          (g \circ f)'(x) = g'\big(f(x)\big)\,f'(x), \qquad \frac{\dd y}{\dd x} = \frac{\dd y}{\dd u}\,\frac{\dd u}{\dd x}
+      - tex: |-
+          \frac{\dd}{\dd x}\,f_n(\cdots f_2(f_1(x))) = f_n'(u_{n-1})\cdots f_2'(u_1)\,f_1'(x)
+        label: {en: 'a chain of $n$ functions: a product of $n$ local derivatives', es: 'una cadena de $n$ funciones: un producto de $n$ derivadas locales'}
+    compute:
+      en: |
+        Name the intermediate values: $u_1 = f_1(x)$, $u_2 = f_2(u_1)$, … Compute the local derivatives
+        $f_k'(u_{k-1})$ and multiply. The order in which you multiply does not change the result, but it changes the
+        cost when the functions have many inputs and outputs: left-to-right is **forward mode**, right-to-left is
+        **reverse mode** (backpropagation).
+      es: |
+        Pon nombre a los valores intermedios: $u_1 = f_1(x)$, $u_2 = f_2(u_1)$, … Calcula las derivadas locales
+        $f_k'(u_{k-1})$ y multiplica. El orden en que multiplicas no cambia el resultado, pero sí el coste cuando las
+        funciones tienen muchas entradas y salidas: de izquierda a derecha es el **modo directo**, de derecha a
+        izquierda el **modo inverso** (retropropagación).
+    example:
+      en: |
+        $y = \sigma(wx + b)$ with $\sigma$ the sigmoid. Set $z = wx + b$. Then
+        $\frac{\partial y}{\partial w} = \sigma'(z)\cdot x = \sigma(z)(1 - \sigma(z))\,x$. This is literally the
+        gradient a neural network computes for one weight of one neuron.
+      es: |
+        $y = \sigma(wx + b)$ con $\sigma$ la sigmoide. Sea $z = wx + b$. Entonces
+        $\frac{\partial y}{\partial w} = \sigma'(z)\cdot x = \sigma(z)(1 - \sigma(z))\,x$. Es literalmente el gradiente
+        que calcula una red neuronal para un peso de una neurona.
+    matters:
+      en: |
+        Backpropagation (Rumelhart, Hinton and Williams, 1986; Linnainmaa's reverse-mode AD, 1970) is the chain rule
+        organised so that the gradient with respect to *all* weights costs about as much as one evaluation of the
+        network. Without that trick, training modern models would be impossible.
+      es: |
+        La retropropagación (Rumelhart, Hinton y Williams, 1986; la diferenciación automática en modo inverso de
+        Linnainmaa, 1970) es la regla de la cadena organizada para que el gradiente respecto de *todos* los pesos cueste
+        más o menos lo mismo que una evaluación de la red. Sin ese truco sería imposible entrenar los modelos actuales.
+    applications:
+      - to: backpropagation
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Backprop is the chain rule evaluated from the loss backwards, reusing every intermediate product.'
+          es: 'La retropropagación es la regla de la cadena evaluada desde la pérdida hacia atrás, reutilizando cada producto intermedio.'
+      - to: automatic-differentiation
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Forward and reverse mode are two orders of multiplying the same chain of local derivatives.'
+          es: 'Los modos directo e inverso son dos órdenes de multiplicar la misma cadena de derivadas locales.'
+      - to: robot-jacobian
+        strength: 4
+        type: frequent
+        note:
+          en: 'End-effector velocity is the chain rule through the arm: $\dot p = \frac{\partial p}{\partial q}\,\dot q$.'
+          es: 'La velocidad del efector final es la regla de la cadena a través del brazo: $\dot p = \frac{\partial p}{\partial q}\,\dot q$.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Differentiate $h(x) = \ln\big(1 + e^{3x}\big)$.'
+          es: 'Deriva $h(x) = \ln\big(1 + e^{3x}\big)$.'
+        solution:
+          en: '$h''(x) = \frac{1}{1 + e^{3x}}\cdot 3e^{3x} = 3\,\sigma(3x)$ — the derivative of softplus is a sigmoid.'
+          es: '$h''(x) = \frac{1}{1 + e^{3x}}\cdot 3e^{3x} = 3\,\sigma(3x)$: la derivada de la softplus es una sigmoide.'
+      - type: ai
+        prompt:
+          en: |
+            A 20-layer network uses sigmoid activations. Bound the factor by which the gradient can shrink when it
+            goes through the 20 activations, ignoring the weights.
+          es: |
+            Una red de 20 capas usa activaciones sigmoide. Acota el factor en que puede encogerse el gradiente al pasar
+            por las 20 activaciones, ignorando los pesos.
+        solution:
+          en: 'Each $\sigma'' \le \frac14$, so the product is at most $4^{-20} \approx 9 \cdot 10^{-13}$: vanishing gradients. ReLU ($\text{derivative } 1$ when active) and residual connections avoid it.'
+          es: 'Cada $\sigma'' \le \frac14$, así que el producto es como mucho $4^{-20} \approx 9 \cdot 10^{-13}$: desvanecimiento del gradiente. ReLU (derivada 1 cuando está activa) y las conexiones residuales lo evitan.'
+
+  - id: implicit-differentiation
+    level: university
+    prerequisites: [chain-rule]
+    title: {en: 'Implicit differentiation', es: 'Derivación implícita'}
+    aliases: {en: [implicit function, implicit function theorem, implicit curve], es: [función implícita, teorema de la función implícita, curva implícita]}
+    summary:
+      en: |
+        Differentiating a relation $F(x, y) = 0$ without solving for $y$: apply the chain rule to both sides and solve
+        for $y'$. The slope of a circle, an ellipse or an elliptic curve at a point comes out this way.
+      es: |
+        Derivar una relación $F(x, y) = 0$ sin despejar $y$: se aplica la regla de la cadena a los dos lados y se despeja
+        $y'$. La pendiente de una circunferencia, una elipse o una curva elíptica en un punto sale así.
+    formulas:
+      - tex: |-
+          F(x, y(x)) = 0 \implies y' = -\frac{F_x}{F_y}
+      - tex: |-
+          y^2 = x^3 + ax + b \implies y' = \frac{3x^2 + a}{2y}
+        label: {en: 'tangent slope of an elliptic curve', es: 'pendiente de la tangente a una curva elíptica'}
+    applications:
+      - to: elliptic-curve-cryptography
+        strength: 2
+        type: historical
+        note:
+          en: 'The point-doubling formula uses the slope $\frac{3x^2 + a}{2y}$, derived over the reals and reused verbatim over finite fields.'
+          es: 'La fórmula de duplicación de puntos usa la pendiente $\frac{3x^2 + a}{2y}$, deducida sobre los reales y reutilizada tal cual sobre cuerpos finitos.'
+
+  - id: higher-order-derivatives
+    level: fundamental
+    prerequisites: [derivative]
+    title: {en: 'Higher-order derivatives', es: 'Derivadas de orden superior'}
+    aliases: {en: [second derivative, acceleration, jerk, concavity], es: [segunda derivada, aceleración, tirón, concavidad]}
+    summary:
+      en: |
+        $f''$ is the rate of change of the rate of change: acceleration, curvature, concavity. Third derivative: jerk.
+        Robots and cameras are tuned to keep these smooth.
+      es: |
+        $f''$ es la tasa de cambio de la tasa de cambio: aceleración, curvatura, concavidad. Tercera derivada: el tirón
+        (jerk). Los robots y las cámaras se ajustan para que estas sean suaves.
+    formulas:
+      - tex: |-
+          f''(x) = \frac{\dd^2 f}{\dd x^2}, \qquad f^{(n)} = \big(f^{(n-1)}\big)'
+      - tex: |-
+          s(t) \xrightarrow{\ \dd/\dd t\ } v(t) \xrightarrow{\ \dd/\dd t\ } a(t) \xrightarrow{\ \dd/\dd t\ } j(t)
+        label: {en: 'position, velocity, acceleration, jerk', es: 'posición, velocidad, aceleración, tirón'}
+    applications:
+      - to: kinematics
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Acceleration is the second derivative of position; Newton''s law $F = ma$ is about it.'
+          es: 'La aceleración es la segunda derivada de la posición; la ley de Newton $F = ma$ habla de ella.'
+      - to: second-order-optimization
+        strength: 4
+        type: fundamental
+        note:
+          en: 'Second derivatives measure curvature; Newton-type methods use them to choose the step.'
+          es: 'Las segundas derivadas miden la curvatura; los métodos tipo Newton las usan para elegir el paso.'
+      - to: trajectory-optimization
+        strength: 4
+        type: frequent
+        note:
+          en: 'Minimum-jerk trajectories minimize $\int \dddot x^{\,2}\,\dd t$ for smooth robot motion.'
+          es: 'Las trayectorias de mínimo tirón minimizan $\int \dddot x^{\,2}\,\dd t$ para un movimiento suave del robot.'
+      - to: bezier-curves
+        strength: 4
+        type: frequent
+        note:
+          en: 'Matching second derivatives at joints ($C^2$) removes visible kinks in fonts and CAD curves.'
+          es: 'Igualar las segundas derivadas en las uniones ($C^2$) elimina quiebros visibles en fuentes tipográficas y curvas CAD.'
+
+  - id: differential
+    level: university
+    prerequisites: [derivative]
+    title: {en: 'Differential and linear approximation', es: 'Diferencial y aproximación lineal'}
+    aliases: {en: [linearization, dy, error propagation, tangent approximation], es: [linealización, dy, propagación de errores, aproximación por la tangente]}
+    summary:
+      en: |
+        Near $a$, $f(a + h) \approx f(a) + f'(a)\,h$. The differential $\dd f = f'(x)\,\dd x$ is that best linear
+        approximation; it tells how an error in the input propagates to the output.
+      es: |
+        Cerca de $a$, $f(a + h) \approx f(a) + f'(a)\,h$. La diferencial $\dd f = f'(x)\,\dd x$ es esa mejor aproximación
+        lineal; dice cómo se propaga a la salida un error en la entrada.
+    formulas:
+      - tex: |-
+          f(a + h) = f(a) + f'(a)\,h + o(h)
+      - tex: |-
+          \frac{|\Delta f|}{|f|} \approx \left|\frac{x f'(x)}{f(x)}\right|\frac{|\Delta x|}{|x|}
+        label: {en: 'relative error amplification (condition number)', es: 'amplificación del error relativo (número de condición)'}
+    applications:
+      - to: scientific-computing
+        strength: 4
+        type: frequent
+        note:
+          en: 'First-order error propagation estimates how measurement and rounding errors affect results.'
+          es: 'La propagación de errores de primer orden estima cómo afectan a los resultados los errores de medida y de redondeo.'
+      - to: control-theory
+        strength: 4
+        type: frequent
+        note:
+          en: 'Nonlinear plants are linearized around an operating point and controlled with linear theory.'
+          es: 'Las plantas no lineales se linealizan alrededor de un punto de operación y se controlan con teoría lineal.'
+    exercises:
+      - type: applied
+        prompt:
+          en: 'Estimate $\sqrt{4.1}$ with the differential of $\sqrt x$ at $x = 4$.'
+          es: 'Estima $\sqrt{4{,}1}$ con la diferencial de $\sqrt x$ en $x = 4$.'
+        solution:
+          en: '$\sqrt{4.1} \approx 2 + \frac{1}{2\sqrt4}\cdot 0.1 = 2.025$ (true value $2.02485…$).'
+          es: '$\sqrt{4{,}1} \approx 2 + \frac{1}{2\sqrt4}\cdot 0{,}1 = 2{,}025$ (valor real $2{,}02485…$).'

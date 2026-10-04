@@ -1,0 +1,413 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getGraph, type Edge, type Topic } from '../../lib/graph';
+import { href, l, t, type Lang, type UIKey } from '../../lib/i18n';
+import { md, mdInline, plain, tex } from '../../lib/md';
+import DemoHost from '../demos/DemoHost.astro';
+import Level from '../Level.astro';
+import Stars from '../Stars.astro';
+import TopicLink from '../TopicLink.astro';
+import Exercise from '../Exercise.astro';
+
+interface Props {
+  lang: Lang;
+  id: string;
+}
+const { lang, id } = Astro.props;
+const g = await getGraph();
+const tp = g.topic(id);
+const area = g.area(tp.area);
+const where = (field: string) => `${tp.area}/${tp.id}.${field}`;
+const render = (field: 'why' | 'intuition' | 'formal' | 'proofIdea' | 'proof' | 'compute' | 'example' | 'matters') => {
+  const v = l(lang, tp[field]);
+  return v ? md(v, lang, where(field)) : undefined;
+};
+
+const isTheorem = tp.kind === 'theorem';
+const isComputing = tp.areaKind === 'computing';
+const prereqs = g.prerequisites(id);
+const upstream = g.upstream(id);
+const dependents = g.dependents(id);
+const apps = g.applications(id);
+const appsAI = apps.filter((e) => g.topic(e.to).area === 'ml');
+const appsCS = apps.filter((e) => g.topic(e.to).area !== 'ml');
+const sources = isComputing ? g.mathSources(id) : [];
+const reach = g.reachByArea(id);
+const related = tp.related.map((r) => g.topic(r));
+const routes = g.routesOf(id);
+const next = g.next(id);
+const prev = g.prev(id);
+
+const sections: { id: string; key: UIKey; html?: string | undefined }[] = [
+  { id: 'what', key: 'sec.what', html: md(tp.summary[lang], lang, where('summary')) },
+  { id: 'why', key: 'sec.why', html: render('why') },
+  { id: 'intuition', key: 'sec.intuition', html: render('intuition') },
+  { id: 'formal', key: isTheorem ? 'sec.statement' : 'sec.formal', html: render('formal') },
+  { id: 'proof-idea', key: 'sec.proofIdea', html: render('proofIdea') },
+];
+const after: { id: string; key: UIKey; html?: string | undefined }[] = [
+  { id: 'compute', key: 'sec.compute', html: render('compute') },
+  { id: 'example', key: 'sec.example', html: render('example') },
+];
+const proof = render('proof');
+const matters = render('matters');
+const deep = Boolean(tp.intuition || tp.formal || tp.example || tp.compute);
+
+const toc: { id: string; key: UIKey }[] = [
+  ...sections.filter((s) => s.html),
+  ...(proof ? [{ id: 'proof', key: 'sec.proof' as UIKey }] : []),
+  ...(tp.formulas.length ? [{ id: 'formulas', key: 'sec.formulas' as UIKey }] : []),
+  ...after.filter((s) => s.html),
+  ...(tp.demo ? [{ id: 'demo', key: 'sec.demo' as UIKey }] : []),
+  ...(matters ? [{ id: 'matters', key: 'sec.matters' as UIKey }] : []),
+  ...(sources.length ? [{ id: 'math-sources', key: 'sec.mathSources' as UIKey }] : []),
+  ...(appsCS.length ? [{ id: 'in-computing', key: 'sec.inComputing' as UIKey }] : []),
+  ...(appsAI.length ? [{ id: 'in-ai', key: 'sec.inAI' as UIKey }] : []),
+  ...(reach.length ? [{ id: 'used-by', key: 'sec.usedBy' as UIKey }] : []),
+  ...(dependents.length ? [{ id: 'dependents', key: 'sec.dependents' as UIKey }] : []),
+  ...(related.length ? [{ id: 'related', key: 'sec.related' as UIKey }] : []),
+  ...(tp.exercises.length ? [{ id: 'exercises', key: 'sec.exercises' as UIKey }] : []),
+];
+
+const note = (e: Edge, field: string) => mdInline(e.note![lang], lang, where(field));
+const diffLabel = `${t(lang, 'difficulty.label')}: ${tp.difficulty}/5`;
+const kids = (x: Topic) => g.prerequisites(x.id);
+---
+
+<Base lang={lang} title={tp.title[lang]} description={plain(tp.summary[lang], lang).slice(0, 180)}>
+  <header class="page-head topic-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="breadcrumb">
+        <a href={href(lang, 'topics/')}>{t(lang, 'nav.syllabus')}</a>
+        <span class="arrow">/</span>
+        <a href={href(lang, `area/${area.id}/`)} class:list={[area.kind]}><span class="glyph-sm">{area.glyph}</span> {area.title[lang]}</a>
+      </nav>
+      <h1>{tp.title[lang]}</h1>
+      <div class="topic-meta">
+        <span class="meta-item"><span class="eyebrow">{t(lang, 'level.label')}</span> <Level lang={lang} level={tp.level} /></span>
+        <span class="meta-item"><span class="eyebrow">{t(lang, 'difficulty.label')}</span> <Stars n={tp.difficulty} label={diffLabel} /></span>
+        <span class="meta-item"><span class:list={['chip', area.kind]}>{t(lang, `kind.${tp.kind}`)}</span></span>
+        <a class="btn small" href={`${href(lang, 'map/')}?focus=${tp.id}`}>⌖ {t(lang, 'sec.openInMap')}</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap topic-layout">
+    <aside class="topic-aside">
+      <section class="aside-block">
+        <h2 class="eyebrow">{t(lang, 'sec.prereqs')}</h2>
+        {
+          prereqs.length ? (
+            <ul class="tree">
+              {prereqs.map((p) => (
+                <li>
+                  <TopicLink lang={lang} topic={p} />
+                  {kids(p).length > 0 && (
+                    <ul>
+                      {kids(p).map((k) => (
+                        <li>
+                          <TopicLink lang={lang} topic={k} />
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="muted small">{t(lang, 'sec.noPrereqs')}</p>
+          )
+        }
+        {
+          upstream.length > prereqs.length && (
+            <details class="full-path">
+              <summary>
+                {t(lang, 'sec.fullPath')} ({upstream.length})
+              </summary>
+              <p class="muted small">{t(lang, 'sec.fullPathHint')}</p>
+              <ol>
+                {upstream.map((u) => (
+                  <li>
+                    <TopicLink lang={lang} topic={u} />
+                  </li>
+                ))}
+              </ol>
+            </details>
+          )
+        }
+      </section>
+
+      <nav class="aside-block toc" aria-label={t(lang, 'sec.onThisPage')}>
+        <h2 class="eyebrow">{t(lang, 'sec.onThisPage')}</h2>
+        <ol>
+          {
+            toc.map((s) => (
+              <li>
+                <a href={`#${s.id}`}>{t(lang, s.key)}</a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+
+      {
+        routes.length > 0 && (
+          <section class="aside-block">
+            <h2 class="eyebrow">{t(lang, 'sec.inRoutes')}</h2>
+            <ul class="plain">
+              {routes.map((r) => (
+                <li>
+                  <a href={href(lang, `routes/${r.id}/`)}>
+                    {r.glyph} {r.title[lang]}
+                  </a>{' '}
+                  <span class="muted small">
+                    {r.steps.indexOf(id) + 1}/{r.steps.length}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+    </aside>
+
+    <article class="topic-body">
+      {
+        sections.map(
+          (s) =>
+            s.html && (
+              <section id={s.id} class:list={['tsec', { 'theorem-box': s.id === 'formal' && isTheorem }]}>
+                <h2>{t(lang, s.key)}</h2>
+                <div class="prose" set:html={s.html} />
+              </section>
+            ),
+        )
+      }
+
+      {
+        proof && (
+          <section id="proof" class="tsec">
+            <details class="proof">
+              <summary>
+                <h2>{t(lang, 'sec.proof')}</h2>
+              </summary>
+              <div class="prose" set:html={proof} />
+            </details>
+          </section>
+        )
+      }
+
+      {
+        tp.formulas.length > 0 && (
+          <section id="formulas" class="tsec">
+            <h2>{t(lang, 'sec.formulas')}</h2>
+            <dl class="formulas">
+              {tp.formulas.map((f) => (
+                <div class="formula">
+                  <dd set:html={tex(typeof f.tex === 'string' ? f.tex : f.tex[lang])} />
+                  {f.label && <dt set:html={mdInline(f.label[lang], lang, where('formulas'))} />}
+                </div>
+              ))}
+            </dl>
+          </section>
+        )
+      }
+
+      {
+        after.map(
+          (s) =>
+            s.html && (
+              <section id={s.id} class="tsec">
+                <h2>{t(lang, s.key)}</h2>
+                <div class="prose" set:html={s.html} />
+              </section>
+            ),
+        )
+      }
+
+      {
+        tp.demo && (
+          <section id="demo" class="tsec">
+            <h2>{t(lang, 'sec.demo')}</h2>
+            <DemoHost id={tp.demo} lang={lang} />
+          </section>
+        )
+      }
+
+      {
+        matters && (
+          <section id="matters" class="tsec">
+            <h2>{t(lang, 'sec.matters')}</h2>
+            <div class="prose" set:html={matters} />
+          </section>
+        )
+      }
+
+      {
+        sources.length > 0 && (
+          <section id="math-sources" class="tsec">
+            <h2>{t(lang, 'sec.mathSources')}</h2>
+            <ul class="edges">
+              {sources.map((e) => (
+                <li>
+                  <div class="edge-head">
+                    <TopicLink lang={lang} topic={g.topic(e.from)} />
+                    <Stars n={e.strength!} />
+                    <span class:list={['conn', e.type]}>{t(lang, `conn.${e.type!}`)}</span>
+                  </div>
+                  <p set:html={note(e, `→${e.to}`)} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        [
+          { sid: 'in-computing', key: 'sec.inComputing' as UIKey, list: appsCS },
+          { sid: 'in-ai', key: 'sec.inAI' as UIKey, list: appsAI },
+        ].map(
+          ({ sid, key, list }) =>
+            list.length > 0 && (
+              <section id={sid} class="tsec">
+                <h2>{t(lang, key)}</h2>
+                <ul class="edges">
+                  {list.map((e) => (
+                    <li>
+                      <div class="edge-head">
+                        <TopicLink lang={lang} topic={g.topic(e.to)} />
+                        <Stars n={e.strength!} />
+                        <span class:list={['conn', e.type]}>{t(lang, `conn.${e.type!}`)}</span>
+                        <span class="chip computing">{g.area(g.topic(e.to).area).title[lang]}</span>
+                      </div>
+                      <p set:html={note(e, `applications.${e.to}`)} />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ),
+        )
+      }
+
+      {
+        reach.length > 0 && (
+          <section id="used-by" class="tsec">
+            <h2>{t(lang, 'sec.usedBy')}</h2>
+            <p class="muted">{t(lang, 'sec.usedByHint')}</p>
+            <div class="reach">
+              {reach.map(({ area: a, items, more }) => (
+                <div class="reach-area">
+                  <h3>
+                    <a href={href(lang, `area/${a.id}/`)}>
+                      <span class="glyph-sm">{a.glyph}</span> {a.title[lang]}
+                    </a>
+                  </h3>
+                  <ul>
+                    {items.map((r) => (
+                      <li>
+                        <span class="path">
+                          {r.path.slice(1, -1).map((p) => (
+                            <>
+                              <a class="via" href={href(lang, `topic/${p}/`)}>
+                                {g.topic(p).title[lang]}
+                              </a>
+                              <span class="arrow">→</span>
+                            </>
+                          ))}
+                        </span>
+                        <TopicLink lang={lang} topic={r.topic} />
+                        <Stars n={r.strength} />
+                      </li>
+                    ))}
+                    {more > 0 && <li class="muted small">+{more}</li>}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      {
+        dependents.length > 0 && (
+          <section id="dependents" class="tsec">
+            <h2>{t(lang, 'sec.dependents')}</h2>
+            <ul class="pills">
+              {dependents.map((d) => (
+                <li>
+                  <TopicLink lang={lang} topic={d} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        related.length > 0 && (
+          <section id="related" class="tsec">
+            <h2>{t(lang, 'sec.related')}</h2>
+            <ul class="pills">
+              {related.map((d) => (
+                <li>
+                  <TopicLink lang={lang} topic={d} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        tp.exercises.length > 0 && (
+          <section id="exercises" class="tsec">
+            <h2>{t(lang, 'sec.exercises')}</h2>
+            {tp.exercises.map((ex, i) => (
+              <Exercise lang={lang} ex={ex} n={i + 1} where={where(`exercises[${i}]`)} />
+            ))}
+          </section>
+        )
+      }
+
+      {
+        tp.links.length > 0 && (
+          <section class="tsec">
+            <h2>{t(lang, 'sec.links')}</h2>
+            <ul>
+              {tp.links.map((k) => (
+                <li>
+                  <a href={k.href}>{k.label[lang]}</a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      {!deep && <p class="pending">{t(lang, 'sec.pending')}</p>}
+
+      <nav class="pager" aria-label="pager">
+        {
+          prev ? (
+            <a class="card pager-prev" href={href(lang, `topic/${prev.id}/`)}>
+              <span class="eyebrow">← {area.title[lang]}</span>
+              <span>{prev.title[lang]}</span>
+            </a>
+          ) : (
+            <span />
+          )
+        }
+        {
+          next && (
+            <a class="card pager-next" href={href(lang, `topic/${next.id}/`)}>
+              <span class="eyebrow">{t(lang, 'sec.next')} →</span>
+              <span>{next.title[lang]}</span>
+            </a>
+          )
+        }
+      </nav>
+    </article>
+  </div>
+</Base>
+

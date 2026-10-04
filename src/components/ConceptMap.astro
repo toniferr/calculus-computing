@@ -1,0 +1,199 @@
+---
+// The home "big map" of section 2: mathematics → computing, every node a link.
+// Nodes sit at percentage coordinates; the SVG behind uses the same 0–100 coordinates with non-scaling strokes,
+// so lines and nodes stay aligned at any width. Below 700px it becomes a vertical list.
+import { href, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const L = (en: string, es: string) => (lang === 'es' ? es : en);
+
+type Node = { x: number; y: number; label: string; to: string; kind: 'root' | 'math' | 'computing' | 'leaf'; row: number };
+const X = [10, 30, 50, 70, 90];
+const Y = [7, 27, 49, 71, 92];
+const nodes: Node[] = [
+  { x: X[2]!, y: Y[0]!, row: 0, kind: 'root', label: L('MATHEMATICS', 'MATEMÁTICAS'), to: 'topics/' },
+  { x: X[1]!, y: Y[1]!, row: 1, kind: 'math', label: L('Calculus', 'Cálculo'), to: 'topics/' },
+  { x: X[2]!, y: Y[1]!, row: 1, kind: 'math', label: L('Linear algebra', 'Álgebra lineal'), to: 'area/linear-algebra/' },
+  { x: X[3]!, y: Y[1]!, row: 1, kind: 'math', label: L('Probability', 'Probabilidad'), to: 'area/probability/' },
+  { x: X[2]!, y: Y[2]!, row: 2, kind: 'root', label: L('COMPUTING', 'COMPUTACIÓN'), to: 'map/' },
+  { x: X[0]!, y: Y[3]!, row: 3, kind: 'computing', label: L('AI', 'IA'), to: 'area/ml/' },
+  { x: X[1]!, y: Y[3]!, row: 3, kind: 'computing', label: '3D', to: 'area/graphics/' },
+  { x: X[2]!, y: Y[3]!, row: 3, kind: 'computing', label: L('Simulation', 'Simulación'), to: 'area/simulation/' },
+  { x: X[3]!, y: Y[3]!, row: 3, kind: 'computing', label: L('Robotics', 'Robótica'), to: 'area/robotics/' },
+  { x: X[4]!, y: Y[3]!, row: 3, kind: 'computing', label: L('Systems', 'Sistemas'), to: 'area/systems/' },
+  { x: X[0]!, y: Y[4]!, row: 4, kind: 'leaf', label: 'Deep learning', to: 'topic/deep-learning/' },
+  { x: X[1]!, y: Y[4]!, row: 4, kind: 'leaf', label: 'Rendering', to: 'topic/rendering-equation/' },
+  { x: X[2]!, y: Y[4]!, row: 4, kind: 'leaf', label: L('Physics', 'Física'), to: 'topic/classical-mechanics/' },
+  { x: X[3]!, y: Y[4]!, row: 4, kind: 'leaf', label: 'Control', to: 'topic/control-theory/' },
+  { x: X[4]!, y: Y[4]!, row: 4, kind: 'leaf', label: L('Optimization', 'Optimización'), to: 'topic/operations-research/' },
+];
+
+// Orthogonal "bus" connectors between rows.
+const mid = (a: number, b: number) => (a + b) / 2;
+const bus = (from: number[], yFrom: number, to: number[], yTo: number) => {
+  const yb = mid(yFrom, yTo);
+  const xs = [...from, ...to];
+  const parts = [`M${Math.min(...xs)} ${yb}H${Math.max(...xs)}`];
+  for (const x of from) parts.push(`M${x} ${yFrom}V${yb}`);
+  for (const x of to) parts.push(`M${x} ${yb}V${yTo}`);
+  return parts.join('');
+};
+const paths = [
+  bus([X[2]!], Y[0]!, [X[1]!, X[2]!, X[3]!], Y[1]!),
+  bus([X[1]!, X[2]!, X[3]!], Y[1]!, [X[2]!], Y[2]!),
+  bus([X[2]!], Y[2]!, X, Y[3]!),
+  ...X.map((x) => `M${x} ${Y[3]}V${Y[4]}`),
+];
+---
+
+<div class="cmap" role="navigation" aria-label={L('From mathematics to computing', 'De las matemáticas a la computación')}>
+  <svg class="cmap-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    {paths.map((d) => <path d={d} />)}
+    {paths.map((d) => <path class="flow" d={d} />)}
+  </svg>
+  {
+    nodes.map((n) => (
+      <a class:list={['cnode', n.kind, `row-${n.row}`]} href={href(lang, n.to)} data-x={n.x} data-y={n.y}>
+        {n.label}
+      </a>
+    ))
+  }
+</div>
+
+<script>
+  // Position nodes from their data attributes through the CSSOM (inline style attributes would break the CSP).
+  for (const a of document.querySelectorAll<HTMLElement>('.cnode')) {
+    a.style.setProperty('--x', `${a.dataset.x}%`);
+    a.style.setProperty('--y', `${a.dataset.y}%`);
+  }
+</script>
+
+<style is:global>
+  .cmap {
+    position: relative;
+    height: 470px;
+    margin: 0 auto;
+    max-width: 980px;
+  }
+
+  .cmap-lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .cmap-lines path {
+    fill: none;
+    stroke: var(--line-2);
+    stroke-width: 1.4;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .cmap-lines path.flow {
+    stroke: var(--accent);
+    stroke-dasharray: 2 14;
+    stroke-linecap: round;
+    stroke-width: 2;
+    opacity: 0.7;
+    animation: cmap-flow 3s linear infinite;
+  }
+
+  @keyframes cmap-flow {
+    to {
+      stroke-dashoffset: -32;
+    }
+  }
+
+  .cnode {
+    position: absolute;
+    left: var(--x, 50%);
+    top: var(--y, 50%);
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 7.5rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--line-2);
+    border-radius: var(--r-sm);
+    background: var(--surface);
+    color: var(--fg);
+    font-size: 0.92rem;
+    font-weight: 550;
+    white-space: nowrap;
+    box-shadow: var(--shadow);
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s,
+      transform 0.15s;
+  }
+
+  .cnode:hover {
+    text-decoration: none;
+    box-shadow: var(--glow);
+    transform: translate(-50%, -50%) translateY(-2px);
+  }
+
+  .cnode.root {
+    font-family: var(--font-mono);
+    letter-spacing: 0.16em;
+    font-size: 0.8rem;
+    padding: 0.6rem 1.2rem;
+    background: var(--surface-2);
+  }
+
+  .cnode.math {
+    border-color: color-mix(in srgb, var(--math) 60%, var(--line));
+    color: var(--math);
+  }
+
+  .cnode.computing {
+    border-color: color-mix(in srgb, var(--comp) 60%, var(--line));
+    color: var(--comp);
+  }
+
+  .cnode.leaf {
+    font-weight: 450;
+    font-size: 0.85rem;
+    color: var(--fg-2);
+    min-width: 0;
+    background: var(--bg-2);
+  }
+
+  @media (max-width: 760px) {
+    .cmap {
+      height: auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    .cmap-lines {
+      display: none;
+    }
+
+    .cnode {
+      position: static;
+      transform: none;
+      white-space: normal;
+      min-width: 0;
+    }
+
+    .cnode:hover {
+      transform: none;
+    }
+
+    .cnode.root {
+      grid-column: 1 / -1;
+    }
+
+    .cnode.row-1 {
+      grid-column: span 1;
+    }
+  }
+</style>

@@ -1,0 +1,22 @@
+---
+import type { Lang } from '../../lib/i18n';
+import GradientDescent from './GradientDescent.astro';
+import Neuron from './Neuron.astro';
+import Newton from './Newton.astro';
+import Riemann from './Riemann.astro';
+import Tangent from './Tangent.astro';
+import Taylor from './Taylor.astro';
+
+interface Props {
+  id: string;
+  lang: Lang;
+}
+const { id, lang } = Astro.props;
+---
+
+{id === 'tangent' && <Tangent lang={lang} />}
+{id === 'riemann' && <Riemann lang={lang} />}
+{id === 'taylor' && <Taylor lang={lang} />}
+{id === 'gradient-descent' && <GradientDescent lang={lang} />}
+{id === 'newton' && <Newton lang={lang} />}
+{id === 'neuron' && <Neuron lang={lang} />}

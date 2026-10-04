@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import { href, t } from '../lib/i18n';
+---
+
+<Base lang="en" title={t('en', '404.title')}>
+  <header class="page-head">
+    <div class="wrap">
+      <p class="eyebrow">404</p>
+      <h1>{t('en', '404.title')}</h1>
+      <p class="lead">{t('en', '404.lead')}</p>
+      <p class="lead" lang="es">{t('es', '404.lead')}</p>
+      <p><a class="btn primary" href={href('en', 'map/')}>{t('en', 'nav.map')}</a> <a class="btn" href={href('en')}>Home</a> <a class="btn" href={href('es')}>Inicio</a></p>
+    </div>
+  </header>
+</Base>

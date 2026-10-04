@@ -1,0 +1,11 @@
+---
+interface Props {
+  n: number;
+  label?: string;
+}
+const { n, label } = Astro.props;
+---
+
+<span class="stars" role="img" aria-label={label ?? `${n}/5`} title={label ?? `${n}/5`}
+  >{'★'.repeat(n)}<span class="off">{'★'.repeat(5 - n)}</span></span
+>

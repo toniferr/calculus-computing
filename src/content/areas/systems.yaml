@@ -1,0 +1,80 @@
+kind: computing
+order: 26
+glyph: '⇄'
+title: {en: 'Optimization and systems', es: 'Optimización y sistemas'}
+summary:
+  en: |
+    Planning, logistics, recommendations and the performance of computer systems: optimization and probability applied
+    to decisions at scale.
+  es: |
+    Planificación, logística, recomendaciones y rendimiento de sistemas informáticos: optimización y probabilidad aplicadas
+    a decisiones a gran escala.
+topics:
+  - id: operations-research
+    kind: application
+    level: university
+    title: {en: 'Operations research and logistics', es: 'Investigación operativa y logística'}
+    aliases: {en: [linear programming, scheduling, routing, planning, supply chain, solver], es: [programación lineal, planificación de tareas, rutas, planificación, cadena de suministro, resolvedor]}
+    summary:
+      en: |
+        Optimal decisions under constraints: production plans, delivery routes, crew schedules, network flows. Continuous
+        problems are solved with convex optimization and duality (Lagrange multipliers as shadow prices); discrete ones add
+        integer programming on top.
+      es: |
+        Decisiones óptimas con restricciones: planes de producción, rutas de reparto, turnos de tripulaciones, flujos en redes.
+        Los problemas continuos se resuelven con optimización convexa y dualidad (multiplicadores de Lagrange como precios
+        sombra); los discretos añaden programación entera encima.
+    formulas:
+      - tex:
+          en: |-
+            \min_x\ c^{\mathsf T}x \quad\text{subject to}\quad Ax \le b,\ x \ge 0
+          es: |-
+            \min_x\ c^{\mathsf T}x \quad\text{sujeto a}\quad Ax \le b,\ x \ge 0
+        label: {en: 'a linear program', es: 'un programa lineal'}
+    matters:
+      en: 'Airlines, logistics companies, energy grids and cloud schedulers solve such problems continuously; calculus supplies optimality conditions and sensitivities.'
+      es: 'Las aerolíneas, las empresas de logística, las redes eléctricas y los planificadores de la nube resuelven estos problemas continuamente; el cálculo aporta las condiciones de optimalidad y las sensibilidades.'
+
+  - id: recommender-systems
+    kind: application
+    level: university
+    prerequisites: [gradient-descent]
+    title: {en: 'Recommender systems', es: 'Sistemas de recomendación'}
+    aliases: {en: [matrix factorization, collaborative filtering, embeddings, Netflix prize], es: [factorización de matrices, filtrado colaborativo, embeddings, premio Netflix]}
+    summary:
+      en: |
+        Predict how much a user will like an item as the dot product of learned vectors, $\hat r_{ui} = p_u\cdot q_i$, fitted by
+        (stochastic) gradient descent on the known ratings with regularization.
+      es: |
+        Predecir cuánto le gustará un artículo a un usuario como el producto escalar de vectores aprendidos,
+        $\hat r_{ui} = p_u\cdot q_i$, ajustados por descenso de gradiente (estocástico) sobre las valoraciones conocidas, con
+        regularización.
+    formulas:
+      - tex: |-
+          \min_{P,Q}\sum_{(u,i)}\big(r_{ui} - p_u\cdot q_i\big)^2 + \lambda\big(\norm{p_u}^2 + \norm{q_i}^2\big)
+
+  - id: queueing-theory
+    kind: application
+    level: advanced
+    title: {en: 'Queueing theory and performance', es: 'Teoría de colas y rendimiento'}
+    aliases: {en: [M/M/1, latency, throughput, Little law, capacity planning, tail latency], es: [M/M/1, latencia, rendimiento, ley de Little, planificación de capacidad, latencia de cola]}
+    summary:
+      en: |
+        Models of requests waiting for servers. With exponential (memoryless) arrivals and services, the M/M/1 queue gives
+        closed formulas: as utilization $\rho \to 1$, waiting time explodes like $1/(1 - \rho)$ — why systems are run well
+        below full capacity.
+      es: |
+        Modelos de peticiones que esperan a servidores. Con llegadas y servicios exponenciales (sin memoria), la cola M/M/1 da
+        fórmulas cerradas: cuando la utilización $\rho \to 1$, el tiempo de espera explota como $1/(1 - \rho)$; por eso los
+        sistemas se operan muy por debajo de su capacidad.
+    formulas:
+      - tex: |-
+          \rho = \frac{\lambda}{\mu}, \qquad W = \frac{1}{\mu - \lambda}, \qquad L = \lambda W
+    exercises:
+      - type: computing
+        prompt:
+          en: 'A service handles $\mu = 100$ req/s. Compare the mean response time at $\lambda = 50$, $90$ and $99$ req/s (M/M/1).'
+          es: 'Un servicio atiende $\mu = 100$ pet/s. Compara el tiempo medio de respuesta con $\lambda = 50$, $90$ y $99$ pet/s (M/M/1).'
+        solution:
+          en: '$W = 1/(\mu - \lambda)$: 20 ms, 100 ms and 1 s. Going from 90% to 99% utilization multiplies latency by 10.'
+          es: '$W = 1/(\mu - \lambda)$: 20 ms, 100 ms y 1 s. Pasar del 90 % al 99 % de utilización multiplica la latencia por 10.'

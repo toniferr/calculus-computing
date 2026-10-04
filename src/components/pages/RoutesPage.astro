@@ -1,0 +1,117 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getGraph } from '../../lib/graph';
+import { href, t, type Lang } from '../../lib/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const g = await getGraph();
+---
+
+<Base lang={lang} title={t(lang, 'routes.title')}>
+  <header class="page-head">
+    <div class="wrap">
+      <p class="eyebrow">{t(lang, 'nav.routes')}</p>
+      <h1>{t(lang, 'routes.title')}</h1>
+      <p class="lead">{t(lang, 'routes.lead')}</p>
+    </div>
+  </header>
+  <div class="wrap section">
+    <div class="route-cards">
+      {
+        g.routes.map((r) => (
+          <a class="card route-card" href={href(lang, `routes/${r.id}/`)} data-route={r.id} data-steps={r.steps.join(' ')}>
+            <span class="glyph">{r.glyph}</span>
+            <h2>{r.title[lang]}</h2>
+            <p>{r.summary[lang]}</p>
+            <ol class="route-chain" aria-hidden="true">
+              {r.steps.map((s) => (
+                <li class:list={[`lv-${g.topic(s).level}`]} data-step={s}>
+                  {g.topic(s).title[lang]}
+                </li>
+              ))}
+            </ol>
+            <span class="meta">
+              <span>
+                {r.steps.length} {t(lang, 'routes.steps')}
+              </span>
+              <span class="route-progress" data-done-label={t(lang, 'routes.done')} />
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</Base>
+
+<script>
+  import { readProgress } from '../../scripts/routes';
+  for (const card of document.querySelectorAll<HTMLElement>('[data-route]')) {
+    const done = readProgress(card.dataset.route!);
+    const steps = card.dataset.steps!.split(' ');
+    const n = steps.filter((s) => done.has(s)).length;
+    for (const li of card.querySelectorAll<HTMLElement>('[data-step]')) li.classList.toggle('done', done.has(li.dataset.step!));
+    const out = card.querySelector<HTMLElement>('.route-progress');
+    if (out && n) out.textContent = `${n}/${steps.length} ${out.dataset.doneLabel}`;
+  }
+</script>
+
+<style is:global>
+  .route-cards {
+    display: grid;
+    gap: 1.2rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr));
+  }
+
+  .route-card h2 {
+    font-size: 1.25rem;
+    margin: 0.2rem 0 0;
+  }
+
+  .route-card .glyph {
+    font-size: 1.6rem;
+  }
+
+  .route-chain {
+    list-style: none;
+    margin: 0.6rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0;
+    font-size: 0.78rem;
+    color: var(--fg-2);
+  }
+
+  .route-chain li {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .route-chain li::before {
+    content: '';
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    margin-right: 0.3rem;
+    border: 1.5px solid var(--lv);
+  }
+
+  .route-chain li.done::before {
+    background: var(--lv);
+  }
+
+  .route-chain li + li::after {
+    order: -1;
+    content: '→';
+    margin: 0 0.35rem;
+    color: var(--faint);
+  }
+
+  .route-progress {
+    color: var(--good);
+    margin-left: auto;
+  }
+</style>

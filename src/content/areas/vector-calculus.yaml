@@ -1,0 +1,423 @@
+kind: math
+order: 13
+glyph: '∮'
+title: {en: 'Vector calculus', es: 'Cálculo vectorial'}
+summary:
+  en: |
+    Fields in space and the operators that describe them — gradient, divergence, curl, Laplacian — plus the integral
+    theorems of Green, Gauss and Stokes. The mathematics of fluids, electromagnetism and physically based graphics.
+  es: |
+    Campos en el espacio y los operadores que los describen (gradiente, divergencia, rotacional, laplaciano), más los
+    teoremas integrales de Green, Gauss y Stokes. Las matemáticas de los fluidos, el electromagnetismo y los gráficos
+    basados en la física.
+intro:
+  en: |
+    A **field** assigns a value to every point of space: a temperature (scalar field) or a velocity (vector field). Three
+    differential operators summarize how a field behaves locally — the **gradient** (where it increases), the
+    **divergence** (how much it spreads out from a point) and the **curl** (how much it swirls) — and the Laplacian
+    combines two of them. The theorems of Green, Gauss and Stokes say that what happens inside a region is determined by
+    what flows across its boundary; finite-volume simulators are built directly on that idea.
+  es: |
+    Un **campo** asigna un valor a cada punto del espacio: una temperatura (campo escalar) o una velocidad (campo
+    vectorial). Tres operadores diferenciales resumen cómo se comporta localmente un campo: el **gradiente** (hacia dónde
+    crece), la **divergencia** (cuánto se expande desde un punto) y el **rotacional** (cuánto gira), y el laplaciano
+    combina dos de ellos. Los teoremas de Green, Gauss y Stokes dicen que lo que pasa dentro de una región lo determina lo
+    que fluye a través de su frontera; los simuladores de volúmenes finitos se construyen directamente sobre esa idea.
+topics:
+  - id: scalar-fields
+    level: university
+    prerequisites: [multivariable-functions]
+    title: {en: 'Scalar fields', es: 'Campos escalares'}
+    aliases: {en: [potential, temperature field, pressure field, density field], es: [potencial, campo de temperatura, campo de presión, campo de densidad]}
+    summary:
+      en: |
+        A function $\phi : \R^3 \to \R$ seen as a quantity spread through space: temperature, pressure, density,
+        electric potential, distance to a surface.
+      es: |
+        Una función $\phi : \R^3 \to \R$ vista como una magnitud repartida por el espacio: temperatura, presión, densidad,
+        potencial eléctrico, distancia a una superficie.
+    formulas:
+      - tex: |-
+          \phi : \R^3 \to \R, \qquad \nabla\phi = \Big(\frac{\partial\phi}{\partial x}, \frac{\partial\phi}{\partial y}, \frac{\partial\phi}{\partial z}\Big)
+    applications:
+      - to: signed-distance-fields
+        strength: 4
+        type: frequent
+        note:
+          en: 'An SDF is a scalar field whose value is the signed distance to a shape.'
+          es: 'Un SDF es un campo escalar cuyo valor es la distancia con signo a una forma.'
+      - to: weather-climate
+        strength: 4
+        type: frequent
+        note:
+          en: 'Temperature, pressure and humidity are scalar fields on a 3D grid of the atmosphere.'
+          es: 'La temperatura, la presión y la humedad son campos escalares sobre una malla 3D de la atmósfera.'
+
+  - id: vector-fields
+    level: university
+    prerequisites: [scalar-fields, vectors]
+    title: {en: 'Vector fields', es: 'Campos vectoriales'}
+    aliases: {en: [velocity field, force field, flow field, streamlines], es: [campo de velocidades, campo de fuerzas, campo de flujo, líneas de corriente]}
+    summary:
+      en: |
+        A vector attached to every point: the wind, the flow of water, a magnetic field, the force of gravity. Integral
+        curves (streamlines) follow the arrows.
+      es: |
+        Un vector en cada punto: el viento, el flujo del agua, un campo magnético, la fuerza de la gravedad. Las curvas
+        integrales (líneas de corriente) siguen las flechas.
+    formulas:
+      - tex: |-
+          F : \R^3 \to \R^3, \qquad F(x,y,z) = \big(P, Q, R\big)
+      - tex: |-
+          \dot x(t) = F\big(x(t)\big)
+        label: {en: 'streamlines / particle tracing', es: 'líneas de corriente / trazado de partículas'}
+    applications:
+      - to: fluid-dynamics
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The state of a fluid simulation is a velocity field $u(x, t)$.'
+          es: 'El estado de una simulación de fluidos es un campo de velocidades $u(x, t)$.'
+      - to: electromagnetism
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Electric and magnetic fields $E$ and $B$ are vector fields.'
+          es: 'Los campos eléctrico y magnético $E$ y $B$ son campos vectoriales.'
+      - to: physics-engine
+        strength: 3
+        type: frequent
+        note:
+          en: 'Wind, gravity wells and particle effects are applied as force fields.'
+          es: 'El viento, los pozos de gravedad y los efectos de partículas se aplican como campos de fuerzas.'
+
+  - id: divergence
+    level: university
+    core: true
+    prerequisites: [vector-fields, partial-derivatives]
+    title: {en: 'Divergence', es: 'Divergencia'}
+    aliases: {en: [div, ∇·F, source, sink, incompressible], es: [div, ∇·F, fuente, sumidero, incompresible]}
+    summary:
+      en: |
+        $\nabla\cdot F = \partial_x P + \partial_y Q + \partial_z R$: the net outflow per unit volume at a point. Positive at
+        sources, negative at sinks, zero for incompressible flow.
+      es: |
+        $\nabla\cdot F = \partial_x P + \partial_y Q + \partial_z R$: el flujo neto saliente por unidad de volumen en un
+        punto. Positiva en las fuentes, negativa en los sumideros y cero en un flujo incompresible.
+    why:
+      en: |
+        To express conservation laws locally. "Mass is neither created nor destroyed" becomes $\partial_t\rho + \nabla\cdot(\rho u) = 0$;
+        "water does not compress" becomes $\nabla\cdot u = 0$; "electric charge produces electric field" becomes Gauss's law.
+      es: |
+        Para expresar localmente las leyes de conservación. «La masa ni se crea ni se destruye» se convierte en
+        $\partial_t\rho + \nabla\cdot(\rho u) = 0$; «el agua no se comprime», en $\nabla\cdot u = 0$; «la carga eléctrica
+        produce campo eléctrico», en la ley de Gauss.
+    intuition:
+      en: |
+        Draw a tiny box around the point and count what flows out minus what flows in, divided by the box's volume.
+        A tap is a source (positive divergence), a drain a sink (negative). In a river, water entering a region must leave
+        it: divergence zero.
+      es: |
+        Dibuja una caja diminuta alrededor del punto y cuenta lo que sale menos lo que entra, dividido entre el volumen de
+        la caja. Un grifo es una fuente (divergencia positiva) y un desagüe un sumidero (negativa). En un río, el agua que
+        entra en una región tiene que salir: divergencia cero.
+    formal:
+      en: |
+        $$\nabla\cdot F = \frac{\partial P}{\partial x} + \frac{\partial Q}{\partial y} + \frac{\partial R}{\partial z}
+        = \lim_{V\to\{p\}}\frac{1}{|V|}\oint_{\partial V}F\cdot n\,\dd S.$$
+      es: |
+        $$\nabla\cdot F = \frac{\partial P}{\partial x} + \frac{\partial Q}{\partial y} + \frac{\partial R}{\partial z}
+        = \lim_{V\to\{p\}}\frac{1}{|V|}\oint_{\partial V}F\cdot n\,\dd S.$$
+    formulas:
+      - tex: |-
+          \nabla\cdot F = \partial_x P + \partial_y Q + \partial_z R
+      - tex: |-
+          \frac{\partial\rho}{\partial t} + \nabla\cdot(\rho\,u) = 0
+        label: {en: 'continuity equation (conservation of mass)', es: 'ecuación de continuidad (conservación de la masa)'}
+      - tex: |-
+          \nabla\cdot E = \frac{\rho}{\varepsilon_0}
+        label: {en: 'Gauss''s law', es: 'ley de Gauss'}
+    example:
+      en: |
+        $F = (x, y, z)$ points straight out from the origin: $\nabla\cdot F = 3$ everywhere — every point is a source.
+        $F = (-y, x, 0)$ rotates around the $z$-axis: $\nabla\cdot F = 0$ — it swirls but nothing is created.
+      es: |
+        $F = (x, y, z)$ apunta hacia fuera desde el origen: $\nabla\cdot F = 3$ en todas partes, todo punto es una fuente.
+        $F = (-y, x, 0)$ gira alrededor del eje $z$: $\nabla\cdot F = 0$, da vueltas pero no se crea nada.
+    matters:
+      en: |
+        Every incompressible fluid solver in games and films (stable fluids, FLIP) has a "projection" step that removes the
+        divergence of the velocity field by solving a Poisson equation. Electromagnetic simulators and finite-volume CFD
+        codes are organized around fluxes and divergence.
+      es: |
+        Todo resolvedor de fluidos incompresibles de videojuegos y cine (stable fluids, FLIP) tiene un paso de
+        «proyección» que elimina la divergencia del campo de velocidades resolviendo una ecuación de Poisson. Los
+        simuladores electromagnéticos y los códigos CFD de volúmenes finitos se organizan alrededor de flujos y
+        divergencia.
+    applications:
+      - to: fluid-dynamics
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Incompressibility $\nabla\cdot u = 0$ is enforced each step by a pressure projection.'
+          es: 'La incompresibilidad $\nabla\cdot u = 0$ se impone en cada paso con una proyección de presión.'
+      - to: electromagnetism
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Two of Maxwell''s equations are divergence equations: $\nabla\cdot E = \rho/\varepsilon_0$, $\nabla\cdot B = 0$.'
+          es: 'Dos de las ecuaciones de Maxwell son de divergencia: $\nabla\cdot E = \rho/\varepsilon_0$, $\nabla\cdot B = 0$.'
+      - to: generative-models
+        strength: 3
+        type: advanced
+        note:
+          en: 'Continuous normalizing flows track log-density with the divergence of the velocity field (instantaneous change of variables).'
+          es: 'Los normalizing flows continuos siguen la log-densidad con la divergencia del campo de velocidades (cambio de variables instantáneo).'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Compute $\nabla\cdot F$ for $F = (x^2y,\ -xy^2,\ z)$.'
+          es: 'Calcula $\nabla\cdot F$ para $F = (x^2y,\ -xy^2,\ z)$.'
+        solution:
+          en: '$2xy - 2xy + 1 = 1$.'
+          es: '$2xy - 2xy + 1 = 1$.'
+
+  - id: curl
+    level: university
+    prerequisites: [vector-fields, partial-derivatives]
+    title: {en: 'Curl', es: 'Rotacional'}
+    aliases: {en: [rot, ∇×F, vorticity, circulation, irrotational], es: [rot, ∇×F, vorticidad, circulación, irrotacional]}
+    summary:
+      en: |
+        $\nabla\times F$: a vector measuring the local rotation of a field — its axis is the axis of spin, its length twice
+        the angular speed. Fields that are gradients have zero curl.
+      es: |
+        $\nabla\times F$: un vector que mide la rotación local de un campo; su eje es el eje de giro y su longitud el doble
+        de la velocidad angular. Los campos que son gradientes tienen rotacional cero.
+    formulas:
+      - tex: |-
+          \nabla\times F = \big(\partial_y R - \partial_z Q,\ \partial_z P - \partial_x R,\ \partial_x Q - \partial_y P\big)
+      - tex: |-
+          \nabla\times(\nabla\phi) = 0, \qquad \nabla\cdot(\nabla\times F) = 0
+      - tex: |-
+          \nabla\times E = -\frac{\partial B}{\partial t}
+        label: {en: 'Faraday''s law', es: 'ley de Faraday'}
+    applications:
+      - to: fluid-dynamics
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Vorticity $\omega = \nabla\times u$ describes eddies; "vorticity confinement" adds back swirls lost to numerical damping in film VFX.'
+          es: 'La vorticidad $\omega = \nabla\times u$ describe los remolinos; el «confinamiento de vorticidad» devuelve los giros perdidos por amortiguamiento numérico en efectos visuales.'
+      - to: electromagnetism
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Faraday''s and Ampère''s laws are curl equations; induction in motors and antennas follows from them.'
+          es: 'Las leyes de Faraday y Ampère son ecuaciones de rotacional; la inducción en motores y antenas se deduce de ellas.'
+
+  - id: laplacian
+    level: university
+    core: true
+    prerequisites: [divergence, gradient]
+    title: {en: 'Laplacian', es: 'Laplaciano'}
+    aliases: {en: [Laplace operator, ∇², Δ, harmonic function, Poisson equation], es: [operador de Laplace, ∇², Δ, función armónica, ecuación de Poisson]}
+    summary:
+      en: |
+        $\Delta f = \nabla\cdot\nabla f = \sum_i \partial^2 f/\partial x_i^2$: how much $f$ at a point differs from the
+        average of its neighbours. It appears in the heat, wave, Laplace, Poisson and Schrödinger equations, and its
+        discrete version smooths meshes and detects edges.
+      es: |
+        $\Delta f = \nabla\cdot\nabla f = \sum_i \partial^2 f/\partial x_i^2$: cuánto se diferencia $f$ en un punto de la
+        media de sus vecinos. Aparece en las ecuaciones del calor, de ondas, de Laplace, de Poisson y de Schrödinger, y su
+        versión discreta suaviza mallas y detecta bordes.
+    intuition:
+      en: |
+        On a grid, $\Delta f \approx \frac{1}{h^2}\big(\text{sum of the 4 neighbours} - 4f\big)$. If $\Delta f < 0$ the point
+        is above its neighbours' average (a local bump); heat flow $u_t = \alpha\Delta u$ flattens bumps. Functions with
+        $\Delta f = 0$ (harmonic) equal the average of their surroundings: the steady state.
+      es: |
+        En una malla, $\Delta f \approx \frac{1}{h^2}\big(\text{suma de los 4 vecinos} - 4f\big)$. Si $\Delta f < 0$ el punto
+        está por encima de la media de sus vecinos (un bulto); el flujo de calor $u_t = \alpha\Delta u$ aplana los bultos.
+        Las funciones con $\Delta f = 0$ (armónicas) son iguales a la media de su entorno: el estado estacionario.
+    formulas:
+      - tex: |-
+          \Delta f = \nabla^2 f = \frac{\partial^2 f}{\partial x^2} + \frac{\partial^2 f}{\partial y^2} + \frac{\partial^2 f}{\partial z^2}
+      - tex: |-
+          \Delta_h f_{i,j} = \frac{f_{i+1,j} + f_{i-1,j} + f_{i,j+1} + f_{i,j-1} - 4f_{i,j}}{h^2}
+        label: {en: 'five-point stencil', es: 'estencil de cinco puntos'}
+    applications:
+      - to: heat-equation
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Diffusion is $u_t = \alpha\Delta u$.'
+          es: 'La difusión es $u_t = \alpha\Delta u$.'
+      - to: wave-equation
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Waves are $u_{tt} = c^2\Delta u$.'
+          es: 'Las ondas son $u_{tt} = c^2\Delta u$.'
+      - to: mesh-processing
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The discrete (cotangent) Laplacian is the core operator of geometry processing: smoothing, parametrization, deformation.'
+          es: 'El laplaciano discreto (cotangente) es el operador central del procesado geométrico: suavizado, parametrización, deformación.'
+      - to: image-processing
+        strength: 4
+        type: frequent
+        note:
+          en: 'Laplacian-of-Gaussian edge detection, sharpening and Poisson image blending.'
+          es: 'Detección de bordes con laplaciano de gaussiana, realce y fusión de imágenes de Poisson.'
+      - to: fluid-dynamics
+        strength: 4
+        type: fundamental
+        note:
+          en: 'The pressure projection solves a Poisson equation $\Delta p = \nabla\cdot u^\ast$ every time step.'
+          es: 'La proyección de presión resuelve una ecuación de Poisson $\Delta p = \nabla\cdot u^\ast$ en cada paso de tiempo.'
+      - to: schrodinger-equation
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Kinetic energy in quantum mechanics is $-\frac{\hbar^2}{2m}\Delta$.'
+          es: 'La energía cinética en mecánica cuántica es $-\frac{\hbar^2}{2m}\Delta$.'
+
+  - id: line-integrals
+    level: university
+    prerequisites: [vector-fields, definite-integral]
+    title: {en: 'Line integrals', es: 'Integrales de línea'}
+    aliases: {en: [work, circulation, path integral, conservative field], es: [trabajo, circulación, integral de camino, campo conservativo]}
+    summary:
+      en: |
+        Integrating a field along a curve: the work $\int_C F\cdot\dd r$ done by a force along a path. For gradient fields it
+        depends only on the endpoints — the definition of a conservative force.
+      es: |
+        Integrar un campo a lo largo de una curva: el trabajo $\int_C F\cdot\dd r$ que hace una fuerza a lo largo de un
+        camino. Para campos gradiente solo depende de los extremos: la definición de fuerza conservativa.
+    formulas:
+      - tex: |-
+          \int_C F\cdot\dd r = \int_a^b F\big(r(t)\big)\cdot r'(t)\,\dd t, \qquad \int_C \nabla\phi\cdot\dd r = \phi(B) - \phi(A)
+    applications:
+      - to: classical-mechanics
+        strength: 4
+        type: frequent
+        note:
+          en: 'Work and potential energy; energy conservation for conservative forces.'
+          es: 'Trabajo y energía potencial; conservación de la energía para fuerzas conservativas.'
+
+  - id: surface-integrals
+    level: advanced
+    prerequisites: [multiple-integrals, surfaces, vector-fields]
+    title: {en: 'Surface integrals and flux', es: 'Integrales de superficie y flujo'}
+    aliases: {en: [flux, surface area, flux integral], es: [flujo, área de una superficie, integral de flujo]}
+    summary:
+      en: |
+        Integrating over a surface: its area, or the **flux** $\iint_S F\cdot n\,\dd S$ — how much of a field passes through
+        it per unit time (water through a net, light through a window).
+      es: |
+        Integrar sobre una superficie: su área, o el **flujo** $\iint_S F\cdot n\,\dd S$, cuánto de un campo la atraviesa por
+        unidad de tiempo (agua a través de una red, luz a través de una ventana).
+    formulas:
+      - tex: |-
+          \iint_S F\cdot n\,\dd S = \iint_D F\big(r(u,v)\big)\cdot\big(r_u\times r_v\big)\,\dd u\,\dd v
+    applications:
+      - to: rendering-equation
+        strength: 4
+        type: frequent
+        note:
+          en: 'Radiometry (flux, irradiance, radiance) is built on surface and solid-angle integrals.'
+          es: 'La radiometría (flujo, irradiancia, radiancia) se construye con integrales de superficie y de ángulo sólido.'
+      - to: fluid-dynamics
+        strength: 4
+        type: frequent
+        note:
+          en: 'Finite-volume solvers update each cell by the fluxes across its faces.'
+          es: 'Los resolvedores de volúmenes finitos actualizan cada celda con los flujos a través de sus caras.'
+
+  - id: greens-theorem
+    level: advanced
+    kind: theorem
+    prerequisites: [line-integrals, multiple-integrals, curl]
+    title: {en: 'Green''s theorem', es: 'Teorema de Green'}
+    aliases: {en: [Green theorem, shoelace formula, planar circulation], es: [teorema de Green, fórmula del lazo, circulación plana]}
+    summary:
+      en: |
+        In the plane, the circulation around a closed curve equals the integral of the curl inside it. A computational
+        gem: the area of a polygon from its vertices (the shoelace formula) is Green's theorem.
+      es: |
+        En el plano, la circulación a lo largo de una curva cerrada es igual a la integral del rotacional en su interior.
+        Una joya computacional: el área de un polígono a partir de sus vértices (fórmula del lazo o del cordón) es el
+        teorema de Green.
+    formal:
+      en: '$$\oint_{\partial D}(P\,\dd x + Q\,\dd y) = \iint_D\left(\frac{\partial Q}{\partial x} - \frac{\partial P}{\partial y}\right)\dd A.$$'
+      es: '$$\oint_{\partial D}(P\,\dd x + Q\,\dd y) = \iint_D\left(\frac{\partial Q}{\partial x} - \frac{\partial P}{\partial y}\right)\dd A.$$'
+    formulas:
+      - tex: |-
+          A = \frac12\oint (x\,\dd y - y\,\dd x) = \frac12\sum_{i}\big(x_i y_{i+1} - x_{i+1}y_i\big)
+        label: {en: 'shoelace formula for polygon area', es: 'fórmula del lazo para el área de un polígono'}
+    applications:
+      - to: mesh-processing
+        strength: 3
+        type: frequent
+        note:
+          en: 'Polygon areas, centroids and orientation tests in GIS and graphics use the shoelace formula.'
+          es: 'Las áreas, centroides y pruebas de orientación de polígonos en SIG y gráficos usan la fórmula del lazo.'
+
+  - id: divergence-theorem
+    level: advanced
+    kind: theorem
+    prerequisites: [divergence, surface-integrals]
+    title: {en: 'Divergence theorem (Gauss)', es: 'Teorema de la divergencia (Gauss)'}
+    aliases: {en: [Gauss theorem, Ostrogradsky, flux theorem], es: [teorema de Gauss, Ostrogradski, teorema del flujo]}
+    summary:
+      en: |
+        The total divergence inside a region equals the flux out through its boundary: what is produced inside must leave
+        through the surface. It is the foundation of conservation laws and finite-volume methods.
+      es: |
+        La divergencia total dentro de una región es igual al flujo saliente por su frontera: lo que se produce dentro
+        tiene que salir por la superficie. Es la base de las leyes de conservación y de los métodos de volúmenes finitos.
+    formal:
+      en: '$$\iiint_V \nabla\cdot F\,\dd V = \oiint_{\partial V}F\cdot n\,\dd S.$$'
+      es: '$$\iiint_V \nabla\cdot F\,\dd V = \oiint_{\partial V}F\cdot n\,\dd S.$$'
+    proofIdea:
+      en: 'Chop $V$ into tiny boxes. For each box, flux out ≈ divergence × volume. Adding all boxes, fluxes through shared internal faces cancel, leaving only the outer boundary.'
+      es: 'Trocea $V$ en cajitas. En cada una, flujo saliente ≈ divergencia × volumen. Al sumarlas, los flujos por las caras internas compartidas se cancelan y solo queda la frontera exterior.'
+    applications:
+      - to: fluid-dynamics
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Finite-volume CFD is the divergence theorem applied cell by cell — the proof idea above, as an algorithm.'
+          es: 'La CFD por volúmenes finitos es el teorema de la divergencia aplicado celda a celda: la idea de la demostración, convertida en algoritmo.'
+      - to: electromagnetism
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Gauss''s law in integral form: the flux of $E$ through a closed surface is the enclosed charge over $\varepsilon_0$.'
+          es: 'La ley de Gauss en forma integral: el flujo de $E$ a través de una superficie cerrada es la carga encerrada entre $\varepsilon_0$.'
+
+  - id: stokes-theorem
+    level: advanced
+    kind: theorem
+    prerequisites: [curl, surface-integrals, greens-theorem]
+    title: {en: 'Stokes'' theorem', es: 'Teorema de Stokes'}
+    aliases: {en: [Kelvin-Stokes, circulation theorem], es: [Kelvin-Stokes, teorema de la circulación]}
+    summary:
+      en: |
+        The circulation of a field around a closed curve equals the flux of its curl through any surface bounded by the
+        curve. Green's theorem in 3D, and the integral form of Faraday's and Ampère's laws.
+      es: |
+        La circulación de un campo a lo largo de una curva cerrada es igual al flujo de su rotacional a través de cualquier
+        superficie limitada por la curva. El teorema de Green en 3D, y la forma integral de las leyes de Faraday y Ampère.
+    formal:
+      en: '$$\oint_{\partial S}F\cdot\dd r = \iint_S(\nabla\times F)\cdot n\,\dd S.$$'
+      es: '$$\oint_{\partial S}F\cdot\dd r = \iint_S(\nabla\times F)\cdot n\,\dd S.$$'
+    applications:
+      - to: electromagnetism
+        strength: 5
+        type: fundamental
+        note:
+          en: 'A changing magnetic flux through a loop induces a voltage around it — generators and transformers.'
+          es: 'Un flujo magnético variable a través de una espira induce un voltaje a lo largo de ella: generadores y transformadores.'

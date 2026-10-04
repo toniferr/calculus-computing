@@ -1,0 +1,125 @@
+---
+import type { Lang } from '../../lib/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const L = (en: string, es: string) => (lang === 'es' ? es : en);
+---
+
+<figure class="demo" data-demo="neuron" data-s-step={L('step', 'paso')} data-s-loss={L('loss', 'pérdida')}>
+  <div class="demo-controls">
+    <label
+      >{L('activation', 'activación')} f
+      <select data-act>
+        <option value="sigmoid">σ (sigmoid)</option>
+        <option value="tanh">tanh</option>
+        <option value="relu">ReLU</option>
+      </select>
+    </label>
+    <label>x <input type="range" data-x min="-30" max="30" value="15" /><output data-x-out></output></label>
+    <label>{L('target', 'objetivo')} y <input type="range" data-y min="-10" max="10" value="10" /><output data-y-out></output></label>
+    <label>η <input type="range" data-lr min="0" max="100" value="60" /><output data-lr-out></output></label>
+  </div>
+  <div class="demo-controls">
+    <label>w <input type="range" data-w min="-300" max="300" value="80" /><output data-w-out></output></label>
+    <label>b <input type="range" data-b min="-300" max="300" value="-20" /><output data-b-out></output></label>
+    <span class="demo-buttons">
+      <button class="btn small primary" type="button" data-step>{L('Gradient step', 'Paso de descenso')}</button>
+      <button class="btn small" type="button" data-train>{L('Train ×50', 'Entrenar ×50')}</button>
+      <button class="btn small" type="button" data-reset>{L('Reset', 'Reiniciar')}</button>
+    </span>
+  </div>
+
+  <div class="nn-graph" aria-live="polite">
+    <div class="nn-col">
+      <div class="nn-node in"><span class="nn-name">x</span><span class="nn-f" data-v="x"></span></div>
+      <div class="nn-node param"><span class="nn-name">w</span><span class="nn-f" data-v="w"></span><span class="nn-b" data-g="w"></span></div>
+      <div class="nn-node param"><span class="nn-name">b</span><span class="nn-f" data-v="b"></span><span class="nn-b" data-g="b"></span></div>
+    </div>
+    <div class="nn-arrow">→</div>
+    <div class="nn-node"><span class="nn-name">z = wx + b</span><span class="nn-f" data-v="z"></span><span class="nn-b" data-g="z"></span></div>
+    <div class="nn-arrow">→</div>
+    <div class="nn-node"><span class="nn-name">ŷ = f(z)</span><span class="nn-f" data-v="yh"></span><span class="nn-b" data-g="yh"></span></div>
+    <div class="nn-arrow">→</div>
+    <div class="nn-node loss"><span class="nn-name">L = ½(ŷ − y)²</span><span class="nn-f" data-v="L"></span><span class="nn-b">∂L/∂L = 1</span></div>
+  </div>
+  <p class="nn-legend small muted">
+    <span class="nn-f-key">{L('forward value', 'valor hacia delante')}</span> ·
+    <span class="nn-b-key">{L('gradient ∂L/∂· flowing backwards', 'gradiente ∂L/∂· que fluye hacia atrás')}</span>
+  </p>
+  <div class="demo-readout nn-chain" aria-live="polite"></div>
+  <canvas class="demo-canvas" data-aspect="0.28"></canvas>
+  <figcaption>
+    {L('The chain rule, evaluated backwards: ∂L/∂w = (∂L/∂ŷ)·(∂ŷ/∂z)·(∂z/∂w). For a layer ŷ = f(Wx + b) the same computation gives ∂L/∂W = δ xᵀ and ∂L/∂b = δ with δ = (ŷ − y) ⊙ f′(z). Try ReLU with a negative z: the gradient is zero and the neuron cannot learn ("dying ReLU").', 'La regla de la cadena, evaluada hacia atrás: ∂L/∂w = (∂L/∂ŷ)·(∂ŷ/∂z)·(∂z/∂w). Para una capa ŷ = f(Wx + b) el mismo cálculo da ∂L/∂W = δ xᵀ y ∂L/∂b = δ con δ = (ŷ − y) ⊙ f′(z). Prueba ReLU con z negativo: el gradiente es cero y la neurona no puede aprender («ReLU muerta»).')}
+  </figcaption>
+</figure>
+
+<script>
+  import { initNeuron } from '../../scripts/demos/neuron';
+  document.querySelectorAll<HTMLElement>('[data-demo="neuron"]').forEach(initNeuron);
+</script>
+
+<style is:global>
+  .nn-graph {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.6rem 0.2rem;
+  }
+
+  .nn-col {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .nn-node {
+    display: grid;
+    gap: 0.15rem;
+    min-width: 7.5rem;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid var(--line-2);
+    border-radius: var(--r-sm);
+    background: var(--bg-2);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+  }
+
+  .nn-node.param {
+    border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  }
+
+  .nn-node.loss {
+    border-color: color-mix(in srgb, var(--comp) 55%, var(--line));
+  }
+
+  .nn-name {
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .nn-f,
+  .nn-f-key {
+    color: var(--math);
+  }
+
+  .nn-b,
+  .nn-b-key {
+    color: var(--comp);
+  }
+
+  .nn-arrow {
+    color: var(--faint);
+    font-size: 1.2rem;
+  }
+
+  .nn-legend {
+    margin: 0 0 0.2rem;
+  }
+
+  .nn-chain {
+    margin-bottom: 0.6rem;
+  }
+</style>

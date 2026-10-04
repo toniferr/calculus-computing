@@ -1,0 +1,487 @@
+kind: math
+order: 17
+glyph: 'ℙ'
+title: {en: 'Probability and calculus', es: 'Probabilidad y cálculo'}
+summary:
+  en: |
+    Continuous probability is calculus: densities are integrated to get probabilities, expectations are integrals, and
+    maximum likelihood is setting a derivative to zero. The mathematical core of statistics and probabilistic AI.
+  es: |
+    La probabilidad continua es cálculo: las densidades se integran para obtener probabilidades, las esperanzas son
+    integrales y la máxima verosimilitud es anular una derivada. El núcleo matemático de la estadística y de la IA
+    probabilística.
+intro:
+  en: |
+    For discrete outcomes probability is counting; for continuous ones (a temperature, a pixel value, the weights of a
+    model) single values have probability zero and everything is expressed with **densities** and **integrals**. That
+    is where integrals enter machine learning: expected losses, likelihoods, Bayesian posteriors and the noise schedules
+    of diffusion models. For the discrete and information-theoretic side, see
+    [Math of AI · Probability](https://toniferr.github.io/math-of-ai/probability/).
+  es: |
+    Para resultados discretos la probabilidad es contar; para continuos (una temperatura, el valor de un píxel, los pesos
+    de un modelo) los valores sueltos tienen probabilidad cero y todo se expresa con **densidades** e **integrales**. Por
+    ahí entran las integrales en el aprendizaje automático: pérdidas esperadas, verosimilitudes, posteriores bayesianas y
+    los calendarios de ruido de los modelos de difusión. Para la parte discreta y de teoría de la información, mira
+    [Math of AI · Probabilidad](https://toniferr.github.io/math-of-ai/es/probabilidad/).
+topics:
+  - id: continuous-random-variables
+    level: university
+    prerequisites: [definite-integral, functions]
+    title: {en: 'Continuous random variables', es: 'Variables aleatorias continuas'}
+    aliases: {en: [random variable, real-valued randomness, measurement noise], es: [variable aleatoria, aleatoriedad real, ruido de medida]}
+    summary:
+      en: |
+        A random quantity that can take any value in an interval. $P(X = x) = 0$ for every single $x$; only intervals have
+        positive probability, given by integrating a density.
+      es: |
+        Una magnitud aleatoria que puede tomar cualquier valor de un intervalo. $P(X = x) = 0$ para cada $x$ concreto; solo
+        los intervalos tienen probabilidad positiva, que se obtiene integrando una densidad.
+    formulas:
+      - tex: |-
+          P(a \le X \le b) = \int_a^b p(x)\,\dd x, \qquad P(X = x) = 0
+    applications:
+      - to: monte-carlo
+        strength: 4
+        type: frequent
+        note:
+          en: 'Monte Carlo methods draw samples of continuous random variables to estimate integrals.'
+          es: 'Los métodos de Monte Carlo extraen muestras de variables aleatorias continuas para estimar integrales.'
+      - to: generative-models
+        strength: 4
+        type: frequent
+        note:
+          en: 'Generative models are continuous random variables whose distribution imitates the data.'
+          es: 'Los modelos generativos son variables aleatorias continuas cuya distribución imita la de los datos.'
+
+  - id: probability-density
+    level: university
+    core: true
+    prerequisites: [continuous-random-variables, improper-integrals]
+    title: {en: 'Probability density function', es: 'Función de densidad de probabilidad'}
+    aliases: {en: [PDF, density, likelihood, normalization], es: [densidad, función de densidad, verosimilitud, normalización]}
+    summary:
+      en: |
+        A function $p(x) \ge 0$ with $\int p = 1$ whose integral over a set is the probability of that set. A density is not
+        a probability: it can exceed 1; it is probability *per unit length*.
+      es: |
+        Una función $p(x) \ge 0$ con $\int p = 1$ cuya integral sobre un conjunto es la probabilidad de ese conjunto. Una
+        densidad no es una probabilidad: puede superar 1; es probabilidad *por unidad de longitud*.
+    why:
+      en: |
+        With infinitely many possible values, each individual value must have probability zero, yet some regions are more
+        likely than others. The density describes that relative likelihood, and integration recovers actual
+        probabilities.
+      es: |
+        Con infinitos valores posibles, cada valor individual debe tener probabilidad cero, y sin embargo unas regiones son
+        más probables que otras. La densidad describe esa verosimilitud relativa, y la integración recupera las
+        probabilidades.
+    intuition:
+      en: |
+        Think of a histogram of many samples with bins getting thinner and thinner, normalized so the total area is 1. In
+        the limit the bars become a curve: the density. Probability is area under it; $p(x)\,\dd x$ is the probability of
+        landing in a tiny interval near $x$.
+      es: |
+        Piensa en un histograma de muchas muestras con barras cada vez más finas, normalizado para que el área total sea 1.
+        En el límite las barras se convierten en una curva: la densidad. La probabilidad es el área bajo ella; $p(x)\,\dd x$
+        es la probabilidad de caer en un intervalo diminuto cerca de $x$.
+    formal:
+      en: |
+        $X$ has density $p$ if $P(X \in A) = \int_A p(x)\,\dd x$ for every (measurable) set $A$, with $p \ge 0$ and
+        $\int_{-\infty}^{\infty}p = 1$. Then $p = F'$ where $F$ is the cumulative distribution function.
+      es: |
+        $X$ tiene densidad $p$ si $P(X \in A) = \int_A p(x)\,\dd x$ para todo conjunto (medible) $A$, con $p \ge 0$ e
+        $\int_{-\infty}^{\infty}p = 1$. Entonces $p = F'$, donde $F$ es la función de distribución acumulada.
+    formulas:
+      - tex: |-
+          p(x) \ge 0, \qquad \int_{-\infty}^{\infty} p(x)\,\dd x = 1
+      - tex: |-
+          \mathcal N(x;\mu,\sigma^2) = \frac{1}{\sigma\sqrt{2\pi}}\exp\!\Big(-\frac{(x - \mu)^2}{2\sigma^2}\Big)
+        label: {en: 'normal (Gaussian) density', es: 'densidad normal (gaussiana)'}
+      - tex: |-
+          p(\theta\mid D) = \frac{p(D\mid\theta)\,p(\theta)}{\int p(D\mid\theta')\,p(\theta')\,\dd\theta'}
+        label: {en: 'Bayes'' rule for densities', es: 'regla de Bayes para densidades'}
+    example:
+      en: |
+        Uniform on $[0, 0.5]$: $p(x) = 2$ there. The density is 2 (> 1) but every probability is fine:
+        $P(X \le 0.1) = \int_0^{0.1}2\,\dd x = 0.2$.
+      es: |
+        Uniforme en $[0;\,0{,}5]$: $p(x) = 2$ ahí. La densidad vale 2 (> 1) pero todas las probabilidades están bien:
+        $P(X \le 0{,}1) = \int_0^{0{,}1}2\,\dd x = 0{,}2$.
+    matters:
+      en: |
+        Generative AI is density modelling: VAEs, normalizing flows and diffusion models all learn a density $p_\theta(x)$ of
+        images or sounds (explicitly or through its score $\nabla_x\log p$). Bayesian inference updates densities with data,
+        and the normalizing integral in the denominator is usually the hard part.
+      es: |
+        La IA generativa es modelado de densidades: los VAE, los normalizing flows y los modelos de difusión aprenden una
+        densidad $p_\theta(x)$ de imágenes o sonidos (explícitamente o a través de su score $\nabla_x\log p$). La inferencia
+        bayesiana actualiza densidades con datos, y la integral normalizadora del denominador suele ser lo difícil.
+    applications:
+      - to: generative-models
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Generative models learn densities; diffusion models learn the score $\nabla_x\log p_t(x)$.'
+          es: 'Los modelos generativos aprenden densidades; los de difusión aprenden el score $\nabla_x\log p_t(x)$.'
+      - to: bayesian-inference
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Priors, likelihoods and posteriors over continuous parameters are densities.'
+          es: 'Las priors, verosimilitudes y posteriores sobre parámetros continuos son densidades.'
+      - to: loss-function
+        strength: 4
+        type: fundamental
+        note:
+          en: 'Regression losses are negative log-densities: squared error ↔ Gaussian noise, absolute error ↔ Laplace noise.'
+          es: 'Las pérdidas de regresión son log-densidades negativas: error cuadrático ↔ ruido gaussiano, error absoluto ↔ ruido de Laplace.'
+      - to: kalman-filter
+        strength: 4
+        type: frequent
+        note:
+          en: 'The Kalman filter propagates Gaussian densities of the state through predictions and measurements.'
+          es: 'El filtro de Kalman propaga densidades gaussianas del estado a través de predicciones y medidas.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'For which $c$ is $p(x) = c\,x(1 - x)$ on $[0,1]$ a density? Compute $P(X > 0.5)$.'
+          es: '¿Para qué $c$ es $p(x) = c\,x(1 - x)$ en $[0,1]$ una densidad? Calcula $P(X > 0{,}5)$.'
+        solution:
+          en: '$\int_0^1 x(1-x)\,\dd x = \frac16$, so $c = 6$. By symmetry $P(X > 0.5) = 0.5$.'
+          es: '$\int_0^1 x(1-x)\,\dd x = \frac16$, luego $c = 6$. Por simetría, $P(X > 0{,}5) = 0{,}5$.'
+
+  - id: cumulative-distribution
+    level: university
+    prerequisites: [probability-density, fundamental-theorem-calculus]
+    title: {en: 'Cumulative distribution function', es: 'Función de distribución acumulada'}
+    aliases: {en: [CDF, quantile function, inverse CDF, percentile], es: [CDF, función cuantil, inversa de la distribución, percentil]}
+    summary:
+      en: |
+        $F(x) = P(X \le x) = \int_{-\infty}^x p(t)\,\dd t$. By the fundamental theorem, $F' = p$. Its inverse (the quantile
+        function) turns uniform random numbers into samples of any distribution.
+      es: |
+        $F(x) = P(X \le x) = \int_{-\infty}^x p(t)\,\dd t$. Por el teorema fundamental, $F' = p$. Su inversa (la función
+        cuantil) convierte números aleatorios uniformes en muestras de cualquier distribución.
+    formulas:
+      - tex: |-
+          F(x) = \int_{-\infty}^{x} p(t)\,\dd t, \qquad F'(x) = p(x)
+      - tex: |-
+          U \sim \mathcal U(0,1) \implies F^{-1}(U) \sim F
+        label: {en: 'inverse transform sampling', es: 'muestreo por transformada inversa'}
+    applications:
+      - to: monte-carlo
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Inverse transform sampling: e.g. $-\ln(1 - U)/\lambda$ is exponential with rate $\lambda$.'
+          es: 'Muestreo por transformada inversa: por ejemplo, $-\ln(1 - U)/\lambda$ es exponencial de tasa $\lambda$.'
+      - to: queueing-theory
+        strength: 3
+        type: frequent
+        note:
+          en: 'Latency percentiles (p99) are quantiles of the response-time distribution.'
+          es: 'Los percentiles de latencia (p99) son cuantiles de la distribución del tiempo de respuesta.'
+
+  - id: expectation
+    level: university
+    core: true
+    prerequisites: [probability-density]
+    title: {en: 'Expectation', es: 'Esperanza'}
+    aliases: {en: [expected value, mean, average, risk, 'E[X]'], es: [valor esperado, media, promedio, riesgo, 'E[X]']}
+    summary:
+      en: |
+        $\E[X] = \int x\,p(x)\,\dd x$: the probability-weighted average, the centre of mass of the distribution. More
+        generally $\E[g(X)] = \int g(x)\,p(x)\,\dd x$ — and the expected loss over the data distribution is what learning
+        really minimizes.
+      es: |
+        $\E[X] = \int x\,p(x)\,\dd x$: la media ponderada por la probabilidad, el centro de masas de la distribución. En
+        general $\E[g(X)] = \int g(x)\,p(x)\,\dd x$, y la pérdida esperada sobre la distribución de los datos es lo que de
+        verdad minimiza el aprendizaje.
+    why:
+      en: |
+        To summarize a random quantity by one number that behaves well: it is linear, it is what averages of many samples
+        converge to (law of large numbers), and decisions that maximize expected value are optimal in the long run.
+      es: |
+        Para resumir una magnitud aleatoria con un número que se porta bien: es lineal, es aquello a lo que convergen las
+        medias de muchas muestras (ley de los grandes números), y las decisiones que maximizan el valor esperado son óptimas
+        a largo plazo.
+    intuition:
+      en: |
+        Balance the graph of the density on a knife edge: it balances at $\E[X]$. And the average of $N$ independent samples
+        estimates it with error about $\sigma/\sqrt N$ — the principle behind Monte Carlo, mini-batch gradients and A/B
+        tests.
+      es: |
+        Equilibra la gráfica de la densidad sobre el filo de un cuchillo: se equilibra en $\E[X]$. Y la media de $N$
+        muestras independientes la estima con un error del orden de $\sigma/\sqrt N$, el principio detrás de Monte Carlo,
+        de los gradientes por mini-lotes y de los tests A/B.
+    formal:
+      en: |
+        $\E[g(X)] = \int_{-\infty}^{\infty} g(x)\,p(x)\,\dd x$ when the integral converges absolutely. Linearity:
+        $\E[aX + bY] = a\E[X] + b\E[Y]$ (always, even for dependent variables). **Law of large numbers:**
+        $\frac1N\sum_{i=1}^N g(X_i) \to \E[g(X)]$ for i.i.d. samples.
+      es: |
+        $\E[g(X)] = \int_{-\infty}^{\infty} g(x)\,p(x)\,\dd x$ cuando la integral converge absolutamente. Linealidad:
+        $\E[aX + bY] = a\E[X] + b\E[Y]$ (siempre, incluso con variables dependientes). **Ley de los grandes números:**
+        $\frac1N\sum_{i=1}^N g(X_i) \to \E[g(X)]$ para muestras i.i.d.
+    formulas:
+      - tex: |-
+          \E[g(X)] = \int g(x)\,p(x)\,\dd x \approx \frac1N\sum_{i=1}^{N} g(x_i)
+      - tex: |-
+          R(\theta) = \E_{(x,y)\sim P}\big[\ell(f_\theta(x), y)\big] \approx \frac{1}{|B|}\sum_{(x,y)\in B}\ell(f_\theta(x), y)
+        label: {en: 'expected risk and its mini-batch estimate', es: 'riesgo esperado y su estimación con un mini-lote'}
+      - tex: |-
+          \nabla_\theta\,\E[\ell] = \E[\nabla_\theta\,\ell]
+        label: {en: 'why stochastic gradients are unbiased', es: 'por qué los gradientes estocásticos son insesgados'}
+    matters:
+      en: |
+        Training minimizes an expectation it cannot compute, by following unbiased noisy estimates of its gradient (SGD).
+        Reinforcement learning maximizes expected return. Monte Carlo rendering computes pixel colours as expectations
+        over random light paths.
+      es: |
+        Entrenar minimiza una esperanza que no se puede calcular, siguiendo estimaciones ruidosas e insesgadas de su
+        gradiente (SGD). El aprendizaje por refuerzo maximiza el retorno esperado. El renderizado de Monte Carlo calcula el
+        color de los píxeles como esperanzas sobre caminos de luz aleatorios.
+    applications:
+      - to: loss-function
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The objective of learning is the expected loss (risk) over the data distribution.'
+          es: 'El objetivo del aprendizaje es la pérdida esperada (riesgo) sobre la distribución de los datos.'
+      - to: sgd
+        strength: 5
+        type: fundamental
+        note:
+          en: 'A mini-batch gradient is an unbiased estimate of the expected gradient.'
+          es: 'El gradiente de un mini-lote es una estimación insesgada del gradiente esperado.'
+      - to: reinforcement-learning
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Agents maximize expected discounted return; policy gradients differentiate an expectation.'
+          es: 'Los agentes maximizan el retorno descontado esperado; los gradientes de política derivan una esperanza.'
+      - to: monte-carlo
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Monte Carlo estimates expectations by sample averages.'
+          es: 'Monte Carlo estima esperanzas con medias muestrales.'
+      - to: queueing-theory
+        strength: 4
+        type: frequent
+        note:
+          en: 'Little''s law $L = \lambda W$ relates expected queue length and expected waiting time.'
+          es: 'La ley de Little $L = \lambda W$ relaciona la longitud media de la cola con el tiempo medio de espera.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Compute $\E[X]$ for the exponential density $p(x) = \lambda e^{-\lambda x}$, $x \ge 0$.'
+          es: 'Calcula $\E[X]$ para la densidad exponencial $p(x) = \lambda e^{-\lambda x}$, $x \ge 0$.'
+        solution:
+          en: 'By parts: $\int_0^\infty x\lambda e^{-\lambda x}\,\dd x = \big[-xe^{-\lambda x}\big]_0^\infty + \int_0^\infty e^{-\lambda x}\,\dd x = \frac1\lambda$.'
+          es: 'Por partes: $\int_0^\infty x\lambda e^{-\lambda x}\,\dd x = \big[-xe^{-\lambda x}\big]_0^\infty + \int_0^\infty e^{-\lambda x}\,\dd x = \frac1\lambda$.'
+      - type: ai
+        prompt:
+          en: 'Why is the gradient of a random mini-batch loss an unbiased estimate of the full gradient? What assumption is needed?'
+          es: '¿Por qué el gradiente de la pérdida de un mini-lote aleatorio es una estimación insesgada del gradiente completo? ¿Qué hipótesis hace falta?'
+        solution:
+          en: |
+            If the batch is drawn uniformly at random, $\E[\frac1{|B|}\sum_{i\in B}\nabla\ell_i] = \frac1N\sum_i\nabla\ell_i$ by
+            linearity of expectation (and exchanging gradient and expectation, which needs mild smoothness). Non-random
+            batches (e.g. sorted data) break it.
+          es: |
+            Si el lote se elige uniformemente al azar, $\E[\frac1{|B|}\sum_{i\in B}\nabla\ell_i] = \frac1N\sum_i\nabla\ell_i$ por
+            la linealidad de la esperanza (e intercambiando gradiente y esperanza, lo que exige algo de suavidad). Los lotes
+            no aleatorios (por ejemplo, datos ordenados) lo rompen.
+
+  - id: variance
+    level: university
+    prerequisites: [expectation]
+    title: {en: 'Variance', es: 'Varianza'}
+    aliases: {en: [standard deviation, spread, noise, second moment], es: [desviación típica, dispersión, ruido, segundo momento]}
+    summary:
+      en: |
+        $\Var(X) = \E[(X - \E X)^2]$: the average squared distance from the mean. The variance of an average of $N$
+        independent samples is $\sigma^2/N$ — the $1/\sqrt N$ law that governs Monte Carlo error, batch sizes and A/B tests.
+      es: |
+        $\Var(X) = \E[(X - \E X)^2]$: la distancia cuadrática media a la media. La varianza de una media de $N$ muestras
+        independientes es $\sigma^2/N$: la ley de $1/\sqrt N$ que gobierna el error de Monte Carlo, el tamaño de los lotes y
+        los tests A/B.
+    formulas:
+      - tex: |-
+          \Var(X) = \E[X^2] - (\E X)^2, \qquad \Var\Big(\frac1N\sum_{i=1}^{N}X_i\Big) = \frac{\sigma^2}{N}
+    applications:
+      - to: monte-carlo
+        strength: 5
+        type: fundamental
+        note:
+          en: 'MC error is $\sigma/\sqrt N$; variance reduction (importance sampling, control variates) is the main lever.'
+          es: 'El error de Monte Carlo es $\sigma/\sqrt N$; reducir la varianza (muestreo por importancia, variables de control) es la palanca principal.'
+      - to: sgd
+        strength: 4
+        type: frequent
+        note:
+          en: 'Gradient noise variance falls as $1/|B|$; it sets the useful learning rate and batch size.'
+          es: 'La varianza del ruido del gradiente cae como $1/|B|$; fija el learning rate y el tamaño de lote útiles.'
+      - to: adam
+        strength: 4
+        type: frequent
+        note:
+          en: 'Adam divides by a running estimate of the gradient''s second moment.'
+          es: 'Adam divide por una estimación móvil del segundo momento del gradiente.'
+      - to: kalman-filter
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The Kalman gain weighs prediction and measurement by their variances.'
+          es: 'La ganancia de Kalman pondera predicción y medida según sus varianzas.'
+      - to: neural-networks
+        strength: 3
+        type: frequent
+        note:
+          en: 'Xavier/He initialization chooses weight variances so activations keep a stable variance through layers.'
+          es: 'La inicialización de Xavier/He elige varianzas de los pesos para que las activaciones mantengan una varianza estable entre capas.'
+
+  - id: distributions
+    level: university
+    prerequisites: [probability-density, exponential-functions]
+    title: {en: 'Continuous distributions', es: 'Distribuciones continuas'}
+    aliases: {en: [normal distribution, Gaussian, exponential distribution, uniform distribution, central limit theorem], es: [distribución normal, gaussiana, distribución exponencial, distribución uniforme, teorema central del límite]}
+    summary:
+      en: |
+        The workhorses: uniform (random number generators), exponential (waiting times, memoryless), normal (sums of many
+        small effects, by the central limit theorem), and their multivariate versions.
+      es: |
+        Las de batalla: uniforme (generadores de números aleatorios), exponencial (tiempos de espera, sin memoria), normal
+        (sumas de muchos efectos pequeños, por el teorema central del límite) y sus versiones multivariantes.
+    formulas:
+      - tex: |-
+          \mathcal U(a,b): \tfrac{1}{b-a}, \qquad \operatorname{Exp}(\lambda): \lambda e^{-\lambda x}, \qquad \mathcal N(\mu,\sigma^2): \tfrac{1}{\sigma\sqrt{2\pi}}e^{-(x-\mu)^2/2\sigma^2}
+      - tex: |-
+          \frac{\bar X_N - \mu}{\sigma/\sqrt N} \xrightarrow{\ d\ } \mathcal N(0,1)
+        label: {en: 'central limit theorem', es: 'teorema central del límite'}
+    applications:
+      - to: queueing-theory
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Poisson arrivals have exponential inter-arrival times — the basis of M/M/1 models of servers.'
+          es: 'Las llegadas de Poisson tienen tiempos entre llegadas exponenciales: la base de los modelos M/M/1 de servidores.'
+      - to: kalman-filter
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Gaussian noise assumptions make the Kalman filter optimal and closed-form.'
+          es: 'Las hipótesis de ruido gaussiano hacen que el filtro de Kalman sea óptimo y de forma cerrada.'
+      - to: generative-models
+        strength: 4
+        type: frequent
+        note:
+          en: 'Diffusion models add Gaussian noise; VAEs use Gaussian latent variables.'
+          es: 'Los modelos de difusión añaden ruido gaussiano; los VAE usan variables latentes gaussianas.'
+
+  - id: maximum-likelihood
+    level: advanced
+    core: true
+    prerequisites: [probability-density, critical-points, logarithmic-functions]
+    title: {en: 'Maximum likelihood estimation', es: 'Estimación por máxima verosimilitud'}
+    aliases: {en: [MLE, likelihood, log-likelihood, negative log-likelihood, NLL], es: [EMV, verosimilitud, log-verosimilitud, log-verosimilitud negativa, NLL]}
+    summary:
+      en: |
+        Choose the parameters that make the observed data most probable: maximize $\prod_i p(x_i\mid\theta)$, i.e. minimize
+        $-\sum_i\log p(x_i\mid\theta)$. Squared error, cross-entropy and the training objective of language models are all
+        negative log-likelihoods.
+      es: |
+        Elegir los parámetros que hacen más probables los datos observados: maximizar $\prod_i p(x_i\mid\theta)$, es decir,
+        minimizar $-\sum_i\log p(x_i\mid\theta)$. El error cuadrático, la entropía cruzada y el objetivo de entrenamiento de
+        los modelos de lenguaje son todos log-verosimilitudes negativas.
+    why:
+      en: |
+        We need a principled way to fit a model to data. Fisher's answer (1922): a parameter value is plausible to the
+        extent that it predicted what actually happened. Under mild conditions the MLE is consistent and asymptotically the
+        most efficient estimator.
+      es: |
+        Hace falta una forma con fundamento de ajustar un modelo a los datos. La respuesta de Fisher (1922): un valor del
+        parámetro es plausible en la medida en que predijo lo que de verdad ocurrió. En condiciones suaves el EMV es
+        consistente y asintóticamente el estimador más eficiente.
+    intuition:
+      en: |
+        Slide a Gaussian left and right over a set of points: the position where the product of the heights at the points
+        is largest is the sample mean. Taking logs turns the product into a sum (numerically stable, easy to differentiate),
+        and setting the derivative to zero finds the peak.
+      es: |
+        Desliza una gaussiana a izquierda y derecha sobre un conjunto de puntos: la posición donde el producto de las
+        alturas en los puntos es máximo es la media muestral. Tomar logaritmos convierte el producto en una suma
+        (numéricamente estable y fácil de derivar), y anular la derivada encuentra el pico.
+    formal:
+      en: |
+        Given i.i.d. data $x_1, \dots, x_N$ and a model $p(x\mid\theta)$,
+        $$\hat\theta_{\text{MLE}} = \arg\max_\theta\sum_{i=1}^N\log p(x_i\mid\theta) = \arg\min_\theta\Big(-\frac1N\sum_{i=1}^N\log p(x_i\mid\theta)\Big).$$
+        Typically found by solving $\nabla_\theta\sum_i\log p(x_i\mid\theta) = 0$, in closed form or by gradient methods.
+      es: |
+        Dados datos i.i.d. $x_1, \dots, x_N$ y un modelo $p(x\mid\theta)$,
+        $$\hat\theta_{\text{EMV}} = \arg\max_\theta\sum_{i=1}^N\log p(x_i\mid\theta) = \arg\min_\theta\Big(-\frac1N\sum_{i=1}^N\log p(x_i\mid\theta)\Big).$$
+        Normalmente se halla resolviendo $\nabla_\theta\sum_i\log p(x_i\mid\theta) = 0$, en forma cerrada o con métodos de
+        gradiente.
+    formulas:
+      - tex: |-
+          \hat\theta = \arg\max_\theta \sum_i \log p(x_i\mid\theta)
+      - tex: |-
+          y = f_\theta(x) + \varepsilon,\ \varepsilon\sim\mathcal N(0,\sigma^2) \implies -\log p = \frac{(y - f_\theta(x))^2}{2\sigma^2} + \text{const}
+        label: {en: 'Gaussian noise ⇒ squared error', es: 'ruido gaussiano ⇒ error cuadrático'}
+      - tex: |-
+          -\sum_t \log p_\theta(w_t \mid w_{<t})
+        label: {en: 'the training loss of a language model', es: 'la pérdida de entrenamiento de un modelo de lenguaje'}
+    example:
+      en: |
+        Gaussian with unknown mean, known $\sigma$: $\ell(\mu) = -\sum\frac{(x_i - \mu)^2}{2\sigma^2} + \text{const}$;
+        $\ell'(\mu) = \sum\frac{x_i - \mu}{\sigma^2} = 0 \Rightarrow \hat\mu = \bar x$. Coin with $k$ heads in $n$ tosses:
+        $\ell(p) = k\ln p + (n - k)\ln(1 - p)$, $\ell'(p) = 0 \Rightarrow \hat p = k/n$.
+      es: |
+        Gaussiana de media desconocida y $\sigma$ conocida: $\ell(\mu) = -\sum\frac{(x_i - \mu)^2}{2\sigma^2} + \text{cte}$;
+        $\ell'(\mu) = \sum\frac{x_i - \mu}{\sigma^2} = 0 \Rightarrow \hat\mu = \bar x$. Moneda con $k$ caras en $n$
+        lanzamientos: $\ell(p) = k\ln p + (n - k)\ln(1 - p)$, $\ell'(p) = 0 \Rightarrow \hat p = k/n$.
+    matters:
+      en: |
+        Most loss functions of machine learning are maximum likelihood in disguise, which tells you *which* loss matches
+        *which* noise assumption. Logistic regression, softmax classifiers, language models and normalizing flows are
+        trained by maximum likelihood; diffusion models by a bound on it.
+      es: |
+        La mayoría de las funciones de pérdida del aprendizaje automático son máxima verosimilitud disfrazada, lo que dice
+        *qué* pérdida corresponde a *qué* hipótesis de ruido. La regresión logística, los clasificadores softmax, los
+        modelos de lenguaje y los normalizing flows se entrenan por máxima verosimilitud; los modelos de difusión, con una
+        cota de ella.
+    applications:
+      - to: loss-function
+        strength: 5
+        type: fundamental
+        note:
+          en: 'MSE and cross-entropy are negative log-likelihoods under Gaussian and categorical models.'
+          es: 'El MSE y la entropía cruzada son log-verosimilitudes negativas bajo modelos gaussianos y categóricos.'
+      - to: logistic-regression
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Logistic regression is the MLE of a Bernoulli model with $p = \sigma(w\cdot x + b)$.'
+          es: 'La regresión logística es el EMV de un modelo de Bernoulli con $p = \sigma(w\cdot x + b)$.'
+      - to: generative-models
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Autoregressive models and flows maximize likelihood exactly; VAEs and diffusion models maximize a lower bound (ELBO).'
+          es: 'Los modelos autorregresivos y los flows maximizan la verosimilitud exactamente; los VAE y los modelos de difusión, una cota inferior (ELBO).'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Find the MLE of $\lambda$ for exponential data $x_1, \dots, x_N$.'
+          es: 'Halla el EMV de $\lambda$ para datos exponenciales $x_1, \dots, x_N$.'
+        solution:
+          en: '$\ell(\lambda) = N\ln\lambda - \lambda\sum x_i$; $\ell''(\lambda) = N/\lambda - \sum x_i = 0 \Rightarrow \hat\lambda = 1/\bar x$.'
+          es: '$\ell(\lambda) = N\ln\lambda - \lambda\sum x_i$; $\ell''(\lambda) = N/\lambda - \sum x_i = 0 \Rightarrow \hat\lambda = 1/\bar x$.'
+      - type: ai
+        prompt:
+          en: 'Show that if the noise is Laplace, $p(\varepsilon) \propto e^{-|\varepsilon|/b}$, maximum likelihood regression minimizes the absolute error.'
+          es: 'Demuestra que si el ruido es de Laplace, $p(\varepsilon) \propto e^{-|\varepsilon|/b}$, la regresión por máxima verosimilitud minimiza el error absoluto.'
+        solution:
+          en: '$-\log p(y\mid x) = |y - f_\theta(x)|/b + \text{const}$; summing over the data, maximizing likelihood is minimizing $\sum|y_i - f_\theta(x_i)|$.'
+          es: '$-\log p(y\mid x) = |y - f_\theta(x)|/b + \text{cte}$; sumando sobre los datos, maximizar la verosimilitud es minimizar $\sum|y_i - f_\theta(x_i)|$.'

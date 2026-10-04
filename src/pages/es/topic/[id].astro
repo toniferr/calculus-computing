@@ -1,0 +1,11 @@
+---
+import TopicPage from '../../../components/pages/TopicPage.astro';
+import { getGraph } from '../../../lib/graph';
+
+export async function getStaticPaths() {
+  const g = await getGraph();
+  return g.topics.map((t) => ({ params: { id: t.id } }));
+}
+---
+
+<TopicPage lang="es" id={Astro.params.id!} />

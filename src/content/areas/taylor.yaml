@@ -1,0 +1,323 @@
+kind: math
+order: 9
+glyph: 'Tₙ'
+title: {en: 'Taylor series', es: 'Taylor y series de Taylor'}
+summary:
+  en: |
+    Approximating any smooth function by polynomials built from its derivatives at one point — the most used
+    approximation in science and engineering.
+  es: |
+    Aproximar cualquier función suave con polinomios construidos a partir de sus derivadas en un punto: la aproximación
+    más usada en ciencia e ingeniería.
+topics:
+  - id: taylor-polynomial
+    level: university
+    core: true
+    demo: taylor
+    prerequisites: [higher-order-derivatives, polynomial-functions, differential]
+    related: [taylor-series, newton-method]
+    title: {en: 'Taylor polynomial', es: 'Polinomio de Taylor'}
+    aliases: {en: [Taylor expansion, Maclaurin polynomial, polynomial approximation, linearization, quadratic approximation], es: [desarrollo de Taylor, polinomio de Maclaurin, aproximación polinómica, linealización, aproximación cuadrática]}
+    summary:
+      en: |
+        The polynomial of degree $n$ that matches $f$ and its first $n$ derivatives at a point $a$. Degree 1 is the
+        tangent line, degree 2 adds curvature; the higher the degree, the wider the region where it is a good
+        approximation. At $a = 0$ it is called a Maclaurin polynomial.
+      es: |
+        El polinomio de grado $n$ que coincide con $f$ y sus $n$ primeras derivadas en un punto $a$. Grado 1 es la recta
+        tangente y grado 2 añade la curvatura; cuanto mayor el grado, más amplia la zona en que aproxima bien. En
+        $a = 0$ se llama polinomio de Maclaurin.
+    why:
+      en: |
+        Polynomials are what we can compute: additions and multiplications. Other functions — $\sin$, $e^x$, the
+        solution of a differential equation — are not. Taylor's idea gives a systematic way to trade any smooth function
+        for a polynomial near a point, with a precise error estimate.
+      es: |
+        Los polinomios son lo que sabemos calcular: sumas y productos. Las demás funciones ($\sin$, $e^x$, la solución
+        de una ecuación diferencial) no. La idea de Taylor da una forma sistemática de cambiar cualquier función suave
+        por un polinomio cerca de un punto, con una estimación precisa del error.
+    intuition:
+      en: |
+        Matching more derivatives means matching the shape more closely: value (same height), first derivative (same
+        slope), second (same bending), third (same change of bending)… Each extra term corrects what the previous
+        polynomial got wrong, and the corrections get smaller near $a$ because they carry higher powers of
+        $(x - a)$. Move the slider in the demo and watch the approximation "peel" away from $a$ more slowly as the order
+        grows.
+      es: |
+        Igualar más derivadas es igualar la forma cada vez mejor: el valor (misma altura), la primera derivada (misma
+        pendiente), la segunda (misma curvatura), la tercera (mismo cambio de curvatura)… Cada término nuevo corrige lo
+        que el polinomio anterior hacía mal, y las correcciones son más pequeñas cerca de $a$ porque llevan potencias más
+        altas de $(x - a)$. Mueve el deslizador de la demo y mira cómo la aproximación se «despega» de $a$ cada vez más
+        tarde al subir el orden.
+    formal:
+      en: |
+        If $f$ is $n$ times differentiable at $a$, its Taylor polynomial of order $n$ is
+        $$T_n(x) = \sum_{k=0}^{n}\frac{f^{(k)}(a)}{k!}(x - a)^k,$$
+        the unique polynomial of degree $\le n$ with $T_n^{(k)}(a) = f^{(k)}(a)$ for $k = 0, \dots, n$. Moreover
+        $f(x) = T_n(x) + o\big((x - a)^n\big)$ as $x \to a$.
+      es: |
+        Si $f$ es $n$ veces derivable en $a$, su polinomio de Taylor de orden $n$ es
+        $$T_n(x) = \sum_{k=0}^{n}\frac{f^{(k)}(a)}{k!}(x - a)^k,$$
+        el único polinomio de grado $\le n$ con $T_n^{(k)}(a) = f^{(k)}(a)$ para $k = 0, \dots, n$. Además
+        $f(x) = T_n(x) + o\big((x - a)^n\big)$ cuando $x \to a$.
+    formulas:
+      - tex: |-
+          T_n(x) = f(a) + f'(a)(x-a) + \frac{f''(a)}{2!}(x-a)^2 + \dots + \frac{f^{(n)}(a)}{n!}(x-a)^n
+      - tex: |-
+          e^x \approx 1 + x + \frac{x^2}{2} + \frac{x^3}{6}, \qquad \sin x \approx x - \frac{x^3}{6} + \frac{x^5}{120}
+      - tex: |-
+          f(x + h) \approx f(x) + \nabla f(x)\cdot h + \tfrac12\,h^{\mathsf T}\nabla^2 f(x)\,h
+        label: {en: 'second order in several variables: gradient and Hessian', es: 'segundo orden en varias variables: gradiente y hessiano'}
+    compute:
+      en: |
+        Compute $f(a), f'(a), f''(a), \dots$, divide the $k$-th by $k!$. For compositions it is usually faster to
+        combine known series (substitute, multiply, integrate term by term) than to differentiate repeatedly. Software
+        can do it exactly with *Taylor-mode* arithmetic on truncated power series — which is how the demo computes the
+        coefficients.
+      es: |
+        Calcula $f(a), f'(a), f''(a), \dots$ y divide la $k$-ésima entre $k!$. Para composiciones suele ser más rápido
+        combinar series conocidas (sustituir, multiplicar, integrar término a término) que derivar una y otra vez. El
+        software lo puede hacer exactamente con aritmética de series de potencias truncadas (*modo Taylor*), que es como
+        calcula la demo los coeficientes.
+    example:
+      en: |
+        Small-angle approximation: $\sin\theta \approx \theta$ (order 1) turns the pendulum equation
+        $\ddot\theta = -\frac gL\sin\theta$ into $\ddot\theta = -\frac gL\theta$, solvable by hand: period
+        $2\pi\sqrt{L/g}$. The error at $\theta = 10° \approx 0.1745$ is $\theta^3/6 \approx 0.0009$ — about 0.5%.
+      es: |
+        Aproximación de ángulo pequeño: $\sin\theta \approx \theta$ (orden 1) convierte la ecuación del péndulo
+        $\ddot\theta = -\frac gL\sin\theta$ en $\ddot\theta = -\frac gL\theta$, resoluble a mano: periodo
+        $2\pi\sqrt{L/g}$. El error en $\theta = 10° \approx 0{,}1745$ es $\theta^3/6 \approx 0{,}0009$, alrededor de un 0,5 %.
+    matters:
+      en: |
+        Gradient descent is "trust the order-1 Taylor model a little"; Newton's method is "jump to the minimum of the
+        order-2 model". Numerical differentiation, ODE solvers (Euler, Runge–Kutta) and their error analysis are
+        derived from Taylor expansions. Physics linearizes with them, and math libraries start from them.
+      es: |
+        El descenso de gradiente es «fíate un poco del modelo de Taylor de orden 1»; el método de Newton es «salta al
+        mínimo del modelo de orden 2». La diferenciación numérica, los resolvedores de EDO (Euler, Runge–Kutta) y su
+        análisis de error se deducen de desarrollos de Taylor. La física linealiza con ellos y las librerías matemáticas
+        parten de ellos.
+    applications:
+      - to: second-order-optimization
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Newton and trust-region methods minimize the quadratic Taylor model $f + g^{\mathsf T}h + \frac12 h^{\mathsf T}Hh$.'
+          es: 'Los métodos de Newton y de región de confianza minimizan el modelo de Taylor cuadrático $f + g^{\mathsf T}h + \frac12 h^{\mathsf T}Hh$.'
+      - to: gradient-descent
+        strength: 4
+        type: fundamental
+        note:
+          en: 'The first-order model $f(x - \eta g) \approx f(x) - \eta\norm g^2$ is why a small step downhill decreases $f$.'
+          es: 'El modelo de primer orden $f(x - \eta g) \approx f(x) - \eta\norm g^2$ es la razón de que un paso pequeño cuesta abajo reduzca $f$.'
+      - to: floating-point
+        strength: 4
+        type: frequent
+        note:
+          en: 'Math libraries evaluate $\sin$, $\exp$, $\log$ with polynomial approximations after range reduction (minimax, refined from Taylor).'
+          es: 'Las librerías matemáticas evalúan $\sin$, $\exp$, $\log$ con aproximaciones polinómicas tras reducir el rango (minimax, refinadas a partir de Taylor).'
+      - to: physics-engine
+        strength: 4
+        type: frequent
+        note:
+          en: 'Integrators (Euler, Verlet) are truncated Taylor expansions of the motion in the time step.'
+          es: 'Los integradores (Euler, Verlet) son desarrollos de Taylor truncados del movimiento en el paso de tiempo.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Find the Maclaurin polynomial of order 4 of $\cos x$ and use it to estimate $\cos 0.5$.'
+          es: 'Halla el polinomio de Maclaurin de orden 4 de $\cos x$ y úsalo para estimar $\cos 0{,}5$.'
+        solution:
+          en: '$T_4 = 1 - \frac{x^2}{2} + \frac{x^4}{24}$; $T_4(0.5) = 0.8776041\overline{6}$ vs $\cos 0.5 = 0.8775826$ (error $2 \cdot 10^{-5}$).'
+          es: '$T_4 = 1 - \frac{x^2}{2} + \frac{x^4}{24}$; $T_4(0{,}5) = 0{,}8776041\overline{6}$ frente a $\cos 0{,}5 = 0{,}8775826$ (error $2 \cdot 10^{-5}$).'
+      - type: ai
+        prompt:
+          en: 'Use the second-order Taylor model of $L(w)$ to derive the step that minimizes it. Which method is this?'
+          es: 'Usa el modelo de Taylor de segundo orden de $L(w)$ para deducir el paso que lo minimiza. ¿Qué método es?'
+        solution:
+          en: '$L(w + h) \approx L + L''h + \frac12 L''''h^2$; setting the derivative in $h$ to zero gives $h = -L''/L''''$. That is Newton''s method for optimization.'
+          es: '$L(w + h) \approx L + L''h + \frac12 L''''h^2$; anulando la derivada en $h$ sale $h = -L''/L''''$. Es el método de Newton para optimización.'
+
+  - id: taylor-remainder
+    level: university
+    kind: theorem
+    prerequisites: [taylor-polynomial, mean-value-theorem]
+    title: {en: 'Taylor''s theorem and the remainder', es: 'Teorema de Taylor y resto'}
+    aliases: {en: [Lagrange remainder, error term, truncation error], es: [resto de Lagrange, término de error, error de truncamiento]}
+    summary:
+      en: |
+        The exact size of the approximation error: $f(x) - T_n(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!}(x - a)^{n+1}$ for some
+        $\xi$ between $a$ and $x$. It is how numerical analysts certify accuracy.
+      es: |
+        El tamaño exacto del error de aproximación: $f(x) - T_n(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!}(x - a)^{n+1}$ para algún
+        $\xi$ entre $a$ y $x$. Es como el análisis numérico certifica la precisión.
+    formal:
+      en: |
+        If $f \in C^{n+1}$ on an interval containing $a$ and $x$, then
+        $$f(x) = T_n(x) + \frac{f^{(n+1)}(\xi)}{(n+1)!}(x - a)^{n+1}$$
+        for some $\xi$ between $a$ and $x$ (Lagrange form).
+      es: |
+        Si $f \in C^{n+1}$ en un intervalo que contiene $a$ y $x$, entonces
+        $$f(x) = T_n(x) + \frac{f^{(n+1)}(\xi)}{(n+1)!}(x - a)^{n+1}$$
+        para algún $\xi$ entre $a$ y $x$ (forma de Lagrange).
+    proofIdea:
+      en: 'Apply Rolle''s theorem $n + 1$ times to $g(t) = f(t) - T_n(t) - K(t - a)^{n+1}$, with $K$ chosen so that $g(x) = 0$.'
+      es: 'Aplica el teorema de Rolle $n + 1$ veces a $g(t) = f(t) - T_n(t) - K(t - a)^{n+1}$, con $K$ elegido para que $g(x) = 0$.'
+    formulas:
+      - tex: |-
+          |R_n(x)| \le \frac{M_{n+1}}{(n+1)!}|x - a|^{n+1}, \qquad M_{n+1} = \max|f^{(n+1)}|
+    applications:
+      - to: scientific-computing
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Truncation errors of finite differences and ODE integrators are Taylor remainders.'
+          es: 'Los errores de truncamiento de las diferencias finitas y de los integradores de EDO son restos de Taylor.'
+      - to: floating-point
+        strength: 3
+        type: frequent
+        note:
+          en: 'Library designers bound the remainder to decide how many terms reach full double precision.'
+          es: 'Quien diseña una librería acota el resto para decidir cuántos términos hacen falta para la precisión doble completa.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'How many terms of the Maclaurin series of $e^x$ guarantee $e$ (at $x = 1$) to within $10^{-10}$?'
+          es: '¿Cuántos términos de la serie de Maclaurin de $e^x$ garantizan $e$ (en $x = 1$) con error menor que $10^{-10}$?'
+        solution:
+          en: '$|R_n| \le \frac{e}{(n+1)!} < \frac{3}{(n+1)!}$. $(n+1)! > 3 \cdot 10^{10}$ needs $n + 1 = 14$ ($14! \approx 8.7 \cdot 10^{10}$), so $n = 13$.'
+          es: '$|R_n| \le \frac{e}{(n+1)!} < \frac{3}{(n+1)!}$. $(n+1)! > 3 \cdot 10^{10}$ exige $n + 1 = 14$ ($14! \approx 8{,}7 \cdot 10^{10}$), luego $n = 13$.'
+
+  - id: power-series
+    level: university
+    prerequisites: [series]
+    title: {en: 'Power series', es: 'Series de potencias'}
+    aliases: {en: [power series, generating function], es: [serie de potencias, función generatriz]}
+    summary:
+      en: |
+        "Polynomials of infinite degree" $\sum_k c_k (x - a)^k$. Inside their interval of convergence they can be added,
+        multiplied, differentiated and integrated term by term — like polynomials.
+      es: |
+        «Polinomios de grado infinito» $\sum_k c_k (x - a)^k$. Dentro de su intervalo de convergencia se pueden sumar,
+        multiplicar, derivar e integrar término a término, como los polinomios.
+    formulas:
+      - tex: |-
+          \sum_{k=0}^{\infty} c_k (x - a)^k, \qquad \frac{\dd}{\dd x}\sum c_k x^k = \sum k\,c_k x^{k-1}
+      - tex: |-
+          \frac{1}{1 - x} = \sum_{k=0}^{\infty} x^k \quad (|x| < 1)
+    applications:
+      - to: algorithm-complexity
+        strength: 3
+        type: advanced
+        note:
+          en: 'Generating functions $\sum a_n x^n$ solve recurrences and count structures in the analysis of algorithms.'
+          es: 'Las funciones generatrices $\sum a_n x^n$ resuelven recurrencias y cuentan estructuras en el análisis de algoritmos.'
+
+  - id: radius-of-convergence
+    level: university
+    prerequisites: [power-series, ratio-test, root-test]
+    title: {en: 'Radius of convergence', es: 'Radio de convergencia'}
+    aliases: {en: [interval of convergence, Cauchy-Hadamard], es: [intervalo de convergencia, Cauchy-Hadamard]}
+    summary:
+      en: |
+        A power series converges for $|x - a| < R$ and diverges for $|x - a| > R$. Surprisingly, $R$ is the distance from
+        $a$ to the nearest singularity **in the complex plane**: the series of $\frac{1}{1 + x^2}$ at 0 has $R = 1$
+        because of the poles at $\pm i$, although the function is perfectly smooth on $\R$.
+      es: |
+        Una serie de potencias converge si $|x - a| < R$ y diverge si $|x - a| > R$. Sorprendentemente, $R$ es la
+        distancia de $a$ a la singularidad más cercana **en el plano complejo**: la serie de $\frac{1}{1 + x^2}$ en 0
+        tiene $R = 1$ por los polos en $\pm i$, aunque la función es perfectamente suave en $\R$.
+    formulas:
+      - tex: |-
+          \frac{1}{R} = \limsup_{k\to\infty}|c_k|^{1/k}
+        label: {en: 'Cauchy–Hadamard', es: 'Cauchy–Hadamard'}
+      - tex: |-
+          \frac{1}{R} = \lim_{k\to\infty}\left|\frac{c_{k+1}}{c_k}\right|
+        label: {en: 'when this limit exists (ratio test)', es: 'cuando este límite existe (criterio del cociente)'}
+    applications: []
+
+  - id: taylor-series
+    level: university
+    core: true
+    prerequisites: [taylor-remainder, power-series]
+    title: {en: 'Taylor and Maclaurin series', es: 'Serie de Taylor y de Maclaurin'}
+    aliases: {en: [Taylor series, Maclaurin series, analytic function], es: [serie de Taylor, serie de Maclaurin, función analítica]}
+    summary:
+      en: |
+        Let the order go to infinity: $f(x) = \sum_{k\ge0}\frac{f^{(k)}(a)}{k!}(x - a)^k$ whenever the remainder tends to
+        0. Functions equal to their Taylor series are called analytic; $e^x$, $\sin$, $\cos$ are, on all of $\R$.
+      es: |
+        Haz que el orden tienda a infinito: $f(x) = \sum_{k\ge0}\frac{f^{(k)}(a)}{k!}(x - a)^k$ siempre que el resto tienda
+        a 0. Las funciones iguales a su serie de Taylor se llaman analíticas; $e^x$, $\sin$, $\cos$ lo son en todo $\R$.
+    why:
+      en: |
+        A Taylor series packs a whole function into one sequence of numbers (its coefficients). That turns analysis
+        into algebra: solving differential equations, evaluating integrals with no closed form, defining $e^A$ for a
+        matrix $A$ or $e^{i\theta}$ for a complex number.
+      es: |
+        Una serie de Taylor empaqueta una función entera en una sucesión de números (sus coeficientes). Eso convierte
+        el análisis en álgebra: resolver ecuaciones diferenciales, evaluar integrales sin forma cerrada, definir $e^A$
+        para una matriz $A$ o $e^{i\theta}$ para un número complejo.
+    intuition:
+      en: |
+        Knowing *everything* about $f$ at a single point — all its derivatives — is, for analytic functions, knowing $f$
+        everywhere within the radius of convergence. Not every smooth function is analytic: $e^{-1/x^2}$ (extended by 0)
+        has all derivatives zero at 0, so its Taylor series is $0$, yet the function is not.
+      es: |
+        Saber *todo* de $f$ en un único punto (todas sus derivadas) es, para las funciones analíticas, saber $f$ en todas
+        partes dentro del radio de convergencia. No toda función suave es analítica: $e^{-1/x^2}$ (extendida con 0)
+        tiene todas las derivadas nulas en 0, así que su serie de Taylor es $0$, y la función no.
+    formulas:
+      - tex: |-
+          e^x = \sum_{k=0}^\infty \frac{x^k}{k!}, \quad \sin x = \sum_{k=0}^\infty \frac{(-1)^k x^{2k+1}}{(2k+1)!}, \quad \cos x = \sum_{k=0}^\infty \frac{(-1)^k x^{2k}}{(2k)!}
+      - tex: |-
+          \ln(1 + x) = \sum_{k=1}^{\infty}\frac{(-1)^{k+1}x^k}{k} \quad (-1 < x \le 1)
+      - tex: |-
+          e^{i\theta} = \sum_k \frac{(i\theta)^k}{k!} = \cos\theta + i\sin\theta
+        label: {en: 'Euler''s formula falls out of the series', es: 'la fórmula de Euler sale de las series'}
+    example:
+      en: |
+        $\int_0^1 e^{-x^2}\,\dd x$ has no elementary antiderivative, but term-by-term integration of
+        $e^{-x^2} = \sum (-1)^k x^{2k}/k!$ gives $\sum_k \frac{(-1)^k}{k!(2k+1)} = 1 - \frac13 + \frac1{10} - \frac1{42} + \dots
+        \approx 0.746824$ — the core of the Gaussian error function `erf`.
+      es: |
+        $\int_0^1 e^{-x^2}\,\dd x$ no tiene primitiva elemental, pero integrar término a término
+        $e^{-x^2} = \sum (-1)^k x^{2k}/k!$ da $\sum_k \frac{(-1)^k}{k!(2k+1)} = 1 - \frac13 + \frac1{10} - \frac1{42} + \dots
+        \approx 0{,}746824$: el núcleo de la función de error gaussiana `erf`.
+    matters:
+      en: |
+        Series let a computer evaluate transcendental functions, let a CAS manipulate them, and let physicists and
+        engineers build perturbation methods. The matrix exponential $e^{At}$ — the solution of every linear ODE system
+        and of every quantum gate $e^{-iHt}$ — is defined by its series.
+      es: |
+        Las series permiten a un ordenador evaluar funciones trascendentes, a un CAS manipularlas y a físicos e
+        ingenieros construir métodos perturbativos. La exponencial de una matriz $e^{At}$ (la solución de todo sistema
+        lineal de EDO y de toda puerta cuántica $e^{-iHt}$) se define por su serie.
+    applications:
+      - to: symbolic-computation
+        strength: 4
+        type: frequent
+        note:
+          en: 'CAS compute series expansions (`series(f, x, 0, n)`) to simplify, take limits and approximate.'
+          es: 'Los CAS calculan desarrollos en serie (`series(f, x, 0, n)`) para simplificar, tomar límites y aproximar.'
+      - to: quantum-computing
+        strength: 3
+        type: advanced
+        note:
+          en: 'Gates are $e^{-iHt}$, matrix exponentials defined by their power series.'
+          es: 'Las puertas son $e^{-iHt}$, exponenciales de matrices definidas por su serie de potencias.'
+      - to: scientific-computing
+        strength: 4
+        type: frequent
+        note:
+          en: 'Special functions (erf, Bessel) are evaluated with series near 0 and asymptotic expansions far away.'
+          es: 'Las funciones especiales (erf, Bessel) se evalúan con series cerca de 0 y desarrollos asintóticos lejos.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Derive the Maclaurin series of $\arctan x$ from $\frac{1}{1 + x^2}$ and use it to write a series for $\pi$.'
+          es: 'Deduce la serie de Maclaurin de $\arctan x$ a partir de $\frac{1}{1 + x^2}$ y úsala para escribir una serie para $\pi$.'
+        solution:
+          en: '$\frac{1}{1+x^2} = \sum (-1)^k x^{2k}$; integrate: $\arctan x = \sum\frac{(-1)^k x^{2k+1}}{2k+1}$. At $x = 1$: $\frac\pi4 = 1 - \frac13 + \frac15 - \dots$ (Leibniz; very slow).'
+          es: '$\frac{1}{1+x^2} = \sum (-1)^k x^{2k}$; integrando, $\arctan x = \sum\frac{(-1)^k x^{2k+1}}{2k+1}$. En $x = 1$: $\frac\pi4 = 1 - \frac13 + \frac15 - \dots$ (Leibniz; muy lenta).'

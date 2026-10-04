@@ -1,0 +1,455 @@
+kind: math
+order: 7
+glyph: 'min'
+title: {en: 'Extrema and optimization', es: 'Extremos y optimización'}
+summary:
+  en: |
+    Finding the best: maxima, minima, convexity and optimization under constraints. The mathematics behind training
+    models, planning routes and allocating resources.
+  es: |
+    Encontrar lo mejor: máximos, mínimos, convexidad y optimización con restricciones. Las matemáticas detrás de
+    entrenar modelos, planificar rutas y asignar recursos.
+intro:
+  en: |
+    Almost every problem in machine learning, operations research, robotics and engineering design can be written as
+    *minimize $f(x)$ subject to some constraints*. Calculus gives the necessary conditions (the derivative vanishes,
+    or the gradient is a combination of constraint gradients), convexity tells when those conditions are also
+    sufficient, and numerical methods (gradient descent, Newton) find the points that satisfy them.
+  es: |
+    Casi todo problema de aprendizaje automático, investigación operativa, robótica o diseño de ingeniería se puede
+    escribir como *minimizar $f(x)$ sujeto a ciertas restricciones*. El cálculo da las condiciones necesarias (la
+    derivada se anula, o el gradiente es combinación de los gradientes de las restricciones), la convexidad dice
+    cuándo esas condiciones son también suficientes, y los métodos numéricos (descenso de gradiente, Newton) encuentran
+    los puntos que las cumplen.
+topics:
+  - id: extrema
+    level: fundamental
+    prerequisites: [functions]
+    title: {en: 'Maxima and minima', es: 'Máximos y mínimos'}
+    aliases: {en: [extrema, local minimum, global minimum, local maximum, global maximum, optimum], es: [extremos, mínimo local, mínimo global, máximo local, máximo global, óptimo]}
+    summary:
+      en: |
+        A global minimum is the lowest value of $f$ anywhere; a local minimum is lowest only in a neighbourhood. In
+        optimization the difference between the two is the difference between a good model and a stuck one.
+      es: |
+        Un mínimo global es el valor más bajo de $f$ en todo su dominio; uno local solo lo es en un entorno. En
+        optimización la diferencia entre ambos es la diferencia entre un buen modelo y uno atascado.
+    formulas:
+      - tex: |-
+          f(x^\ast) \le f(x)\ \ \forall x
+        label: {en: '$x^\ast$ is a global minimum', es: '$x^\ast$ es un mínimo global'}
+      - tex: |-
+          \exists\delta > 0:\ f(x^\ast) \le f(x)\ \ \forall x,\ |x - x^\ast| < \delta
+        label: {en: '$x^\ast$ is a local minimum', es: '$x^\ast$ es un mínimo local'}
+    applications:
+      - to: loss-function
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Training is the search for parameters that minimize the loss — in practice, a good local minimum.'
+          es: 'Entrenar es buscar los parámetros que minimizan la pérdida; en la práctica, un buen mínimo local.'
+      - to: operations-research
+        strength: 4
+        type: fundamental
+        note:
+          en: 'Cost minimization and profit maximization are the native language of operations research.'
+          es: 'Minimizar costes y maximizar beneficios es el idioma nativo de la investigación operativa.'
+
+  - id: critical-points
+    level: fundamental
+    core: true
+    prerequisites: [derivative, extrema, higher-order-derivatives]
+    title: {en: 'Critical points and derivative tests', es: 'Puntos críticos y criterios de la derivada'}
+    aliases: {en: [stationary point, first derivative test, second derivative test, Fermat theorem], es: [punto estacionario, criterio de la primera derivada, criterio de la segunda derivada, teorema de Fermat]}
+    summary:
+      en: |
+        Where $f'(x) = 0$ (or does not exist). Fermat: an interior extremum of a differentiable function is a critical
+        point. The sign of $f''$ then tells minimum ($f'' > 0$), maximum ($f'' < 0$) or "look closer" ($f'' = 0$).
+      es: |
+        Donde $f'(x) = 0$ (o no existe). Fermat: un extremo interior de una función derivable es un punto crítico. El
+        signo de $f''$ dice después si es mínimo ($f'' > 0$), máximo ($f'' < 0$) o «hay que mirar más» ($f'' = 0$).
+    why:
+      en: |
+        Checking every point to find the lowest is impossible on a continuum. Fermat's observation reduces the search to
+        solving an equation, $f'(x) = 0$, usually with finitely many solutions. Optimization algorithms are, at heart,
+        methods to solve that equation when it cannot be solved by hand.
+      es: |
+        Comprobar todos los puntos para encontrar el más bajo es imposible en un continuo. La observación de Fermat
+        reduce la búsqueda a resolver una ecuación, $f'(x) = 0$, que suele tener un número finito de soluciones. Los
+        algoritmos de optimización son, en el fondo, métodos para resolver esa ecuación cuando no se puede a mano.
+    intuition:
+      en: |
+        At the bottom of a valley or the top of a hill the tangent is horizontal. But a horizontal tangent can also be an
+        inflection point ($x^3$ at 0) — and in many dimensions, a **saddle**: a minimum in one direction and a maximum
+        in another. In high-dimensional loss landscapes most critical points are saddles.
+      es: |
+        En el fondo de un valle o en la cima de una colina la tangente es horizontal. Pero una tangente horizontal
+        también puede ser un punto de inflexión ($x^3$ en 0) y, en varias dimensiones, una **silla de montar**: mínimo en
+        una dirección y máximo en otra. En los paisajes de pérdida de muchas dimensiones, la mayoría de puntos críticos
+        son sillas.
+    formal:
+      en: |
+        **Fermat.** If $f$ has a local extremum at an interior point $c$ and $f'(c)$ exists, then $f'(c) = 0$.
+
+        **Second derivative test.** If $f'(c) = 0$ and $f''(c) > 0$, $c$ is a strict local minimum; if
+        $f''(c) < 0$, a strict local maximum.
+      es: |
+        **Fermat.** Si $f$ tiene un extremo local en un punto interior $c$ y $f'(c)$ existe, entonces $f'(c) = 0$.
+
+        **Criterio de la segunda derivada.** Si $f'(c) = 0$ y $f''(c) > 0$, $c$ es un mínimo local estricto; si
+        $f''(c) < 0$, un máximo local estricto.
+    formulas:
+      - tex:
+          en: |-
+            f'(c) = 0, \quad f''(c) > 0 \implies \text{local minimum}
+          es: |-
+            f'(c) = 0, \quad f''(c) > 0 \implies \text{mínimo local}
+      - tex: |-
+          \min_w \sum_i (y_i - w x_i)^2 \implies w^\ast = \frac{\sum_i x_i y_i}{\sum_i x_i^2}
+        label: {en: 'least squares through the origin: set the derivative to zero', es: 'mínimos cuadrados por el origen: anular la derivada'}
+    compute:
+      en: |
+        1. Compute $f'$ and solve $f'(x) = 0$; add points where $f'$ does not exist.
+        2. Classify each with the sign of $f''$ (or the sign change of $f'$).
+        3. For global extrema on $[a,b]$, also compare the endpoint values.
+        When step 1 has no closed-form solution, iterate: gradient descent or Newton's method on $f'$.
+      es: |
+        1. Calcula $f'$ y resuelve $f'(x) = 0$; añade los puntos donde $f'$ no existe.
+        2. Clasifica cada uno con el signo de $f''$ (o el cambio de signo de $f'$).
+        3. Para extremos globales en $[a,b]$, compara también los valores en los extremos del intervalo.
+        Si el paso 1 no tiene solución cerrada, itera: descenso de gradiente o método de Newton sobre $f'$.
+    example:
+      en: |
+        Fit $y \approx w x$ to the points $(1, 2), (2, 3), (3, 7)$. Loss $L(w) = (2 - w)^2 + (3 - 2w)^2 + (7 - 3w)^2$.
+        $L'(w) = -2(2 - w) - 4(3 - 2w) - 6(7 - 3w) = 28w - 58 = 0 \Rightarrow w = 58/28 \approx 2.07$, and $L'' = 28 > 0$:
+        a minimum. This is linear regression in one line.
+      es: |
+        Ajusta $y \approx w x$ a los puntos $(1, 2), (2, 3), (3, 7)$. Pérdida $L(w) = (2 - w)^2 + (3 - 2w)^2 + (7 - 3w)^2$.
+        $L'(w) = -2(2 - w) - 4(3 - 2w) - 6(7 - 3w) = 28w - 58 = 0 \Rightarrow w = 58/28 \approx 2{,}07$, y $L'' = 28 > 0$:
+        un mínimo. Es la regresión lineal en una línea.
+    matters:
+      en: |
+        "Set the derivative to zero" is the most reused recipe of applied mathematics: least squares, maximum
+        likelihood, optimal control and economics all start there. Gradient-based training is that recipe executed
+        numerically when the equation is too big to solve.
+      es: |
+        «Anular la derivada» es la receta más reutilizada de las matemáticas aplicadas: mínimos cuadrados, máxima
+        verosimilitud, control óptimo y economía empiezan todos ahí. El entrenamiento por gradiente es esa receta
+        ejecutada numéricamente cuando la ecuación es demasiado grande para resolverla.
+    applications:
+      - to: gradient-descent
+        strength: 4
+        type: fundamental
+        note:
+          en: 'Gradient descent stops where the derivative vanishes — at a critical point.'
+          es: 'El descenso de gradiente se detiene donde se anula la derivada: en un punto crítico.'
+      - to: loss-landscape
+        strength: 4
+        type: fundamental
+        note:
+          en: 'Minima, maxima and (overwhelmingly) saddle points shape the landscape optimizers must cross.'
+          es: 'Mínimos, máximos y (sobre todo) puntos de silla dan forma al paisaje que deben cruzar los optimizadores.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Find and classify the critical points of $f(x) = x^4 - 4x^3$.'
+          es: 'Halla y clasifica los puntos críticos de $f(x) = x^4 - 4x^3$.'
+        solution:
+          en: '$f''(x) = 4x^2(x - 3)$: critical points 0 and 3. $f''(x) = 12x^2 - 24x$; $f''(3) = 36 > 0$ → minimum. At 0, $f'' = 0$ and $f''$ does not change sign (negative on both sides): not an extremum.'
+          es: '$f''(x) = 4x^2(x - 3)$: puntos críticos 0 y 3. $f''(x) = 12x^2 - 24x$; $f''(3) = 36 > 0$ → mínimo. En 0, $f'' = 0$ y $f''$ no cambia de signo (negativa a ambos lados): no es extremo.'
+      - type: applied
+        prompt:
+          en: 'A server costs $c(n) = 100/n + 4n$ (latency penalty plus hardware) with $n$ instances. Which $n$ minimizes cost?'
+          es: 'Un servicio cuesta $c(n) = 100/n + 4n$ (penalización de latencia más hardware) con $n$ instancias. ¿Qué $n$ minimiza el coste?'
+        solution:
+          en: '$c''(n) = -100/n^2 + 4 = 0 \Rightarrow n = 5$; $c''(n) = 200/n^3 > 0$, so it is a minimum, $c(5) = 40$.'
+          es: '$c''(n) = -100/n^2 + 4 = 0 \Rightarrow n = 5$; $c''(n) = 200/n^3 > 0$, así que es un mínimo, $c(5) = 40$.'
+
+  - id: convexity
+    level: university
+    core: true
+    prerequisites: [critical-points, inequalities]
+    title: {en: 'Convexity and concavity', es: 'Convexidad y concavidad'}
+    aliases: {en: [convex function, concave function, convex optimization, inflection point, Jensen inequality], es: [función convexa, función cóncava, optimización convexa, punto de inflexión, desigualdad de Jensen]}
+    summary:
+      en: |
+        $f$ is convex if the chord between any two points of its graph lies above the graph — equivalently, for smooth
+        $f$, if $f'' \ge 0$. For convex functions **every local minimum is global**, which is why convex problems are
+        the ones optimization can reliably solve.
+      es: |
+        $f$ es convexa si la cuerda entre dos puntos cualesquiera de su gráfica queda por encima de la gráfica; para $f$
+        suave, equivalentemente, si $f'' \ge 0$. En las funciones convexas **todo mínimo local es global**, y por eso los
+        problemas convexos son los que la optimización resuelve de forma fiable.
+    why:
+      en: |
+        General optimization is hopeless: a function can hide its minimum anywhere. Convexity is the structural property
+        that makes local information (the slope here) globally trustworthy: if the slope says "downhill is that way",
+        the global minimum really is that way.
+      es: |
+        La optimización general es una causa perdida: una función puede esconder su mínimo en cualquier sitio. La
+        convexidad es la propiedad estructural que hace fiable globalmente la información local (la pendiente aquí): si
+        la pendiente dice «cuesta abajo es por ahí», el mínimo global está de verdad por ahí.
+    intuition:
+      en: |
+        A convex function is a bowl: no bumps, no secondary valleys. The tangent line at any point lies entirely below
+        the graph, so $f(y) \ge f(x) + f'(x)(y - x)$ — the linear prediction is always an underestimate, and a point with
+        zero slope beats every other point.
+      es: |
+        Una función convexa es un cuenco: sin bultos ni valles secundarios. La recta tangente en cualquier punto queda
+        entera por debajo de la gráfica, así que $f(y) \ge f(x) + f'(x)(y - x)$: la predicción lineal siempre se queda
+        corta, y un punto con pendiente cero gana a todos los demás.
+    formal:
+      en: |
+        $f$ is **convex** on an interval if for all $x, y$ and $t \in [0,1]$:
+        $$f\big(tx + (1-t)y\big) \le t f(x) + (1 - t) f(y).$$
+        For differentiable $f$: convex $\iff f(y) \ge f(x) + f'(x)(y - x)$; for twice differentiable $f$: convex
+        $\iff f'' \ge 0$. $f$ is **concave** if $-f$ is convex. An **inflection point** is where concavity changes.
+      es: |
+        $f$ es **convexa** en un intervalo si para todo $x, y$ y $t \in [0,1]$:
+        $$f\big(tx + (1-t)y\big) \le t f(x) + (1 - t) f(y).$$
+        Para $f$ derivable: convexa $\iff f(y) \ge f(x) + f'(x)(y - x)$; para $f$ dos veces derivable: convexa
+        $\iff f'' \ge 0$. $f$ es **cóncava** si $-f$ es convexa. Un **punto de inflexión** es donde cambia la concavidad.
+    proofIdea:
+      en: 'Local ⇒ global: if $x^\ast$ were a local but not global minimum, the chord to a lower point $y$ would lie below $f(x^\ast)$ arbitrarily close to $x^\ast$, contradicting local minimality.'
+      es: 'Local ⇒ global: si $x^\ast$ fuera mínimo local pero no global, la cuerda hasta un punto más bajo $y$ quedaría por debajo de $f(x^\ast)$ arbitrariamente cerca de $x^\ast$, en contra de la minimalidad local.'
+    formulas:
+      - tex: |-
+          f\big(tx + (1-t)y\big) \le t f(x) + (1 - t) f(y)
+      - tex: |-
+          f\big(\E[X]\big) \le \E\big[f(X)\big]
+        label: {en: 'Jensen''s inequality (convex $f$)', es: 'desigualdad de Jensen ($f$ convexa)'}
+      - tex:
+          en: |-
+            \nabla^2 f(x) \succeq 0 \ \ \forall x \iff f \text{ convex}
+          es: |-
+            \nabla^2 f(x) \succeq 0 \ \ \forall x \iff f \text{ convexa}
+        label: {en: 'several variables: positive semidefinite Hessian', es: 'varias variables: hessiano semidefinido positivo'}
+    matters:
+      en: |
+        Linear and logistic regression, support vector machines, LASSO and most of operations research are convex: they
+        come with guarantees and reliable solvers. Deep networks are not, which is why their training is an empirical
+        art — and why it is remarkable that gradient descent works so well on them anyway.
+      es: |
+        La regresión lineal y logística, las máquinas de vectores soporte, el LASSO y casi toda la investigación
+        operativa son convexos: vienen con garantías y resolvedores fiables. Las redes profundas no lo son, y por eso
+        entrenarlas es un arte empírico (y por eso es notable que el descenso de gradiente funcione tan bien con ellas).
+    applications:
+      - to: loss-function
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Squared error and cross-entropy are convex in the predictions; for linear models, in the parameters too.'
+          es: 'El error cuadrático y la entropía cruzada son convexos en las predicciones; en modelos lineales, también en los parámetros.'
+      - to: support-vector-machines
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Training an SVM is a convex quadratic program: a unique global optimum.'
+          es: 'Entrenar una SVM es un programa cuadrático convexo: un único óptimo global.'
+      - to: operations-research
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Convex optimization (linear, quadratic, conic programs) is the workhorse of planning and logistics.'
+          es: 'La optimización convexa (programas lineales, cuadráticos, cónicos) es el caballo de batalla de la planificación y la logística.'
+      - to: loss-landscape
+        strength: 4
+        type: frequent
+        note:
+          en: 'Deep-network losses are non-convex: many minima and saddles, yet good minima are easy to find in practice.'
+          es: 'Las pérdidas de las redes profundas no son convexas: muchos mínimos y sillas, aunque en la práctica es fácil encontrar mínimos buenos.'
+    exercises:
+      - type: proof
+        prompt:
+          en: 'Show that $f(x) = \ln(1 + e^x)$ (softplus) is convex.'
+          es: 'Demuestra que $f(x) = \ln(1 + e^x)$ (softplus) es convexa.'
+        solution:
+          en: '$f''(x) = \sigma(x)$ and $f''(x) = \sigma(x)(1 - \sigma(x)) > 0$.'
+          es: '$f''(x) = \sigma(x)$ y $f''(x) = \sigma(x)(1 - \sigma(x)) > 0$.'
+      - type: ai
+        prompt:
+          en: 'Is the loss of a 1-hidden-layer network convex in its weights? Hint: swap two hidden neurons.'
+          es: '¿Es convexa en los pesos la pérdida de una red con una capa oculta? Pista: intercambia dos neuronas ocultas.'
+        solution:
+          en: |
+            No. Swapping two hidden neurons (and their outgoing weights) gives a different weight vector with the same
+            loss. If $\theta_1 \ne \theta_2$ are both minima, convexity would make their midpoint at least as good — but
+            the midpoint averages the two neurons into identical ones, generally worse. Symmetric minima rule out convexity.
+          es: |
+            No. Intercambiar dos neuronas ocultas (y sus pesos de salida) da otro vector de pesos con la misma pérdida. Si
+            $\theta_1 \ne \theta_2$ son ambos mínimos, la convexidad haría que su punto medio fuera igual de bueno, pero
+            el punto medio promedia las dos neuronas en dos idénticas, en general peor. Los mínimos simétricos impiden la
+            convexidad.
+
+  - id: constrained-optimization
+    level: university
+    prerequisites: [extrema, gradient]
+    title: {en: 'Constrained optimization', es: 'Optimización con restricciones'}
+    aliases: {en: [constraints, feasible set, subject to], es: [restricciones, conjunto factible, sujeto a]}
+    summary:
+      en: |
+        Minimize $f(x)$ only over the points that satisfy constraints $g(x) = 0$ or $h(x) \le 0$: a budget, a physical
+        limit, a probability that must sum to 1. The minimum can now sit on the boundary, where $\nabla f \ne 0$.
+      es: |
+        Minimizar $f(x)$ solo sobre los puntos que cumplen restricciones $g(x) = 0$ o $h(x) \le 0$: un presupuesto, un
+        límite físico, unas probabilidades que deben sumar 1. El mínimo puede estar ahora en la frontera, donde
+        $\nabla f \ne 0$.
+    formulas:
+      - tex:
+          en: |-
+            \min_{x} f(x) \quad \text{subject to} \quad g_i(x) = 0,\ \ h_j(x) \le 0
+          es: |-
+            \min_{x} f(x) \quad \text{sujeto a} \quad g_i(x) = 0,\ \ h_j(x) \le 0
+    applications:
+      - to: operations-research
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Scheduling, routing and allocation are optimization under capacity and demand constraints.'
+          es: 'Planificar, enrutar y asignar es optimizar con restricciones de capacidad y demanda.'
+      - to: trajectory-optimization
+        strength: 5
+        type: fundamental
+        note:
+          en: 'A robot trajectory minimizes effort subject to dynamics, joint limits and obstacles.'
+          es: 'La trayectoria de un robot minimiza el esfuerzo sujeta a la dinámica, los límites articulares y los obstáculos.'
+
+  - id: lagrange-multipliers
+    level: university
+    core: true
+    prerequisites: [constrained-optimization, gradient]
+    title: {en: 'Lagrange multipliers', es: 'Multiplicadores de Lagrange'}
+    aliases: {en: [Lagrangian, lambda, dual, shadow price], es: [lagrangiano, lambda, dual, precio sombra]}
+    summary:
+      en: |
+        At a constrained optimum of $f$ subject to $g = 0$, the gradients are parallel: $\nabla f = \lambda\nabla g$. The
+        multiplier $\lambda$ measures how much the optimum would improve if the constraint were relaxed.
+      es: |
+        En un óptimo de $f$ con la restricción $g = 0$, los gradientes son paralelos: $\nabla f = \lambda\nabla g$. El
+        multiplicador $\lambda$ mide cuánto mejoraría el óptimo si se relajara la restricción.
+    why:
+      en: |
+        Substituting the constraint to eliminate a variable works only in easy cases. Lagrange's method keeps all the
+        variables and adds one unknown per constraint, turning a constrained problem into an unconstrained system of
+        equations — and the new unknowns turn out to carry economic and physical meaning.
+      es: |
+        Sustituir la restricción para eliminar una variable solo funciona en casos fáciles. El método de Lagrange
+        conserva todas las variables y añade una incógnita por restricción, convirtiendo un problema con restricciones en
+        un sistema de ecuaciones sin ellas, y las nuevas incógnitas resultan tener significado económico y físico.
+    intuition:
+      en: |
+        Walk along the curve $g = 0$ looking at the level sets of $f$. While the curve crosses level sets, you can still
+        go lower. At the optimum the curve is **tangent** to a level set of $f$, so their normals — $\nabla f$ and
+        $\nabla g$ — point along the same line.
+      es: |
+        Camina por la curva $g = 0$ mirando los conjuntos de nivel de $f$. Mientras la curva cruza conjuntos de nivel,
+        todavía puedes bajar. En el óptimo la curva es **tangente** a un conjunto de nivel de $f$, así que sus normales
+        ($\nabla f$ y $\nabla g$) apuntan en la misma recta.
+    formal:
+      en: |
+        If $x^\ast$ is a local extremum of $f$ on $\{g = 0\}$, with $f, g$ continuously differentiable and
+        $\nabla g(x^\ast) \ne 0$, then there is $\lambda$ with $\nabla f(x^\ast) = \lambda\,\nabla g(x^\ast)$.
+        Equivalently, $(x^\ast, \lambda)$ is a critical point of the **Lagrangian**
+        $$\mathcal L(x, \lambda) = f(x) - \lambda\,g(x).$$
+      es: |
+        Si $x^\ast$ es un extremo local de $f$ sobre $\{g = 0\}$, con $f, g$ de clase $C^1$ y $\nabla g(x^\ast) \ne 0$,
+        entonces existe $\lambda$ con $\nabla f(x^\ast) = \lambda\,\nabla g(x^\ast)$. Equivalentemente, $(x^\ast, \lambda)$
+        es un punto crítico del **lagrangiano**
+        $$\mathcal L(x, \lambda) = f(x) - \lambda\,g(x).$$
+    formulas:
+      - tex: |-
+          \nabla f(x^\ast) = \lambda\,\nabla g(x^\ast), \qquad g(x^\ast) = 0
+      - tex: |-
+          \frac{\partial f^\ast}{\partial c} = \lambda, \qquad g(x) = c
+        label: {en: 'the multiplier is the sensitivity of the optimum ("shadow price")', es: 'el multiplicador es la sensibilidad del óptimo («precio sombra»)'}
+    example:
+      en: |
+        Maximize entropy $H(p) = -\sum_i p_i\ln p_i$ subject to $\sum_i p_i = 1$. $\partial_{p_i}\big(H - \lambda(\sum p - 1)\big)
+        = -\ln p_i - 1 - \lambda = 0$, so all $p_i$ are equal: the uniform distribution. Add a constraint on the expected
+        energy and the same computation produces the softmax / Boltzmann distribution $p_i \propto e^{-\beta E_i}$.
+      es: |
+        Maximiza la entropía $H(p) = -\sum_i p_i\ln p_i$ sujeta a $\sum_i p_i = 1$. $\partial_{p_i}\big(H - \lambda(\sum p - 1)\big)
+        = -\ln p_i - 1 - \lambda = 0$, así que todos los $p_i$ son iguales: la distribución uniforme. Añade una restricción
+        sobre la energía esperada y el mismo cálculo produce la distribución softmax o de Boltzmann $p_i \propto e^{-\beta E_i}$.
+    matters:
+      en: |
+        Support vector machines are derived through their Lagrangian dual (where the kernel trick appears). Constrained
+        training, fairness constraints, the maximum-entropy justification of softmax, and duality in operations research
+        all use the same idea. In physics, Lagrange's other great idea — the Lagrangian of mechanics — runs robot
+        dynamics.
+      es: |
+        Las máquinas de vectores soporte se deducen a través de su dual lagrangiano (donde aparece el truco del núcleo).
+        El entrenamiento con restricciones, las restricciones de equidad, la justificación de la softmax por máxima
+        entropía y la dualidad en investigación operativa usan la misma idea. En física, la otra gran idea de Lagrange
+        (el lagrangiano de la mecánica) gobierna la dinámica de los robots.
+    applications:
+      - to: support-vector-machines
+        strength: 5
+        type: fundamental
+        note:
+          en: 'The SVM dual is obtained with Lagrange multipliers; only points with $\alpha_i > 0$ (support vectors) matter.'
+          es: 'El dual de la SVM se obtiene con multiplicadores de Lagrange; solo importan los puntos con $\alpha_i > 0$ (vectores soporte).'
+      - to: operations-research
+        strength: 4
+        type: frequent
+        note:
+          en: 'Dual variables are shadow prices: how much an extra unit of a resource is worth.'
+          es: 'Las variables duales son precios sombra: cuánto vale una unidad más de un recurso.'
+      - to: regularization
+        strength: 3
+        type: advanced
+        note:
+          en: 'Penalized training $L + \lambda\norm w^2$ is the Lagrangian of training under a norm constraint $\norm w \le r$.'
+          es: 'Entrenar con penalización $L + \lambda\norm w^2$ es el lagrangiano de entrenar con una restricción de norma $\norm w \le r$.'
+    exercises:
+      - type: computation
+        prompt:
+          en: 'Maximize $f(x,y) = xy$ subject to $x + y = 10$ with a Lagrange multiplier.'
+          es: 'Maximiza $f(x,y) = xy$ sujeta a $x + y = 10$ con un multiplicador de Lagrange.'
+        solution:
+          en: '$(y, x) = \lambda(1, 1)$ gives $x = y = \lambda$, and $x + y = 10$ gives $x = y = 5$, $f = 25$, $\lambda = 5$.'
+          es: '$(y, x) = \lambda(1, 1)$ da $x = y = \lambda$, y $x + y = 10$ da $x = y = 5$, $f = 25$, $\lambda = 5$.'
+      - type: ai
+        prompt:
+          en: 'Show that the distribution maximizing entropy with a fixed mean energy $\sum_i p_i E_i = \bar E$ has the form $p_i \propto e^{-\beta E_i}$.'
+          es: 'Demuestra que la distribución que maximiza la entropía con energía media fija $\sum_i p_i E_i = \bar E$ tiene la forma $p_i \propto e^{-\beta E_i}$.'
+        solution:
+          en: '$\partial_{p_i}\big[-\sum p\ln p - \lambda(\sum p - 1) - \beta(\sum pE - \bar E)\big] = -\ln p_i - 1 - \lambda - \beta E_i = 0$, so $p_i = e^{-1-\lambda}e^{-\beta E_i}$: a softmax of $-\beta E$.'
+          es: '$\partial_{p_i}\big[-\sum p\ln p - \lambda(\sum p - 1) - \beta(\sum pE - \bar E)\big] = -\ln p_i - 1 - \lambda - \beta E_i = 0$, así que $p_i = e^{-1-\lambda}e^{-\beta E_i}$: una softmax de $-\beta E$.'
+
+  - id: kkt-conditions
+    level: advanced
+    prerequisites: [lagrange-multipliers, convexity]
+    title: {en: 'KKT conditions', es: 'Condiciones KKT'}
+    aliases: {en: [Karush-Kuhn-Tucker, inequality constraints, complementary slackness, duality], es: [Karush-Kuhn-Tucker, restricciones de desigualdad, holgura complementaria, dualidad]}
+    summary:
+      en: |
+        Lagrange multipliers for inequality constraints $h_j(x) \le 0$: multipliers are non-negative, and each is zero
+        unless its constraint is active (complementary slackness). For convex problems the KKT conditions are necessary
+        and sufficient.
+      es: |
+        Multiplicadores de Lagrange para restricciones de desigualdad $h_j(x) \le 0$: los multiplicadores son no
+        negativos y cada uno es cero salvo que su restricción esté activa (holgura complementaria). En problemas
+        convexos las condiciones KKT son necesarias y suficientes.
+    formulas:
+      - tex: |-
+          \nabla f(x^\ast) + \sum_j \mu_j \nabla h_j(x^\ast) = 0, \quad \mu_j \ge 0, \quad \mu_j\,h_j(x^\ast) = 0
+    applications:
+      - to: support-vector-machines
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Complementary slackness is why only the support vectors (points on or inside the margin) get non-zero weight.'
+          es: 'La holgura complementaria es la razón de que solo los vectores soporte (puntos en el margen o dentro) tengan peso no nulo.'
+      - to: operations-research
+        strength: 5
+        type: fundamental
+        note:
+          en: 'Interior-point and active-set solvers are algorithms for satisfying the KKT conditions.'
+          es: 'Los resolvedores de punto interior y de conjunto activo son algoritmos para cumplir las condiciones KKT.'
+      - to: trajectory-optimization
+        strength: 4
+        type: frequent
+        note:
+          en: 'Nonlinear programming solvers used in model predictive control (IPOPT, SQP) iterate towards a KKT point.'
+          es: 'Los resolvedores de programación no lineal usados en control predictivo (IPOPT, SQP) iteran hacia un punto KKT.'
