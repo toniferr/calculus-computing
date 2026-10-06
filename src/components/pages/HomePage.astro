@@ -1,17 +1,15 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getGraph } from '../../lib/graph';
-import { href, t, type Lang } from '../../lib/i18n';
-import { forceLayout } from '../../lib/layout';
+import { href, t, type Lang, type UIKey } from '../../lib/i18n';
 
-// The home page is only the title screen: the whole graph drawn as a sky (scripts/splash.ts). The guided overview
-// that used to live here is on /overview/.
+// The home page is only the title screen: one curve and four ideas of calculus at work on it, one after another
+// (scripts/splash.ts). The guided overview that used to live here is on /overview/.
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
 const g = await getGraph();
-const { nodes } = forceLayout(g);
 
 const stats = [
   { n: g.topics.length, key: 'home.stats.topics' as const },
@@ -19,36 +17,23 @@ const stats = [
   { n: g.areas.length, key: 'home.stats.areas' as const },
 ];
 
-// ---- payload for the client: positions from the same layout as the map ---------------------------------------------
-const areaIndex = new Map(g.areas.map((a, i) => [a.id, i]));
-const centroid = g.areas.map((a) => {
-  const own = nodes.filter((n) => n.area === a.id);
-  const x = own.reduce((s, n) => s + n.x, 0) / Math.max(1, own.length);
-  const y = Math.min(...own.map((n) => n.y));
-  return { t: a.title[lang], k: a.kind === 'math' ? 0 : 1, x: Math.round(x), y: Math.round(y) };
-});
-const index = new Map(g.topics.map((tp, i) => [tp.id, i]));
-const data = {
-  // [x, y, radius, kind (0 math, 1 computing), core, area]
-  nodes: g.topics.map((tp, i) => [
-    Math.round(nodes[i]!.x),
-    Math.round(nodes[i]!.y),
-    Math.round(nodes[i]!.r * 10) / 10,
-    g.areas[areaIndex.get(tp.area)!]!.kind === 'math' ? 0 : 1,
-    tp.core ? 1 : 0,
-    areaIndex.get(tp.area),
-  ]),
-  ids: g.topics.map((tp) => tp.id),
-  titles: g.topics.map((tp) => tp.title[lang]),
-  // [from, to, application (math → computing)]
-  edges: g.edges.map((e) => [index.get(e.from), index.get(e.to), e.kind === 'application' ? 1 : 0]),
-  areas: centroid,
-  // The chain shown first: the curated path from functions to backpropagation (as on the overview page).
-  featured: ['functions', 'derivative', 'chain-rule', 'multivariable-functions', 'partial-derivatives', 'gradient',
-    'multivariable-chain-rule', 'loss-function', 'gradient-descent', 'neural-networks', 'backpropagation']
-    .map((id) => index.get(id))
-    .filter((i) => i !== undefined),
-  topicUrl: href(lang, 'topic/'),
+// Each act names its topic and where it is used; the links are real connections from the content (applications of
+// the mathematical topic, or the computing topics built on it), so g.topic() fails the build if one disappears.
+const acts: { chip: UIKey; text: UIKey; topic: string; uses: string[] }[] = [
+  { chip: 'splash.act.derivative', text: 'splash.text.derivative', topic: 'derivative', uses: ['automatic-differentiation', 'physics-engine'] },
+  { chip: 'splash.act.integral', text: 'splash.text.integral', topic: 'definite-integral', uses: ['rendering-equation', 'monte-carlo'] },
+  { chip: 'splash.act.taylor', text: 'splash.text.taylor', topic: 'taylor-polynomial', uses: ['floating-point', 'physics-engine'] },
+  { chip: 'splash.act.descent', text: 'splash.text.descent', topic: 'gradient-descent', uses: ['neural-networks', 'backpropagation'] },
+];
+const link = (id: string) => ({ url: href(lang, `topic/${id}/`), title: g.topic(id).title[lang] });
+
+// Words the canvas writes, and the language for its numbers.
+const words = {
+  lang,
+  degree: t(lang, 'splash.degree'),
+  step: t(lang, 'splash.step'),
+  local: t(lang, 'splash.local'),
+  global: t(lang, 'splash.global'),
 };
 ---
 
@@ -77,14 +62,46 @@ const data = {
       <p class="splash-hint">{t(lang, 'splash.hint')}</p>
     </div>
     <div class="splash-hud">
-      <p class="splash-caption" data-chain-label={t(lang, 'splash.chain')}></p>
-      <div class="splash-ctrls">
-        <button class="btn small" type="button" data-trace>{t(lang, 'splash.trace')}</button>
-        <button class="btn small" type="button" data-pause data-pause-label={t(lang, 'splash.pause')} data-play-label={t(lang, 'splash.play')} aria-pressed="false">{t(lang, 'splash.pause')}</button>
+      <ol class="splash-acts">
+        {
+          acts.map((a, i) => (
+            <li>
+              <button type="button" data-act={i} aria-pressed={i === 0 ? 'true' : 'false'}>
+                <span class="n">{i + 1}</span>
+                {t(lang, a.chip)}
+              </button>
+            </li>
+          ))
+        }
+      </ol>
+      <div class="splash-line">
+        {
+          acts.map((a, i) => {
+            const topic = link(a.topic);
+            return (
+              <p class="splash-caption" data-caption={i} hidden={i !== 0}>
+                <a class="topic" href={topic.url}>{topic.title}</a>: {t(lang, a.text)}{' '}
+                <span class="uses">
+                  {t(lang, 'splash.uses')}:{' '}
+                  {a.uses.map(link).map((u, k) => (
+                    <>
+                      {k > 0 && ' · '}
+                      <a href={u.url}>{u.title}</a>
+                    </>
+                  ))}
+                </span>
+              </p>
+            );
+          })
+        }
+        <div class="splash-ctrls">
+          <button class="btn small" type="button" data-next>{t(lang, 'splash.next')} →</button>
+          <button class="btn small" type="button" data-pause data-pause-label={t(lang, 'splash.pause')} data-play-label={t(lang, 'splash.play')} aria-pressed="false">{t(lang, 'splash.pause')}</button>
+        </div>
       </div>
     </div>
   </section>
-  <script is:inline type="application/json" id="splash-data" set:html={JSON.stringify(data).replace(/</g, '\\u003c')} />
+  <script is:inline type="application/json" id="splash-data" set:html={JSON.stringify(words).replace(/</g, '\\u003c')} />
 </Base>
 
 <script>
@@ -100,7 +117,7 @@ const data = {
     position: relative;
     display: flex;
     flex-direction: column;
-    min-height: max(calc(100svh - var(--header-h)), 620px);
+    min-height: max(calc(100svh - var(--header-h)), 640px);
     overflow: hidden;
     background: var(--bg);
   }
@@ -112,12 +129,13 @@ const data = {
     height: 100%;
     display: block;
     touch-action: manipulation;
+    cursor: crosshair;
   }
 
   .splash-copy {
     position: relative;
     z-index: 1;
-    width: min(44vw, 560px);
+    width: min(40vw, 540px);
     margin-left: max(1.5rem, calc((100vw - 1240px) / 2));
     padding-top: clamp(2rem, 9vh, 6rem);
     pointer-events: none;
@@ -190,31 +208,107 @@ const data = {
     left: 0;
     right: 0;
     bottom: 0;
+    display: grid;
+    gap: 0.6rem;
+    padding: 0.8rem max(1.5rem, calc((100vw - 1240px) / 2)) 1rem;
+  }
+
+  .splash-acts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .splash-acts button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    overflow: hidden;
+    padding: 0.32rem 0.8rem 0.32rem 0.4rem;
+    border: 1px solid var(--line-2);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    backdrop-filter: blur(6px);
+    color: var(--muted);
+    font: inherit;
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .splash-acts button:hover {
+    color: var(--fg);
+  }
+
+  .splash-acts .n {
+    display: inline-grid;
+    place-items: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    background: var(--surface);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+
+  .splash-acts button[aria-pressed='true'] {
+    border-color: var(--accent);
+    color: var(--fg);
+  }
+
+  .splash-acts button[aria-pressed='true'] .n {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  /* How far the act has played, as a thin bar along the bottom of its chip. */
+  .splash-acts button[aria-pressed='true']::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: calc(var(--p, 0) * 100%);
+    background: var(--accent);
+  }
+
+  .splash-line {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 0.6rem 1rem;
-    padding: 0.8rem max(1.5rem, calc((100vw - 1240px) / 2)) 1rem;
   }
 
   .splash-caption {
     flex: 1 1 280px;
     margin: 0;
-    padding: 0.4rem 0.75rem;
+    padding: 0.45rem 0.75rem;
     min-height: 2.2rem;
     border: 1px solid var(--line);
     border-radius: var(--r-sm);
     background: color-mix(in srgb, var(--bg) 78%, transparent);
     backdrop-filter: blur(6px);
-    font-size: 0.86rem;
+    font-size: 0.88rem;
   }
 
-  .splash-caption b {
+  .splash-caption[hidden] {
+    display: none;
+  }
+
+  .splash-caption .topic {
+    font-weight: 700;
+  }
+
+  .splash-caption .uses {
+    color: var(--muted);
+  }
+
+  .splash-caption .uses a {
     color: var(--comp);
-  }
-
-  .splash-caption .math {
-    color: var(--accent);
   }
 
   .splash-ctrls {
@@ -237,7 +331,7 @@ const data = {
     .splash-canvas {
       order: 2;
       position: relative;
-      height: clamp(360px, 62svh, 520px);
+      height: clamp(340px, 56svh, 480px);
     }
 
     .splash-hud {

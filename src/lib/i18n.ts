@@ -220,23 +220,47 @@ const ui = {
     es: 'Un panorama de Calculus × Computing: el gran mapa, la tesis, dos preguntas, rutas, figuras interactivas y todas las áreas.',
   },
 
-  // Home: the title screen (a constellation of the whole graph)
+  // Home: the title screen (one curve, four ideas of calculus at work on it)
   'splash.eyebrow': { en: 'An interactive knowledge map', es: 'Un mapa de conocimiento interactivo' },
   'splash.lead': {
-    en: 'All of university calculus and where every idea lands in AI, graphics, simulation, robotics and scientific computing. Behind this text, the whole map as a sky: every star is a topic, and light keeps travelling from mathematics to the technology it makes possible.',
-    es: 'Todo el cálculo universitario y dónde aterriza cada idea en IA, gráficos, simulación, robótica y computación científica. Detrás de este texto, el mapa entero como un cielo: cada estrella es un concepto, y la luz no deja de viajar de las matemáticas a la tecnología que hacen posible.',
+    en: 'All of university calculus and where every idea lands in AI, graphics, simulation, robotics and scientific computing. Behind this text, four of those ideas at work on a single curve: the slope, the area, the approximation and the way downhill.',
+    es: 'Todo el cálculo universitario y dónde aterriza cada idea en IA, gráficos, simulación, robótica y computación científica. Detrás de este texto, cuatro de esas ideas trabajando sobre una sola curva: la pendiente, el área, la aproximación y el camino cuesta abajo.',
   },
   'splash.start': { en: 'Start with the overview', es: 'Empezar por el panorama' },
   'splash.hint': {
-    en: 'Hover a star to read it, click to open it.',
-    es: 'Pasa el ratón por una estrella para leerla; haz clic para abrirla.',
+    en: 'Move the pointer over the curve to steer each idea; in gradient descent, click to drop a ball.',
+    es: 'Mueve el puntero sobre la curva para guiar cada idea; en el descenso de gradiente, haz clic para soltar una bola.',
   },
   'splash.label': {
-    en: 'The knowledge map drawn as a constellation: mathematics topics in blue on the left, computing topics in amber on the right, joined by faint lines; pulses of light travel from mathematics to computing, and from time to time the chain of ideas behind one topic lights up.',
-    es: 'El mapa de conocimiento dibujado como una constelación: los conceptos de matemáticas en azul a la izquierda y los de computación en ámbar a la derecha, unidos por líneas tenues; pulsos de luz viajan de las matemáticas a la computación y, de vez en cuando, se ilumina la cadena de ideas que hay detrás de un concepto.',
+    en: 'A curve on which four ideas play in turn: a tangent line slides along it (the derivative), rectangles under it grow thinner until they fill the area (the integral), polynomials of rising degree hug it around a point (Taylor series), and balls hop downhill to its valleys (gradient descent).',
+    es: 'Una curva sobre la que se suceden cuatro ideas: una recta tangente la recorre (la derivada), unos rectángulos bajo ella se afinan hasta llenar el área (la integral), polinomios de grado creciente se pegan a ella alrededor de un punto (serie de Taylor) y unas bolas bajan a saltos hasta sus valles (descenso de gradiente).',
   },
-  'splash.trace': { en: 'Trace another chain', es: 'Trazar otra cadena' },
-  'splash.chain': { en: 'Where it comes from:', es: 'De dónde viene:' },
+  'splash.act.derivative': { en: 'Derivative', es: 'Derivada' },
+  'splash.act.integral': { en: 'Integral', es: 'Integral' },
+  'splash.act.taylor': { en: 'Taylor series', es: 'Serie de Taylor' },
+  'splash.act.descent': { en: 'Gradient descent', es: 'Descenso de gradiente' },
+  'splash.text.derivative': {
+    en: 'the slope of the tangent, the limit of ever-shorter secants. Computers take millions of them a second.',
+    es: 'la pendiente de la tangente, el límite de secantes cada vez más cortas. Los ordenadores calculan millones por segundo.',
+  },
+  'splash.text.integral': {
+    en: 'add up thinner and thinner rectangles and the sum closes in on the exact area. Most integrals in computing are never solved, only approximated like this.',
+    es: 'suma rectángulos cada vez más finos y la suma se acerca al área exacta. Casi todas las integrales de la computación no se resuelven: se aproximan así.',
+  },
+  'splash.text.taylor': {
+    en: 'near a point, a polynomial built from the derivatives there hugs the curve, and each extra degree hugs it further out. The idea behind how a machine that only adds and multiplies computes sin x.',
+    es: 'cerca de un punto, un polinomio hecho con las derivadas en ese punto se pega a la curva, y cada grado más se pega más lejos. La idea con la que una máquina que solo suma y multiplica calcula sen x.',
+  },
+  'splash.text.descent': {
+    en: 'step against the slope, x ← x − η f′(x), until the ground is flat. Where you start decides which valley you end in.',
+    es: 'da pasos contra la pendiente, x ← x − η f′(x), hasta que el suelo es plano. Dónde empiezas decide en qué valle acabas.',
+  },
+  'splash.uses': { en: 'Used in', es: 'Se usa en' },
+  'splash.degree': { en: 'degree', es: 'grado' },
+  'splash.step': { en: 'step', es: 'paso' },
+  'splash.local': { en: 'local minimum', es: 'mínimo local' },
+  'splash.global': { en: 'global minimum', es: 'mínimo global' },
+  'splash.next': { en: 'Next idea', es: 'Siguiente idea' },
   'splash.pause': { en: 'Pause', es: 'Pausa' },
   'splash.play': { en: 'Play', es: 'Seguir' },
 
