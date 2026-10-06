@@ -34,6 +34,7 @@ const ui = {
     en: 'An interactive knowledge map of university calculus — from limits to vector calculus, ODEs and Fourier — and where each idea shows up in AI, graphics, simulation, robotics and scientific computing.',
     es: 'Un mapa de conocimiento interactivo del cálculo universitario —de los límites al cálculo vectorial, las EDO y Fourier— y de dónde aparece cada idea en IA, gráficos, simulación, robótica y computación científica.',
   },
+  'nav.overview': { en: 'Overview', es: 'Panorama' },
   'nav.map': { en: 'Map', es: 'Mapa' },
   'nav.syllabus': { en: 'Syllabus', es: 'Temario' },
   'nav.routes': { en: 'Routes', es: 'Rutas' },
@@ -214,6 +215,30 @@ const ui = {
   'home.stats.links': { en: 'connections', es: 'conexiones' },
   'home.stats.areas': { en: 'areas', es: 'áreas' },
   'home.stats.demos': { en: 'interactive figures', es: 'figuras interactivas' },
+  'overview.description': {
+    en: 'An overview of Calculus × Computing: the big map, the thesis, two questions, routes, interactive figures and every area.',
+    es: 'Un panorama de Calculus × Computing: el gran mapa, la tesis, dos preguntas, rutas, figuras interactivas y todas las áreas.',
+  },
+
+  // Home: the title screen (a constellation of the whole graph)
+  'splash.eyebrow': { en: 'An interactive knowledge map', es: 'Un mapa de conocimiento interactivo' },
+  'splash.lead': {
+    en: 'All of university calculus and where every idea lands in AI, graphics, simulation, robotics and scientific computing. Behind this text, the whole map as a sky: every star is a topic, and light keeps travelling from mathematics to the technology it makes possible.',
+    es: 'Todo el cálculo universitario y dónde aterriza cada idea en IA, gráficos, simulación, robótica y computación científica. Detrás de este texto, el mapa entero como un cielo: cada estrella es un concepto, y la luz no deja de viajar de las matemáticas a la tecnología que hacen posible.',
+  },
+  'splash.start': { en: 'Start with the overview', es: 'Empezar por el panorama' },
+  'splash.hint': {
+    en: 'Hover a star to read it, click to open it.',
+    es: 'Pasa el ratón por una estrella para leerla; haz clic para abrirla.',
+  },
+  'splash.label': {
+    en: 'The knowledge map drawn as a constellation: mathematics topics in blue on the left, computing topics in amber on the right, joined by faint lines; pulses of light travel from mathematics to computing, and from time to time the chain of ideas behind one topic lights up.',
+    es: 'El mapa de conocimiento dibujado como una constelación: los conceptos de matemáticas en azul a la izquierda y los de computación en ámbar a la derecha, unidos por líneas tenues; pulsos de luz viajan de las matemáticas a la computación y, de vez en cuando, se ilumina la cadena de ideas que hay detrás de un concepto.',
+  },
+  'splash.trace': { en: 'Trace another chain', es: 'Trazar otra cadena' },
+  'splash.chain': { en: 'Where it comes from:', es: 'De dónde viene:' },
+  'splash.pause': { en: 'Pause', es: 'Pausa' },
+  'splash.play': { en: 'Play', es: 'Seguir' },
 
   'footer.siblings': { en: 'Sister sites', es: 'Webs hermanas' },
   'footer.source': { en: 'Source code', es: 'Código fuente' },

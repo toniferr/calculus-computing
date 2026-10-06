@@ -22,6 +22,7 @@ const path = stripLang(Astro.url.pathname);
 const canonical = new URL(href(lang, path), Astro.site).href;
 
 const nav = [
+  { key: 'nav.overview', path: 'overview/' },
   { key: 'nav.map', path: 'map/' },
   { key: 'nav.syllabus', path: 'topics/' },
   { key: 'nav.routes', path: 'routes/' },

@@ -13,6 +13,8 @@ backpropagation come from?*).
 | **Syllabus** | 17 mathematical areas — foundations, sequences and limits, continuity, derivatives, fundamental theorems, optimization, numerical methods, Taylor, integrals, series, multivariable and vector calculus, ODEs, dynamical systems and chaos, transforms, probability — plus a linear-algebra bridge |
 | **Computing domains** | AI and machine learning, scientific computing, graphics, robotics and control, physics and simulation, signals and vision, optimization and systems, cryptography, quantum |
 | **Topic pages** | the same structure everywhere: level, prerequisites (and the full computed path), what it is, why it exists, intuition, formal definition, formulas, how it is computed, example, interactive figure, why it matters, applications in computing and in AI, what depends on it, exercises with solutions |
+| **Home** | a title screen: the whole graph as a sky of stars, with pulses travelling from mathematics to computing and the chain of ideas behind a topic lighting up (`scripts/splash.ts`) |
+| **Overview** | the big map, the thesis, two questions (upstream and downstream), routes, figures and every area |
 | **Knowledge map** | every topic and connection, zoomable, with upstream / downstream exploration |
 | **Routes** | recover university calculus · mathematics for AI · computer graphics · simulation · computational physics |
 | **Interactive figures** | tangent and secant, Riemann sums, Taylor polynomials, gradient descent on 2D landscapes, Newton's method, backpropagation through one neuron |
@@ -53,6 +55,7 @@ src/
 │   ├── graph.ts               builds and validates the knowledge graph; upstream, downstream, reach, matrix
 │   ├── md.ts                  Markdown + TeX → HTML/MathML, [[topic-id]] links
 │   ├── i18n.ts                interface strings and URL helpers (en at the root, es under /es/)
+│   ├── layout.ts              build-time force layout of the graph, shared by the map and the home page
 │   └── demos.ts               registry of interactive figures
 ├── components/
 │   ├── pages/                 one component per page type, rendered for both languages

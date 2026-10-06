@@ -185,7 +185,7 @@ export function plain(src: string, lang: Lang = 'en'): string {
         .replace(/\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}/g, '$1/$2')
         .replace(/\\(?:left|right|bigg?|Bigg?|qquad|quad)(?![a-zA-Z])/g, '')
         .replace(/\\[,;!:]/g, ' ')
-        .replace(/\\([a-zA-Z]+)/g, (m, cmd: string) => TEX_UNICODE[cmd] ?? '')
+        .replace(/\\([a-zA-Z]+)/g, (_m, cmd: string) => TEX_UNICODE[cmd] ?? '')
         .replace(/\\([{}|,;!])/g, '$1')
         .replace(/\^\{([^{}]*)\}/g, '^$1')
         .replace(/_\{([^{}]*)\}/g, '_$1')
