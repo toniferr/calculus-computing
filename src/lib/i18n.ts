@@ -226,7 +226,6 @@ const ui = {
     en: 'All of university calculus and where every idea lands in AI, graphics, simulation, robotics and scientific computing. Behind this text, four of those ideas at work on a single curve: the slope, the area, the approximation and the way downhill.',
     es: 'Todo el cálculo universitario y dónde aterriza cada idea en IA, gráficos, simulación, robótica y computación científica. Detrás de este texto, cuatro de esas ideas trabajando sobre una sola curva: la pendiente, el área, la aproximación y el camino cuesta abajo.',
   },
-  'splash.start': { en: 'Start with the overview', es: 'Empezar por el panorama' },
   'splash.hint': {
     en: 'Move the pointer over the curve to steer each idea; in gradient descent, click to drop a ball.',
     es: 'Mueve el puntero sobre la curva para guiar cada idea; en el descenso de gradiente, haz clic para soltar una bola.',

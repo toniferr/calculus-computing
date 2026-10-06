@@ -44,11 +44,6 @@ const words = {
       <p class="eyebrow">{t(lang, 'splash.eyebrow')}</p>
       <h1 id="splash-title">Calculus <span class="x">×</span> Computing</h1>
       <p class="lead">{t(lang, 'splash.lead')}</p>
-      <div class="hero-cta">
-        <a class="btn primary" href={href(lang, 'overview/')}>{t(lang, 'splash.start')} →</a>
-        <a class="btn" href={href(lang, 'map/')}>⌖ {t(lang, 'home.explore')}</a>
-        <a class="btn" href={href(lang, 'topics/')}>{t(lang, 'home.syllabus')}</a>
-      </div>
       <dl class="stats">
         {
           stats.map((s) => (
@@ -161,18 +156,11 @@ const words = {
     max-width: 34rem;
   }
 
-  .splash .hero-cta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.6rem;
-    margin: 1.6rem 0 1.6rem;
-  }
-
   .splash .stats {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem 2.5rem;
-    margin: 0 0 1rem;
+    margin: 1.8rem 0 1rem;
   }
 
   .splash .stats div {
