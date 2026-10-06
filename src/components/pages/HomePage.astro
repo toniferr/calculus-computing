@@ -11,12 +11,6 @@ interface Props {
 const { lang } = Astro.props;
 const g = await getGraph();
 
-const stats = [
-  { n: g.topics.length, key: 'home.stats.topics' as const },
-  { n: g.edges.length, key: 'home.stats.links' as const },
-  { n: g.areas.length, key: 'home.stats.areas' as const },
-];
-
 // Each act names its topic and where it is used; the links are real connections from the content (applications of
 // the mathematical topic, or the computing topics built on it), so g.topic() fails the build if one disappears.
 const acts: { chip: UIKey; text: UIKey; topic: string; uses: string[] }[] = [
@@ -44,17 +38,6 @@ const words = {
       <p class="eyebrow">{t(lang, 'splash.eyebrow')}</p>
       <h1 id="splash-title">Calculus <span class="x">×</span> Computing</h1>
       <p class="lead">{t(lang, 'splash.lead')}</p>
-      <dl class="stats">
-        {
-          stats.map((s) => (
-            <div>
-              <dt>{t(lang, s.key)}</dt>
-              <dd>{s.n}</dd>
-            </div>
-          ))
-        }
-      </dl>
-      <p class="splash-hint">{t(lang, 'splash.hint')}</p>
     </div>
     <div class="splash-hud">
       <ol class="splash-acts">
@@ -154,40 +137,6 @@ const words = {
 
   .splash .lead {
     max-width: 34rem;
-  }
-
-  .splash .stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem 2.5rem;
-    margin: 1.8rem 0 1rem;
-  }
-
-  .splash .stats div {
-    display: flex;
-    flex-direction: column-reverse;
-  }
-
-  .splash .stats dd {
-    margin: 0;
-    font-size: 2rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .splash .stats dt {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  .splash-hint {
-    margin: 0;
-    font-size: 0.85rem;
-    color: var(--muted);
   }
 
   .splash-hud {

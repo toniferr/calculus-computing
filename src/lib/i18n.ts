@@ -226,10 +226,6 @@ const ui = {
     en: 'All of university calculus and where every idea lands in AI, graphics, simulation, robotics and scientific computing. Behind this text, four of those ideas at work on a single curve: the slope, the area, the approximation and the way downhill.',
     es: 'Todo el cálculo universitario y dónde aterriza cada idea en IA, gráficos, simulación, robótica y computación científica. Detrás de este texto, cuatro de esas ideas trabajando sobre una sola curva: la pendiente, el área, la aproximación y el camino cuesta abajo.',
   },
-  'splash.hint': {
-    en: 'Move the pointer over the curve to steer each idea; in gradient descent, click to drop a ball.',
-    es: 'Mueve el puntero sobre la curva para guiar cada idea; en el descenso de gradiente, haz clic para soltar una bola.',
-  },
   'splash.label': {
     en: 'A curve on which four ideas play in turn: a tangent line slides along it (the derivative), rectangles under it grow thinner until they fill the area (the integral), polynomials of rising degree hug it around a point (Taylor series), and balls hop downhill to its valleys (gradient descent).',
     es: 'Una curva sobre la que se suceden cuatro ideas: una recta tangente la recorre (la derivada), unos rectángulos bajo ella se afinan hasta llenar el área (la integral), polinomios de grado creciente se pegan a ella alrededor de un punto (serie de Taylor) y unas bolas bajan a saltos hasta sus valles (descenso de gradiente).',
