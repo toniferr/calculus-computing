@@ -442,6 +442,39 @@ const data = {
 
     .map-page {
       height: calc(100svh - var(--header-h));
+      min-height: 480px;
+    }
+    /* Phones: the toolbar keeps to a few lines so the map gets most of the screen. */
+    .map-toolbar {
+      padding-top: 0.7rem;
+      padding-bottom: 0.6rem;
+    }
+    .map-title p {
+      display: none;
+    }
+    .map-controls {
+      width: 100%;
+    }
+    .map-find {
+      width: 100%;
+    }
+    .map-controls .filters {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+      max-width: 100%;
+    }
+    .map-controls .filters > * {
+      flex: none;
+    }
+    /* The detail panel becomes a bottom sheet. */
+    .map-panel {
+      top: auto;
+      left: 0.5rem;
+      right: 0.5rem;
+      bottom: 0.5rem;
+      width: auto;
+      max-height: 60%;
     }
   }
 </style>

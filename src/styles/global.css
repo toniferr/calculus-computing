@@ -445,7 +445,8 @@ math {
   }
 }
 
-@media (max-width: 900px) {
+/* Seven links, the brand and the tools need ~1150px (Spanish labels are longer): below that, the menu button. */
+@media (max-width: 1150px) {
   .menu-btn {
     display: inline-flex;
   }
@@ -555,7 +556,7 @@ math {
 }
 
 .section {
-  padding: 3rem 0 0;
+  padding-top: 3rem;
 }
 
 .section-head {

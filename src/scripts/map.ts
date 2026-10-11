@@ -115,13 +115,21 @@ function zoomAt(px: number, py: number, factor: number): void {
   apply();
 }
 
+// Space the open panel takes from the map: a column on the right, or (on phones) a sheet at the bottom.
+function panelInset(gap: number): { w: number; h: number } {
+  if (panel.hidden) return { w: 0, h: 0 };
+  if (panel.offsetWidth > svg.clientWidth * 0.7) return { w: 0, h: Math.min(panel.offsetHeight + gap, svg.clientHeight * 0.6) };
+  return { w: Math.min(panel.offsetWidth + gap, svg.clientWidth / 2), h: 0 };
+}
+
 function fit(indices: number[] = visibleIndices(), pad = 60, besidePanel = false): void {
   if (!indices.length) return;
   const xs = indices.map((i) => data.nodes[i]!.x);
   const ys = indices.map((i) => data.nodes[i]!.y);
   const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys) - 30, Math.max(...ys)];
-  const W = svg.clientWidth - (besidePanel && !panel.hidden ? Math.min(panel.offsetWidth + 16, svg.clientWidth / 2) : 0);
-  const H = svg.clientHeight;
+  const inset = besidePanel ? panelInset(16) : { w: 0, h: 0 };
+  const W = svg.clientWidth - inset.w;
+  const H = svg.clientHeight - inset.h;
   k = Math.min(2, Math.min(W / (x1 - x0 + pad * 2), H / (y1 - y0 + pad * 2)));
   tx = W / 2 - k * (x0 + x1) / 2;
   ty = H / 2 - k * (y0 + y1) / 2;
@@ -131,9 +139,9 @@ function fit(indices: number[] = visibleIndices(), pad = 60, besidePanel = false
 function centerOn(i: number, zoom = 1.8): void {
   const n = data.nodes[i]!;
   k = zoom;
-  const panelW = panel.hidden ? 0 : Math.min(panel.offsetWidth, svg.clientWidth / 2);
-  tx = (svg.clientWidth - panelW) / 2 - k * n.x;
-  ty = svg.clientHeight / 2 - k * n.y;
+  const inset = panelInset(0);
+  tx = (svg.clientWidth - inset.w) / 2 - k * n.x;
+  ty = (svg.clientHeight - inset.h) / 2 - k * n.y;
   apply();
 }
 
